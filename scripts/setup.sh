@@ -1,5 +1,12 @@
 #/bin/bash
 
+#	KStars and INDI Development Setup Script
+#﻿   Copyright (C) 2019 Robert Lancaster <rlancaste@gmail.com>
+#	This script is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU General Public
+#	License as published by the Free Software Foundation; either
+#	version 2 of the License, or (at your option) any later version.
+
 # This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
 # It also uses that to get the top folder file name so that it can use that in the scripts.
 # Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
@@ -8,6 +15,7 @@
 
 # This resets the script options to default values.
 	REMOVE_ALL=""
+	SKIP_WEB_MANAGER=""
 
 # This function will display the message so it stands out in the Terminal both in the code and at the top.
 	function display
@@ -22,10 +30,31 @@
 		# This will display the message in the title bar.
 		echo "\033]0;SettingUpMacDevEnvForKStars-INDI-$*\a"
 	}
+	
+# This function will download a git repo if needed, and will update it if not
+# $1 is the name of the folder that will be created when the clone is done
+# $2 is the pretty name of the repository
+# $3 is the git address to be cloned
+	function downloadOrUpdateRepository
+	{
+		mkdir -p "${SRC_FOLDER}"
+		if [ ! -d "${SRC_FOLDER}/$1" ]
+		then
+			display "Downloading $2 GIT repository"
+			cd "${SRC_FOLDER}"
+			git clone "$3"
+		else
+			display "Updating $2 GIT repository"
+			cd "${SRC_FOLDER}/$1"
+			git pull
+		fi
+	}
 
 # This function shortens the amount of code needed to clean the build directories if desired, make them if needed, and enter them
+# $1 is the path to the build directory, $2 is the name of the package to be built
 	function setupAndEnterBuildDir
 	{
+		display "Setting up and entering $2 build directory"
 		if [ -d "$1" ]
 		then
 			if [ -n "$REMOVE_ALL" ]
@@ -38,26 +67,61 @@
 		cd "$1"
 	}
 
+# This function will take a newly copied app bundle for building purposes, delete directories, and link it to the system QT
+# $1 is the path to the App bundle to be processed.
+	function reLinkAppBundle
+	{
+		App="$1"
+		rm -rf "${App}/Contents/Frameworks"
+		rm -r "${App}/Contents/Resources/qml"
+		rm "${App}/Contents/Resources/qt.conf"
+		rm -r "${App}/Contents/Plugins"
+		cp -f "${App}/Contents/MacOS/indi/gsc" "${DEV_ROOT}/bin"
+		rm -r "${App}/Contents/MacOS/indi"
+		ln -sf "${DEV_ROOT}/bin" "${App}/Contents/MacOS/indi"
+		
+		##################
+		cat > "${App}/Contents/Resources/qt.conf" <<- EOF
+		[Paths]
+		Prefix = ${QT_PATH}
+		Plugins = plugIns
+		Imports = qml
+		Qml2Imports = qml
+		EOF
+		##################
+		
+		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
+		#This command will cause them to look to the lib directory and QT.
+		processDirectory "${App}/Contents/MacOS"
+	}
+
 #This will print out how to use the script
-	function usage
+	function displayUsageAndExit
 	{
 		cat  <<- EOF
-			options:
+			script options:
+				-h Display the help information
 				-r Remove everything from the build directories and start fresh
 		EOF
+		exit
 	}
 
 #This function processes the user's options for running the script
 	function processOptions
 	{
-		while getopts "r" option
+		while getopts "rh" option
 		do
 			case $option in
 				r)
 					REMOVE_ALL="Yep"
 					;;
+				h)
+					displayUsageAndExit
+					;;
 				*)
-					dieUsage "Unsupported option $option"
+					display "Unsupported option $option"
+					displayUsageAndExit
+					exit
 					;;
 			esac
 		done
@@ -144,6 +208,8 @@
 	DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
 	sourceKStarsApp="/Applications/KStars.app"
 	KStarsApp="${BUILD_FOLDER}/kstars-build/kstars/KStars.app"
+	sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
+	INDIWebManagerApp="${BUILD_FOLDER}/webmanager-build/INDIWebManagerApp.app"
 	QMAKE_MACOSX_DEPLOYMENT_TARGET=10.12
 	MACOSX_DEPLOYMENT_TARGET=10.12
 	QT_PATH="${HOME}/Qt/5.12.3/clang_64/"
@@ -153,18 +219,31 @@
 	
 	# pkgconfig is not needed, but can be found by adding it to the path.
 	#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
+
+# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
+	then
+  		display "One or more critical directory variables is blank, please edit this script."
+  		exit 1
+	fi
 	
 # This checks the most important variables to see if the paths exist.  If they don't, it terminates the script with a message.
 	if [ ! -d "${QT_PATH}" ]
 	then
 		display "QT Does Not Exist at the directory specified, please install QT or edit this script."
-		exit
+		exit 1
 	fi
 	
 	if [ ! -d "${sourceKStarsApp}" ]
 	then
 		display "The source KStars app does not exist at the directory specified. This script relies on an existing KStars APP bundle in order to set up the development environment.  Please download KStars.app or edit this script."
-		exit
+		exit 1
+	fi
+	
+	if [ ! -d "${sourceINDIWebManagerApp}" ]
+	then
+		display "The source INDI Web Manager App does not exist at the directory specified.  Skipping Web Manager build.  If you want to build the INDI Web Manager App, either download an existing copy, or edit this script to change the path to it."
+		SKIP_WEB_MANAGER="Yep"
 	fi
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
@@ -273,70 +352,39 @@
 # This is the start of the build section of the Script.
 
 # This section will build INDI CORE
-	if [ ! -d "${SRC_FOLDER}/indi" ]
-	then
-		display "Downloading INDI Core GIT repository"
-		mkdir -p "${SRC_FOLDER}"
-		cd "${SRC_FOLDER}"
-		git clone https://github.com/indilib/indi.git 
-	else
-		display "Updating INDI Core GIT repository"
-		cd "${SRC_FOLDER}/indi"
-		git pull
-	fi
 
+	downloadOrUpdateRepository "indi" "INDI Core" "https://github.com/indilib/indi.git"
+
+	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
+	
 	display "Building INDI Core Drivers"
-	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install
 
 # This section will build INDI 3rd Party libraries and drivers.
-	if [ ! -d "${SRC_FOLDER}/indi-3rdparty" ]
-	then
-		display "Downloading INDI 3rd Party GIT repository"
-		cd "${SRC_FOLDER}"
-		git clone https://github.com/indilib/indi-3rdparty.git
-	else
-		display "Updating INDI 3rd Party GIT repository"
-		cd "${SRC_FOLDER}/indi-3rdparty"
-		git pull
-	fi
 
-	display "Building INDI 3rd Party Libraries"
+	downloadOrUpdateRepository "indi-3rdparty" "INDI 3rd Party" "https://github.com/indilib/indi-3rdparty.git"
+
 	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
+	
+	display "Building INDI 3rd Party Libraries"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install 
-
-	display "Building INDI 3rd Party Drivers"
+	
 	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
+	
+	display "Building INDI 3rd Party Drivers"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install
 
 # This section will build KStars
-	if [ ! -d "${SRC_FOLDER}/kstars" ]
-	then
-		display "Downloading KStars GIT repository"
-		cd "${SRC_FOLDER}"
-		git clone https://github.com/KDE/kstars.git 
-	else
-		display "Updating KStars GIT repository"
-		cd "${SRC_FOLDER}/kstars"
-		git pull
-	fi
 
-	display "Setting Up KStars Build Directory"
-	setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build"
-	
-	if [ -n "$REMOVE_ALL" ]
-	then
-		if [ -d "${KStarsApp}" ]
-		then
-			rm -r "${KStarsApp}"
-		fi
-	fi
+	downloadOrUpdateRepository "kstars" "KStars" "https://github.com/KDE/kstars.git"
+
+	setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
 	
 	# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
 	# It is very important that you build on top of an existing KStars app bundle since this script will not set up
@@ -345,33 +393,38 @@
 	then
 		mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
 		cp -rf "${sourceKStarsApp}" "${KStarsApp}"
-		rm -rf "${KStarsApp}/Contents/Frameworks"
-		rm -r "${KStarsApp}/Contents/Resources/qml"
-		rm "${KStarsApp}/Contents/Resources/qt.conf"
-		rm -r "${KStarsApp}/Contents/Plugins"
-		rm -r "${KStarsApp}/Contents/MacOS/indi"
-		ln -sf "${DEV_ROOT}/bin" "${KStarsApp}/Contents/MacOS/indi"
-		cp -f "${sourceKStarsApp}/Contents/MacOS/indi/gsc" "${DEV_ROOT}/bin"
-		##################
-		cat > "${KStarsApp}/Contents/Resources/qt.conf" <<- EOF
-		[Paths]
-		Prefix = ${QT_PATH}
-		Plugins = plugIns
-		Imports = qml
-		Qml2Imports = qml
-		EOF
-		##################
-		
-		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
-		#This command will cause them to look to the lib directory and QT.
-		processDirectory "${KStarsApp}/Contents/MacOS"
+		reLinkAppBundle "${KStarsApp}"
 	fi
 
 	display "Building KStars"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/kstars"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/kstars"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 
 	ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
+	
+# This section will build INDIWebManagerApp
 
+	if [ -z "${SKIP_WEB_MANAGER}" ]
+	then
+		downloadOrUpdateRepository "INDIWebManagerApp" "INDI Web Manager App" "https://github.com/rlancaste/INDIWebManagerApp.git"
+
+		setupAndEnterBuildDir "${BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
+	
+		# This will copy the source INDIWebManagerApp app into the build directory and delete and/or replace any files necessary
+		# It is very important that you build on top of an existing INDIWebManagerApp app bundle since this script will not set up
+		# all the ancillary files that INDIWebManagerApp needs in the app bundle in order to run.
+		if [ ! -d "${INDIWebManagerApp}" ]
+		then
+			mkdir -p "${BUILD_FOLDER}/webmanager-build/"
+			cp -rf "${sourceINDIWebManagerApp}" "${INDIWebManagerApp}"
+			reLinkAppBundle "${INDIWebManagerApp}"
+		fi
+
+		display "Building INDI Web Manager App"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/INDIWebManagerApp"
+		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+
+		ln -sf "${INDIWebManagerApp}" "${TOP_FOLDER}/INDIWebManagerApp.app"
+	fi
 
 display "Script Execution Complete"
