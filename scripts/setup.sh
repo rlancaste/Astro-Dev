@@ -11,25 +11,10 @@
 # It also uses that to get the top folder file name so that it can use that in the scripts.
 # Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-	TOP_FOLDER=$( cd "${DIR}/../" && pwd )
 
 # This resets the script options to default values.
 	REMOVE_ALL=""
 	SKIP_WEB_MANAGER=""
-
-# This function will display the message so it stands out in the Terminal both in the code and at the top.
-	function display
-	{
-		# This will display the message in line in the commands.
-		echo ""
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-		echo "~ $*"
-		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-		echo ""
-	
-		# This will display the message in the title bar.
-		echo "\033]0;SettingUpMacDevEnvForKStars-INDI-$*\a"
-	}
 	
 # This function will download a git repo if needed, and will update it if not
 # $1 is the name of the folder that will be created when the clone is done
@@ -197,28 +182,15 @@
 # This is where the main part of the script starts!
 #
 
+# Prepare to run the script by setting all of the environment variables	
+# If you want to customize any of those variables, you can edit this file
+	source ${DIR}/build-env.sh
+
 #Process the command line options to determine what to do.
 	processOptions $@
 
+# Display the Welcome message.
 	display "This will use an existing KStars App to setup a Development Environment for KStars and INDI on your Mac that does not depend on Craft or Homebrew.  It assumes the KStars app bundle is at /Applications/KStars.app.  It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
-
-# These are the script options.  You can change these if needed.
-	SRC_FOLDER="${TOP_FOLDER}/src"
-	BUILD_FOLDER="${TOP_FOLDER}/build"
-	DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
-	sourceKStarsApp="/Applications/KStars.app"
-	KStarsApp="${BUILD_FOLDER}/kstars-build/kstars/KStars.app"
-	sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
-	INDIWebManagerApp="${BUILD_FOLDER}/webmanager-build/INDIWebManagerApp.app"
-	QMAKE_MACOSX_DEPLOYMENT_TARGET=10.12
-	MACOSX_DEPLOYMENT_TARGET=10.12
-	QT_PATH="${HOME}/Qt/5.12.3/clang_64/"
-	GETTEXT_PATH=$(brew --prefix gettext)
-	PREFIX_PATH="${QT_PATH};${DEV_ROOT};${GETTEXT_PATH}"
-	PATH="${DEV_ROOT}/bin:${KStarsApp}/Contents/MacOS/astrometry/bin:${QT_PATH}/bin:$PATH"
-	
-	# pkgconfig is not needed, but can be found by adding it to the path.
-	#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
 	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
