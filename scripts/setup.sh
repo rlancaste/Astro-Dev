@@ -171,8 +171,8 @@
 	{
 		target=$1
 		
-		install_name_tool -add_rpath "${DEV_ROOT}/lib" $target
-		install_name_tool -add_rpath "${QT_PATH}/lib" $target
+		install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
+		install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
         	
 		entries=$(otool -L $target | sed '1d' | awk '{print $1}')
 		#echo "Processing $target"
