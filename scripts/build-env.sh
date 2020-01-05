@@ -56,7 +56,7 @@
 		# These paths are root directories that contain cmake files and dynamic libraries
 	export PREFIX_PATH="${QT_PATH};${DEV_ROOT};${GETTEXT_PATH}"
 		# This is a list of paths to binaries that will be needed for building and running.  They are added to the PATH variable.
-	export PATH="${DEV_ROOT}/bin:${KStarsApp}/Contents/MacOS/astrometry/bin:${QT_PATH}/bin:$PATH"
+	export PATH="${DEV_ROOT}/bin:${KStarsApp}/Contents/MacOS/astrometry/bin:${KStarsApp}/Contents/MacOS/xplanet/bin:${QT_PATH}/bin:$PATH"
 	
 	# pkgconfig is not needed, but can be found by adding it to the path.
 	#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
