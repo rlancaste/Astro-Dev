@@ -24,7 +24,7 @@ cd  ~/Projects
 git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
 6. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system, most important: the QT path.
-7. Drag setup.sh to the OS X Terminal and run the script.
+7. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal and run the script.
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
 ```
@@ -40,17 +40,18 @@ There are a large number of variables that you can customize in build-env.sh.  T
 
 # [setup.sh](scripts/setup.sh) options
 The setup.sh script does not have a lot of options right now, but here they are:
-- The -r option removes the dev-root directory and the previous builds and starts fresh, it can even remove homebrew packages if desired.
+- The -r option removes the dev-root directory and the previous builds and starts fresh.  It can even remove all homebrew packages and reinstall them if desired.
 - The -h option shows information about how to use the script.
 
 # Using the newly built programs
 
-At this point you have a currently up to date version of INDI, INDI-3rd Party, KStars, and (optionally) INDI Web Manager App in the Dev folder.
+At this point you have a currently up to date version of INDI, INDI-3rd Party, KStars, and (optionally) INDI Web Manager App.
 You can use these programs if you like, they should be fully functional and bleeding edge, 
 but note that they are not portable, they rely on the files in the folders used to build these programs. This includes the QT version 
 you linked it to, as well as the files in the ASTRO-ROOT directory.  So please don't delete these files, move the Dev folder to another location, or delete/replace QT.
-If you do need to make a change like these, just re-run the setup script with the -r option and it will rebuild everything.  
-If you want a truly portable app bundle, you will need to use the KSTars-on-OSX-Craft repository to do that.
+If you do need to make a change like these, just re-run the setup script with the -r option and it will rebuild everything.  You CAN copy
+the KStars.app or INDI Web Manager.app bundles to any other location on your computer and they should work just fine as long as the build folders don't get deleted.
+If you want a truly portable app bundle, you will need to use the KStars-on-OSX-Craft repository to do that.
 
 # Editing and Making Changes to the software
 
