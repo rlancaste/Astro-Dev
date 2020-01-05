@@ -15,6 +15,21 @@
 # This resets the script options to default values.
 	REMOVE_ALL=""
 	
+# This function checks to see if a connection to a website exists.
+	function checkForConnection
+	{
+		testCommand=$(curl -Is $2 | head -n 1)
+		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* ]]
+  		then 
+  			echo "$1 connection was found."
+  		else
+  			echo "$1, ($2), a required connection, was not found, aborting script."
+  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in setup.sh."
+  			exit
+		fi
+	}
+
+	
 # This function will download a git repo if needed, and will update it if not
 # Note that this function should only be used on the real repo, not the forked one.  For that see the next function.
 # $1 is the path of the Source folder that will be created when the clone is done
@@ -241,6 +256,14 @@
 # Display the Welcome message.
 	display "This will use an existing KStars App to setup a Development Environment for KStars and INDI on your Mac that does not depend on Craft or Homebrew.  It assumes the KStars app bundle is at /Applications/KStars.app.  It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
 
+# Before starting, check to see if the remote servers are accessible
+	display "Checking Connections"
+	
+	checkForConnection "INDI Repository" "https://github.com/${INDI_REPO}.git"
+	checkForConnection "INDI 3rd Party Repository" "https://github.com/${THIRDPARTY_REPO}.git"
+	checkForConnection "KStars Repository" "https://github.com/${KSTARS_REPO}.git"
+	checkForConnection "INDI Web Manager Repository" "https://github.com/${WEBMANAGER_REPO}.git"
+
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
 	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
 	then
@@ -266,6 +289,40 @@
 		display "The source INDI Web Manager App does not exist at the directory specified.  Skipping Web Manager build.  If you want to build the INDI Web Manager App, either download an existing copy, or edit this script to change the path to it."
 		BUILD_WEBMANAGER=""
 	fi
+	
+#This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
+# If you do not want to use homebrew, then you need to remove or edit this section of the script.
+	if [ -d "/usr/local/Homebrew" ]
+	then
+		#This will remove all the homebrew packages if desired.
+		if [ -n "$REMOVE_ALL" ]
+		then
+			display "You have selected the REMOVE_ALL option."
+			read -p "Do you also want to remove Homebrew packages and reinstall them? (y/n)" reinstallHomebrew
+			if [ "$reinstallHomebrew" == "y" ]
+			then
+				brew remove --force $(brew list) --ignore-dependencies
+			fi
+		fi  
+	else
+		display "Installing Homebrew."
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
+
+# This will install KStars and INDI dependencies from Homebrew.
+# These items are needed from Homebrew.  If you don't want homebrew, then you need to install them another way and get them in your PATH
+	display "Installing Homebrew Dependencies."
+	brew upgrade
+	
+	brew install gpsd 
+	brew install cmake
+	brew install gettext
+	brew install libusb
+	
+	# Ruby is installed on OS X by default, but the system ruby can't be changed and we need logger-colors.
+	brew install ruby
+	export PATH=/usr/local/opt/ruby/bin:$PATH
+	gem install logger-colors
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
 	if [ -n "${REMOVE_ALL}" ]
