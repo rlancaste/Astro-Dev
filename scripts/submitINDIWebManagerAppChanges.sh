@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#	Submit Changes script
+#﻿   Copyright (C) 2019 Robert Lancaster <rlancaste@gmail.com>
+#	This script is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU General Public
+#	License as published by the Free Software Foundation; either
+#	version 2 of the License, or (at your option) any later version.
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # Prepare to run the script by setting all of the environment variables	
 	source "${DIR}/build-env.sh"
