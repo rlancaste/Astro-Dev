@@ -29,10 +29,13 @@
 
 # This sets the directory paths.  Note that these are customizable.
 # Beware that none of them should have spaces in the file path.
+
 		#This is the base path
 	export TOP_FOLDER=$( cd "${DIR}/../" && pwd )
 		# This is the enclosing folder for the source code of INDI, KStars, and INDI Web Manager
 	export SRC_FOLDER="${TOP_FOLDER}/src"
+		# This is the enclosing folder for the forked source code of INDI, KStars, and INDI Web Manager
+	export FORKED_SRC_FOLDER="${TOP_FOLDER}/src-forked"
 		# This is the enclosing folder for the build folders of INDI, KStars, and INDI Web Manager
 	export BUILD_FOLDER="${TOP_FOLDER}/build"
 		# This is the root folder for "installing" the software to facilitate building
@@ -58,8 +61,30 @@
 	# pkgconfig is not needed, but can be found by adding it to the path.
 	#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
 
+# These are the urls for the repositories that will be used for building
+# The prefix https://github.com/ and the suffix .git is asssumed.
+
+	 export INDI_REPO="indilib/indi"
+	 export THIRDPARTY_REPO="indilib/indi-3rdparty"
+	 export KSTARS_REPO="KDE/kstars"
+	 export WEBMANAGER_REPO="rlancaste/INDIWebManagerApp"
+	 
+# These are the urls for the forks of the repositories that you will be using for editing these repos
+# To use this section:
+#		1. Make sure the user name has been edited to match your github user name
+#		2. Uncomment the one(s) for which you would like to make/use a forked repo to edit
+#		3. Run the setup script with the -r option selected.
+# If you want to later change back to the standard repo, just comment out that line again and run the setup script with the -r option again.
+# You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
+
+	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own username.
+	 #export FORKED_INDI_REPO="${GIT_USERNAME}/indi"
+	 export FORKED_THIRDPARTY_REPO="${GIT_USERNAME}/indi-3rdparty"
+	 #export FORKED_WEBMANAGER_REPO="${GIT_USERNAME}/INDIWebManagerApp"
+
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
+
 	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.12
 	export MACOSX_DEPLOYMENT_TARGET=10.12
 	
@@ -68,6 +93,7 @@ display "Environment Variables Set."
 echo "DIR                      is [${DIR}]"
 echo "TOP_FOLDER               is [${TOP_FOLDER}]"
 echo "SRC_FOLDER               is [${SRC_FOLDER}]"
+echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"
 echo "BUILD_FOLDER             is [${BUILD_FOLDER}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
 echo "sourceKStarsApp          is [${sourceKStarsApp}]"
@@ -81,3 +107,33 @@ echo "PREFIX_PATH              is [${PREFIX_PATH}]"
 echo "PATH                     is [${PATH}]"
 
 echo "OSX Deployment target    is [${QMAKE_MACOSX_DEPLOYMENT_TARGET}]"
+
+
+export KSTARS_SRC_FOLDER="${SRC_FOLDER}/kstars"
+
+if [ -n "${FORKED_INDI_REPO}" ]
+then
+	echo "Using forked INDI Repo: ${FORKED_INDI_REPO}" 
+	export INDI_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi"
+else
+	echo "Using INDI Repo: ${INDI_REPO}"
+	export INDI_SRC_FOLDER="${SRC_FOLDER}/indi"
+fi
+
+if [ -n "${FORKED_THIRDPARTY_REPO}" ]
+then
+	echo "Using forked 3rd Party Repo: ${FORKED_THIRDPARTY_REPO}" 
+	export THIRDPARTY_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi-3rdParty"
+else
+	echo "Using 3rd Party Repo: ${THIRDPARTY_REPO}"
+	export THIRDPARTY_SRC_FOLDER="${SRC_FOLDER}/indi-3rdParty"
+fi
+
+if [ -n "${FORKED_WEBMANAGER_REPO}" ]
+then
+	echo "Using forked Web Manaager Repo: ${FORKED_WEBMANAGER_REPO}" 
+	export WEBMANAGER_SRC_FOLDER="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
+else
+	echo "Using Web Manager Repo: ${WEBMANAGER_REPO}"
+	export WEBMANAGER_SRC_FOLDER="${SRC_FOLDER}/INDIWebManagerApp"
+fi

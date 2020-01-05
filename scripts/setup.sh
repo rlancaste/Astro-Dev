@@ -17,22 +17,71 @@
 	SKIP_WEB_MANAGER=""
 	
 # This function will download a git repo if needed, and will update it if not
-# $1 is the name of the folder that will be created when the clone is done
+# Note that this function should only be used on the real repo, not the forked one.  For that see the next function.
+# $1 is the path of the Source folder that will be created when the clone is done
 # $2 is the pretty name of the repository
-# $3 is the git address to be cloned
+# $3 is the git repository to be cloned
 	function downloadOrUpdateRepository
 	{
 		mkdir -p "${SRC_FOLDER}"
-		if [ ! -d "${SRC_FOLDER}/$1" ]
+		if [ ! -d "$1" ]
 		then
 			display "Downloading $2 GIT repository"
 			cd "${SRC_FOLDER}"
-			git clone "$3"
+			git clone https://github.com/"$3".git
 		else
 			display "Updating $2 GIT repository"
-			cd "${SRC_FOLDER}/$1"
+			cd "$1"
 			git pull
 		fi
+	}
+	
+# This function will create a Fork on Github or update an existing fork
+# It will also do all the functions of the function above for a Forked Repo
+# $1 is the path of the Source folder that will be created when the clone is done
+# $2 is the pretty name of the repository
+# $3 is the git repository to be forked to $4
+# $4 is the git repository to be cloned
+
+	function createOrUpdateFork
+	{
+		
+		# This will download the fork if needed, or update it to the latest version if necessary
+		mkdir -p "${FORKED_SRC_FOLDER}"
+		if [ ! -d "$1" ]
+		then
+			display "The Forked Repo is not downloaded, checking if a $2 Fork is needed."
+			# This will check to see if the repo already exists
+			git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
+			if [ $? -eq 0 ]
+			then
+				echo "The Forked Repo already exists, it can just get cloned."
+			else
+				echo "The $2 Repo has not been forked yet, attempting to do so now."
+				# This will attempt to make a fork with your username, if one exists, it will not create another
+				curl -u $GIT_USERNAME https://api.github.com/repos/$3/forks -d ''	
+			fi
+			
+			# This will verify yet again if the repo exists.
+			git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
+			if [ ! $? -eq 0 ]
+			then
+				display "Error, the fork was not able to be created, you should do so manually and start the script again."
+			fi
+			
+			display "Downloading $2 GIT repository"
+			cd "${FORKED_SRC_FOLDER}"
+			git clone https://github.com/"$4".git
+		else
+			display "Updating $2 GIT repository"
+			cd "$1"
+			git pull
+		fi
+		
+		# This will attempt to update the fork to match the upstream master
+		git fetch upstream
+		git merge upstream/master
+		git push
 	}
 
 # This function shortens the amount of code needed to clean the build directories if desired, make them if needed, and enter them
@@ -323,38 +372,52 @@
 
 # This is the start of the build section of the Script.
 
+# These make sure that the source folders exist
+	mkdir -p "${SRC_FOLDER}"
+	mkdir -p "${FORKED_SRC_FOLDER}"
+
 # This section will build INDI CORE
-
-	downloadOrUpdateRepository "indi" "INDI Core" "https://github.com/indilib/indi.git"
-
+	
+	if [ -n "${FORKED_INDI_REPO}" ]
+	then
+		createOrUpdateFork "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}" "${FORKED_INDI_REPO}"
+	else
+		downloadOrUpdateRepository "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}"
+	fi
+	
 	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
 	
 	display "Building INDI Core Drivers"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install
 
 # This section will build INDI 3rd Party libraries and drivers.
 
-	downloadOrUpdateRepository "indi-3rdparty" "INDI 3rd Party" "https://github.com/indilib/indi-3rdparty.git"
-
+	if [ -n "${FORKED_THIRDPARTY_REPO}" ]
+	then
+		createOrUpdateFork "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}" "${FORKED_THIRDPARTY_REPO}"
+	else
+		downloadOrUpdateRepository "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}"
+	fi
+	
 	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
 	
 	display "Building INDI 3rd Party Libraries"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install 
 	
 	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
 	
 	display "Building INDI 3rd Party Drivers"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/indi-3rdParty"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 	make install
 
 # This section will build KStars
 
-	downloadOrUpdateRepository "kstars" "KStars" "https://github.com/KDE/kstars.git"
+	downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
 
 	setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
 	
@@ -369,7 +432,7 @@
 	fi
 
 	display "Building KStars"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/kstars"
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 	make -j $(expr $(sysctl -n hw.ncpu) + 2)
 
 	ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
@@ -378,7 +441,12 @@
 
 	if [ -z "${SKIP_WEB_MANAGER}" ]
 	then
-		downloadOrUpdateRepository "INDIWebManagerApp" "INDI Web Manager App" "https://github.com/rlancaste/INDIWebManagerApp.git"
+		if [ -n "${FORKED_WEBMANAGER_REPO}" ]
+		then
+			createOrUpdateFork "${WEBMANAGER_SRC_FOLDER}" "INDI Web Manager App" "${WEBMANAGER_REPO}" "${FORKED_WEBMANAGER_REPO}"
+		else
+			downloadOrUpdateRepository "${WEBMANAGER_SRC_FOLDER}" "INDI Web Manager App" "${WEBMANAGER_REPO}"
+		fi
 
 		setupAndEnterBuildDir "${BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
 	
@@ -393,7 +461,7 @@
 		fi
 
 		display "Building INDI Web Manager App"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${SRC_FOLDER}/INDIWebManagerApp"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
 		make -j $(expr $(sysctl -n hw.ncpu) + 2)
 
 		ln -sf "${INDIWebManagerApp}" "${TOP_FOLDER}/INDIWebManagerApp.app"
