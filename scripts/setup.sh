@@ -175,7 +175,7 @@
 		install_name_tool -add_rpath "${QT_PATH}/lib" $target
         	
 		entries=$(otool -L $target | sed '1d' | awk '{print $1}')
-		echo "Processing $target"
+		#echo "Processing $target"
 
 		for entry in $entries
 		do
@@ -208,15 +208,17 @@
 		echo "Processing all of the files in $directory"
 		for file in ${directory}/*
 		do
-			if [[ $file == *.dylib ]]
-			then
-    			base=$(basename ${file})
-        		echo "Processing file ${base}"
-        		processTarget ${file}
-        	fi
-        	if [ -d "$file" ]
+        	if [ -d "${file}" ]
         	then
-        		processDirectory "${file}"
+        		base=$(basename ${file})
+        		if [[ ${base} != *.dSYM ]]
+				then
+        			processDirectory "${file}"
+        		fi
+        	else
+        		base=$(basename ${file})
+        		#echo "Processing file ${base}"
+        		processTarget ${file}
         	fi
 		done
 	}
@@ -270,7 +272,7 @@
 	then
 		if [ -d "${DEV_ROOT}" ]
 		then
-			rm -r "${DEV_ROOT}"
+			rm -fr "${DEV_ROOT}"
 		fi
 	fi
 
