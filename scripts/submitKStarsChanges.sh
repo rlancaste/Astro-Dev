@@ -32,7 +32,7 @@ fi
 
 # Export the Arcanist path so that it can be run.
 	export PATH="${TOP_FOLDER}"/arc/arcanist/bin:$PATH
-# Change to the kstars-mac directory so that the changes can be submitted.
+# Change to the kstars source directory so that the changes can be submitted.
 	cd "${KSTARS_SRC_FOLDER}"
 # Check with the user to see if they want to create a new diff or change the current one.
 	read -p "Do you either want to create a new arcanist diff (1) or update an existing one (2)? " arcDiffOpts
