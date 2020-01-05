@@ -4,7 +4,7 @@ A Script to easily build INDI, INDI Web Manager, and KStars for Mac using existi
 # About the repository
 This repository was written by myself, Rob Lancaster, for the purpose of making it easier to get set up to easily build the latest versions of INDI, 3rd Party Drivers, KStars, and INDI Web Manager App on a Mac computer
 as well as to be able to edit the source code to test out ideas or to diagnose problems.  This script is not meant for distribution of any of these items.  For building the latest versions and distributing them as a DMG,
-please see my other repository [KSTars-on-OSX-Craft]("https://github.com/rlancaste/kstars-on-osx-craft").  This script, unlike those in the craft-based repository, does not attempt to build everything from scratch, but instead starts with already built APP bundles that 
+please see my other repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).  This script, unlike those in the craft-based repository, does not attempt to build everything from scratch, but instead starts with already built APP bundles that 
 have already been downloaded to your computer.  So it is very necessary that you download KStars.app first!  If you want to build or edit the INDI Web Manager App, you should download that one too, otherwise this script 
 will skip that step.  So downloading KStars is required, but INDI Web Manager App is optional but recommended.  You will also need a version of QT, obtained from Homebrew, Craft, or installed using the official QT open source installer.
 It is highly recommended that the version number of QT that you download should match the version that was originally used to build the app(s) you downloaded.  If the QT versions are different, there could be issues with functions 
@@ -12,10 +12,10 @@ not matching.
 
 # Getting set up
 
-1. Download and install [KStars.app]("https://edu.kde.org/kstars/#download") (if not done already)
-2. (Optional) Download and install [INDIWebManager.app]("https://github.com/rlancaste/INDIWebManagerApp/releases") (if not done already)
+1. Download and install [KStars.app](https://edu.kde.org/kstars/#download) (if not done already)
+2. (Optional) Download and install [INDIWebManager.app](https://github.com/rlancaste/INDIWebManagerApp/releases) (if not done already)
 3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
-4. Download and install [Qt]("https://www.qt.io") from whatever source (Homebrew, Craft, QT Installer)
+4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
 	Note: If you are using the QT installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Visualizations along with QT Creator.
 5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
