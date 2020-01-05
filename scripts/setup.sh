@@ -365,18 +365,13 @@
 
 	if [ ! -d "${DEV_ROOT}/share/kf5" ]
 	then
-
 		tar -xzf "${DIR}/archive/share-kf5.zip" -C "${DEV_ROOT}/share" 
+		ln -sf "${DEV_ROOT}/share/kf5" "${HOME}/Library/Application Support/kf5"
 	fi
 
 	if [ ! -d "${DEV_ROOT}/share/ECM" ]
 	then
 		tar -xzf "${DIR}/archive/share-ECM.zip" -C "${DEV_ROOT}/share" 
-	fi
-	
-	if [ ! -d "${DEV_ROOT}/share/xml" ]
-	then
-		tar -xzf "${DIR}/archive/share-xml.zip" -C "${DEV_ROOT}/share" 
 	fi
 
 # This is the start of the build section of the Script.
