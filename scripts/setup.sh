@@ -330,6 +330,8 @@
 		if [ -d "${DEV_ROOT}" ]
 		then
 			rm -fr "${DEV_ROOT}"
+			rm "${TOP_FOLDER}/INDIWebManagerApp.app"
+			rm "${TOP_FOLDER}/KStars.app"
 		fi
 	fi
 
