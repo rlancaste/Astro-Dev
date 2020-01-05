@@ -14,7 +14,6 @@
 
 # This resets the script options to default values.
 	REMOVE_ALL=""
-	SKIP_WEB_MANAGER=""
 	
 # This function will download a git repo if needed, and will update it if not
 # Note that this function should only be used on the real repo, not the forked one.  For that see the next function.
@@ -110,7 +109,6 @@
 		rm -r "${App}/Contents/Resources/qml"
 		rm "${App}/Contents/Resources/qt.conf"
 		rm -r "${App}/Contents/Plugins"
-		cp -f "${App}/Contents/MacOS/indi/gsc" "${DEV_ROOT}/bin"
 		rm -r "${App}/Contents/MacOS/indi"
 		ln -sf "${DEV_ROOT}/bin" "${App}/Contents/MacOS/indi"
 		
@@ -242,7 +240,7 @@
 	display "This will use an existing KStars App to setup a Development Environment for KStars and INDI on your Mac that does not depend on Craft or Homebrew.  It assumes the KStars app bundle is at /Applications/KStars.app.  It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
 	then
   		display "One or more critical directory variables is blank, please edit this script."
   		exit 1
@@ -264,7 +262,7 @@
 	if [ ! -d "${sourceINDIWebManagerApp}" ]
 	then
 		display "The source INDI Web Manager App does not exist at the directory specified.  Skipping Web Manager build.  If you want to build the INDI Web Manager App, either download an existing copy, or edit this script to change the path to it."
-		SKIP_WEB_MANAGER="Yep"
+		BUILD_WEBMANAGER=""
 	fi
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
@@ -334,7 +332,9 @@
 
 	if [ ! -d "${DEV_ROOT}/bin" ]
 	then
-		tar -xzf "${DIR}/archive/bin.zip" -C "${DEV_ROOT}" 
+		tar -xzf "${DIR}/archive/bin.zip" -C "${DEV_ROOT}"
+		cp -fr "${sourceKStarsApp}/Contents/MacOS/indi"/* "${DEV_ROOT}/bin/"
+		processDirectory "${DEV_ROOT}/bin"
 	fi
 
 	if [ ! -d "${DEV_ROOT}/include" ]
@@ -354,6 +354,7 @@
 
 	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.54.0.dylib" ]
 	then
+		# Note this file isn't even needed at all, we just need to put it in there because the build fails if it isn't present.
 		cp -f "${DIR}/archive/libKF5KIOGui.5.54.0.dylib" "${DEV_ROOT}/lib"
 	fi
 
@@ -372,74 +373,78 @@
 
 # This is the start of the build section of the Script.
 
-# These make sure that the source folders exist
-	mkdir -p "${SRC_FOLDER}"
-	mkdir -p "${FORKED_SRC_FOLDER}"
-
 # This section will build INDI CORE
-	
-	if [ -n "${FORKED_INDI_REPO}" ]
+	if [ -n "${BUILD_INDI}" ]
 	then
-		createOrUpdateFork "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}" "${FORKED_INDI_REPO}"
-	else
-		downloadOrUpdateRepository "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}"
+		if [ -n "${FORKED_INDI_REPO}" ]
+		then
+			createOrUpdateFork "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}" "${FORKED_INDI_REPO}"
+		else
+			downloadOrUpdateRepository "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}"
+		fi
+	
+		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
+	
+		display "Building INDI Core Drivers"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
+		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		make install
 	fi
-	
-	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
-	
-	display "Building INDI Core Drivers"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
-	make -j $(expr $(sysctl -n hw.ncpu) + 2)
-	make install
 
 # This section will build INDI 3rd Party libraries and drivers.
 
-	if [ -n "${FORKED_THIRDPARTY_REPO}" ]
+	if [ -n "${BUILD_THIRDPARTY}" ]
 	then
-		createOrUpdateFork "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}" "${FORKED_THIRDPARTY_REPO}"
-	else
-		downloadOrUpdateRepository "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}"
+		if [ -n "${FORKED_THIRDPARTY_REPO}" ]
+		then
+			createOrUpdateFork "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}" "${FORKED_THIRDPARTY_REPO}"
+		else
+			downloadOrUpdateRepository "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}"
+		fi
+	
+		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+	
+		display "Building INDI 3rd Party Libraries"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		make install 
+	
+		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+	
+		display "Building INDI 3rd Party Drivers"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		make install
 	fi
-	
-	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
-	
-	display "Building INDI 3rd Party Libraries"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
-	make -j $(expr $(sysctl -n hw.ncpu) + 2)
-	make install 
-	
-	setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
-	
-	display "Building INDI 3rd Party Drivers"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
-	make -j $(expr $(sysctl -n hw.ncpu) + 2)
-	make install
 
 # This section will build KStars
 
-	downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
-
-	setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
-	
-	# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
-	# It is very important that you build on top of an existing KStars app bundle since this script will not set up
-	# all the ancillary files that KStars needs in the app bundle in order to run.
-	if [ ! -d "${KStarsApp}" ]
+	if [ -n "${BUILD_KSTARS}" ]
 	then
-		mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
-		cp -rf "${sourceKStarsApp}" "${KStarsApp}"
-		reLinkAppBundle "${KStarsApp}"
+		downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
+
+		setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
+	
+		# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
+		# It is very important that you build on top of an existing KStars app bundle since this script will not set up
+		# all the ancillary files that KStars needs in the app bundle in order to run.
+		if [ ! -d "${KStarsApp}" ]
+		then
+			mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
+			cp -rf "${sourceKStarsApp}" "${KStarsApp}"
+			reLinkAppBundle "${KStarsApp}"
+		fi
+
+		display "Building KStars"
+		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+
+		ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
 	fi
-
-	display "Building KStars"
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
-	make -j $(expr $(sysctl -n hw.ncpu) + 2)
-
-	ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
 	
 # This section will build INDIWebManagerApp
 
-	if [ -z "${SKIP_WEB_MANAGER}" ]
+	if [ -n "${BUILD_WEBMANAGER}" ]
 	then
 		if [ -n "${FORKED_WEBMANAGER_REPO}" ]
 		then

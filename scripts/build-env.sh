@@ -72,14 +72,14 @@
 # These are the urls for the forks of the repositories that you will be using for editing these repos
 # To use this section:
 #		1. Make sure the user name has been edited to match your github user name
-#		2. Uncomment the one(s) for which you would like to make/use a forked repo to edit
+#		2. Uncomment the one(s) for which you would like to make/use a forked repo to edit (remove the #)
 #		3. Run the setup script with the -r option selected.
-# If you want to later change back to the standard repo, just comment out that line again and run the setup script with the -r option again.
+# If you want to later change back to the standard repo, just comment out that line with a # again and run the setup script with the -r option again.
 # You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
 
 	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own username.
 	 #export FORKED_INDI_REPO="${GIT_USERNAME}/indi"
-	 export FORKED_THIRDPARTY_REPO="${GIT_USERNAME}/indi-3rdparty"
+	 #export FORKED_THIRDPARTY_REPO="${GIT_USERNAME}/indi-3rdparty"
 	 #export FORKED_WEBMANAGER_REPO="${GIT_USERNAME}/INDIWebManagerApp"
 
 # This sets the minimum OS X version you are compiling for
@@ -87,6 +87,12 @@
 
 	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.12
 	export MACOSX_DEPLOYMENT_TARGET=10.12
+	
+# These are the build options, you can make parts not build by just commenting out the line with a #
+	export BUILD_INDI="Yep"
+	export BUILD_THIRDPARTY="Yep"
+	export BUILD_KSTARS="Yep"
+	export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
