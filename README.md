@@ -81,4 +81,5 @@ a lot of other files that are ALREADY IN the build folder.  The setup script has
 are good to go.  You can do the same for INDI and INDI 3rd Party.
 
 # Submitting changes to the software
-If you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit your changes and then go to GitHub and make a pull request.
+For INDI, INDI Web Manager, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit your changes and then go to GitHub and make a pull request.
+For KStars, if you made your changes in the KStars source folder, you can use the submitKStarsChanges script to submit your changes with phabricator and arcanist.

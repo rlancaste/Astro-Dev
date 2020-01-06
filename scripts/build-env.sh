@@ -78,7 +78,7 @@
 # You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
 
 	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own username.
-	 export FORKED_INDI_REPO="${GIT_USERNAME}/indi"
+	 #export FORKED_INDI_REPO="${GIT_USERNAME}/indi"
 	 #export FORKED_THIRDPARTY_REPO="${GIT_USERNAME}/indi-3rdparty"
 	 #export FORKED_WEBMANAGER_REPO="${GIT_USERNAME}/INDIWebManagerApp"
 
@@ -90,9 +90,9 @@
 	
 # These are the build options, you can make parts not build by just commenting out the line with a #
 	export BUILD_INDI="Yep"
-	#export BUILD_THIRDPARTY="Yep"
-	#export BUILD_KSTARS="Yep"
-	#export BUILD_WEBMANAGER="Yep"
+	export BUILD_THIRDPARTY="Yep"
+	export BUILD_KSTARS="Yep"
+	export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
