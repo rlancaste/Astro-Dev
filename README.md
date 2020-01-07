@@ -17,7 +17,7 @@ not matching.
 3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
 4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
 	Note: If you are using the QT Installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Data Visualizations along with QT Creator.
-	![Screenshot of QT Installer](images/ConfigureProject.png "Screenshot of QT Installer")
+	![Screenshot of QT Installer](images/QTInstallerOptions.png "Screenshot of QT Installer")
 5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
 mkdir ~/Projects
