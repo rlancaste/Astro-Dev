@@ -75,14 +75,24 @@ To make this script automatically create a fork for you so you can make edits:
 
 ## Importing the source folder
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
+You can use one of the paths shown below.
+- ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi/CMakeLists.txt
+- ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi-3rdparty/CMakeLists.txt
+- ~/Projects/KStars-INDI-Mac-Dev/src/kstars/CMakeLists.txt
+- ~/Projects/KStars-INDI-Mac-Dev/src-forked/INDIWebManagerApp/CMakeLists.txt
 
 ![OpenProject](images/OpenProject.png "Open Project")
 ![Select the CMakeLists.txt](images/SelectCMakeLists.png "[Select the CMakeLists.txt")
 
 ## Selecting the build folder
 MAKE SURE that you use the already built build folder for KStars or INDI Web Manager App.  DO NOT make a new build folder, because the app bundles require 
-a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Just select the build folder in XCode or QT creator and you
-are good to go.  You can do the same for INDI and INDI 3rd Party.
+a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Select the "Choose" button
+and navigate to one of the following paths for the build folder as shown below.
+- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/indi-core
+- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/ThirdParty-Drivers
+- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/ThirdParty-Libraries
+- ~/Projects/KStars-INDI-Mac-Dev/build/kstars-build
+- ~/Projects/KStars-INDI-Mac-Dev/build/webmanager-build
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
