@@ -1,6 +1,8 @@
 # KStars-INDI-Mac-Dev
 A Script to easily build INDI, INDI Web Manager, and KStars for Mac using existing app folder(s) and the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
 
+![Screenshot of KStars on OS X](images/ScreenShotKStarsOnOSX.png "Screenshot of KStars on OS X")
+
 # About the repository
 This repository was written by myself, Rob Lancaster, for the purpose of making it easier to get set up to easily build the latest versions of INDI, 3rd Party Drivers, KStars, and INDI Web Manager App on a Mac computer
 as well as to be able to edit the source code to test out ideas or to diagnose problems.  This script is not meant for distribution of any of these items.  For building the latest versions and distributing them as a DMG,
