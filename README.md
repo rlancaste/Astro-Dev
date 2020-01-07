@@ -16,7 +16,8 @@ not matching.
 2. (Optional) Download and install [INDIWebManager.app](https://github.com/rlancaste/INDIWebManagerApp/releases) (if not done already)
 3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
 4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
-	Note: If you are using the QT installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Data Visualizations along with QT Creator.
+	Note: If you are using the QT Installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Data Visualizations along with QT Creator.
+	![Screenshot of QT Installer](images/ConfigureProject.png "Screenshot of QT Installer")
 5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
 mkdir ~/Projects
@@ -24,7 +25,7 @@ cd  ~/Projects
 git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
 6. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system, most important: the QT path.
-7. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal and run the script.
+7. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal or just copy and paste the following into Terminal and run the script.
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
 ```
@@ -75,11 +76,19 @@ To make this script automatically create a fork for you so you can make edits:
 ## Importing the source folder
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
 
+![OpenProject](images/OpenProject.png "Open Project")
+![Select the CMakeLists.txt](images/SelectCMakeLists.png "[Select the CMakeLists.txt")
+
 ## Selecting the build folder
 MAKE SURE that you use the already built build folder for KStars or INDI Web Manager App.  DO NOT make a new build folder, because the app bundles require 
 a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Just select the build folder in XCode or QT creator and you
 are good to go.  You can do the same for INDI and INDI 3rd Party.
 
+![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
+
 # Submitting changes to the software
 - For INDI, INDI Web Manager, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit your changes and then go to GitHub and make a pull request.
-- For KStars, if you made your changes in the KStars source folder, you can use the submitKStarsChanges script to submit your changes with phabricator and arcanist.
+- [submitINDICoreChanges.sh](scripts/submitINDICoreChanges.sh)
+- [submitINDIThirdPartyChanges.sh](scripts/submitINDIThirdPartyChanges.sh)
+- [submitINDIWebManagerAppChanges.sh](scripts/submitINDIWebManagerAppChanges.sh)
+- For KStars, if you made your changes in the KStars source folder, you can use the [submitKStarsChanges](scripts/submitKStarsChanges.sh) script to submit your changes with phabricator and arcanist.
