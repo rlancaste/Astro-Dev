@@ -16,7 +16,7 @@ not matching.
 2. (Optional) Download and install [INDIWebManager.app](https://github.com/rlancaste/INDIWebManagerApp/releases) (if not done already)
 3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
 4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
-	Note: If you are using the QT installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Visualizations along with QT Creator.
+	Note: If you are using the QT installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Data Visualizations along with QT Creator.
 5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
 mkdir ~/Projects
