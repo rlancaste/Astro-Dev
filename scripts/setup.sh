@@ -500,6 +500,7 @@
 		display "Building KStars"
 		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		make install
 
 		ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
 	fi
