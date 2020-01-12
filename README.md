@@ -45,6 +45,8 @@ There are a large number of variables that you can customize in build-env.sh.  T
 The setup.sh script does not have a lot of options right now, but here they are:
 - The -r option removes the dev-root directory and the previous builds and starts fresh.  It can even remove all homebrew packages and reinstall them if desired.
 - The -h option shows information about how to use the script.
+- The -o option allows you to build the software offline without checking Repos or connections.  Make sure it is all installed first
+- The -x option will build with xcodebuild instead of make and will set up an XCode project
 
 # Using the newly built programs
 
@@ -75,7 +77,7 @@ To make this script automatically create a fork for you so you can make edits:
 2. Enter your [gibhub.com](https://github.com/) username.  Get an account if you don't have one.
 3. Run the [setup.sh](scripts/setup.sh) script again with the -r option.  
 
-## Importing the source folder
+## Importing the source folder in QT Creator
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
 You can use one of the paths shown below.
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi/CMakeLists.txt
@@ -86,7 +88,7 @@ You can use one of the paths shown below.
 ![OpenProject](images/OpenProject.png "Open Project")
 ![Select the CMakeLists.txt](images/SelectCMakeLists.png "[Select the CMakeLists.txt")
 
-## Selecting the build folder
+## Selecting the build folder in Qt Creator
 MAKE SURE that you use the already built build folder for KStars or INDI Web Manager App.  DO NOT make a new build folder, because the app bundles require 
 a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Select the "Choose" button
 and navigate to one of the following paths for the build folder as shown below.
@@ -97,6 +99,17 @@ and navigate to one of the following paths for the build folder as shown below.
 - ~/Projects/KStars-INDI-Mac-Dev/build/webmanager-build
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
+
+# Building with XCode instead of QT Creator
+If you run this script with the -x option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
+open it up and use XCode to edit the code.  If you would like to do this, you should have XCode already installed and setup.  You should also already have or you can create a code signing certificate.
+If you just plan to build, test, change, and submit changes to the code and not distribute it to others, then you don't need to pay for the cerfificate.  A self signed certificate you create in KeyChain Access
+will work just fine.  Once you have the certificate, all you need to do is to run these commands to get setup to work in XCode, replacing *YOUR ITENTITY* with your code signing certificate identity.
+
+```
+export CODE_SIGN_IDENTITY="*YOUR IDENTITY*"
+~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh -x
+```
 
 # Submitting changes to the software
 - For INDI, INDI Web Manager, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit your changes and then go to GitHub and make a pull request.

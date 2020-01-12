@@ -18,7 +18,7 @@
 		echo ""
 	
 		# This will display the message in the title bar.
-		echo -n -e "\033]0;$*\007"
+		echo "\033]0;$*\007"
 	}
 
 # This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
@@ -27,7 +27,7 @@
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
 
-# This sets the directory paths.  Note that these are customizable.
+# This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
 # Beware that none of them should have spaces in the file path.
 
 		#This is the base path
@@ -38,16 +38,14 @@
 	export FORKED_SRC_FOLDER="${TOP_FOLDER}/src-forked"
 		# This is the enclosing folder for the build folders of INDI, KStars, and INDI Web Manager
 	export BUILD_FOLDER="${TOP_FOLDER}/build"
+		# This is the enclosing folder for the xcode build folders of INDI, KStars, and INDI Web Manager
+	export XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build"
 		# This is the root folder for "installing" the software to facilitate building
 	export DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
 		# This is the path to the KStars App bundle the script will copy to setup the lib folder and kstars build folder
 	export sourceKStarsApp="/Applications/KStars.app"
-		# This the path to the KStars App bundle the script will be building inside of.
-	export KStarsApp="${BUILD_FOLDER}/kstars-build/kstars/KStars.app"
 		# This is the path to the INDI Web Manager App bundle the script will copy to setup the INDI Web Manager build folder
 	export sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
-		# This the path to the  INDI Web Manager App bundle the script will be building inside of.
-	export INDIWebManagerApp="${BUILD_FOLDER}/webmanager-build/INDIWebManagerApp.app"
 		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
 	export QT_PATH="${HOME}/Qt/5.12.3/clang_64"
 		# This sets the path to GET TEXT which is needed for building some packages.  This assumes it is in homebrew, but if not, change it.

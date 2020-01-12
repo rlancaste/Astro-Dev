@@ -14,6 +14,8 @@
 
 # This resets the script options to default values.
 	REMOVE_ALL=""
+	BUILD_XCODE=""
+	BUILD_OFFLINE=""
 	
 # This function checks to see if a connection to a website exists.
 	function checkForConnection
@@ -24,8 +26,27 @@
   			echo "$1 connection was found."
   		else
   			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in setup.sh."
+  			echo "If you would like the script to run anyway, please make sure all the repos are downloaded and use the BUILD OFFLINE option to run setup.sh."
   			exit
+		fi
+	}
+	
+#This function installs a program with homebrew if it is not installed, otherwise it moves on.
+	function brewInstallIfNeeded
+	{
+		brew ls $1 > /dev/null 2>&1
+		if [ $? -ne 0 ]
+		then
+			if [ -n "${BUILD_OFFLINE}" ]
+			then
+				display "brew : $* is not installed, You are using the build offline option, exiting now."
+				exit
+			else
+				echo "Installing : $*"
+				brew install $*
+			fi
+		else
+			echo "brew : $* is already installed"
 		fi
 	}
 
@@ -37,16 +58,25 @@
 # $3 is the git repository to be cloned
 	function downloadOrUpdateRepository
 	{
-		mkdir -p "${SRC_FOLDER}"
-		if [ ! -d "$1" ]
+		if [ -n "${BUILD_OFFLINE}" ]
 		then
-			display "Downloading $2 GIT repository"
-			cd "${SRC_FOLDER}"
-			git clone https://github.com/"$3".git
+			if [ ! -d "$1" ]
+			then
+				display "The source code for $2 is not downloaded, it cannot be built offline without that, exiting now."
+				exit
+			fi
 		else
-			display "Updating $2 GIT repository"
-			cd "$1"
-			git pull
+			mkdir -p "${SRC_FOLDER}"
+			if [ ! -d "$1" ]
+			then
+				display "Downloading $2 GIT repository"
+				cd "${SRC_FOLDER}"
+				git clone https://github.com/"$3".git
+			else
+				display "Updating $2 GIT repository"
+				cd "$1"
+				git pull
+			fi
 		fi
 	}
 	
@@ -59,50 +89,58 @@
 
 	function createOrUpdateFork
 	{
-		
-		# This will download the fork if needed, or update it to the latest version if necessary
-		mkdir -p "${FORKED_SRC_FOLDER}"
-		if [ ! -d "$1" ]
+		if [ -n "${BUILD_OFFLINE}" ]
 		then
-			display "The Forked Repo is not downloaded, checking if a $2 Fork is needed."
-			# This will check to see if the repo already exists
-			git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
-			if [ $? -eq 0 ]
+			if [ ! -d "$1" ]
 			then
-				echo "The Forked Repo already exists, it can just get cloned."
-			else
-				echo "The $2 Repo has not been forked yet, attempting to do so now."
-				# This will attempt to make a fork with your username, if one exists, it will not create another
-				curl -u $GIT_USERNAME https://api.github.com/repos/$3/forks -d ''	
+				display "The forked source code for $2 is not downloaded, it cannot be built offline without that, exiting now."
+				exit
 			fi
-			
-			# This will verify yet again if the repo exists.
-			git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
-			if [ ! $? -eq 0 ]
-			then
-				display "Error, the fork was not able to be created, you should do so manually and start the script again."
-			fi
-			
-			display "Downloading $2 GIT repository"
-			cd "${FORKED_SRC_FOLDER}"
-			git clone https://github.com/"$4".git
 		else
-			display "Updating $2 GIT repository"
-			cd "$1"
-			git pull
-		fi
+			# This will download the fork if needed, or update it to the latest version if necessary
+			mkdir -p "${FORKED_SRC_FOLDER}"
+			if [ ! -d "$1" ]
+			then
+				display "The Forked Repo is not downloaded, checking if a $2 Fork is needed."
+				# This will check to see if the repo already exists
+				git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
+				if [ $? -eq 0 ]
+				then
+					echo "The Forked Repo already exists, it can just get cloned."
+				else
+					echo "The $2 Repo has not been forked yet, attempting to do so now."
+					# This will attempt to make a fork with your username, if one exists, it will not create another
+					curl -u $GIT_USERNAME https://api.github.com/repos/$3/forks -d ''	
+				fi
+			
+				# This will verify yet again if the repo exists.
+				git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
+				if [ ! $? -eq 0 ]
+				then
+					display "Error, the fork was not able to be created, you should do so manually and start the script again."
+				fi
+			
+				display "Downloading $2 GIT repository"
+				cd "${FORKED_SRC_FOLDER}"
+				git clone https://github.com/"$4".git
+			else
+				display "Updating $2 GIT repository"
+				cd "$1"
+				git pull
+			fi
 		
-		# This will attempt to update the fork to match the upstream master
-		git fetch upstream
-		git merge upstream/master
-		git push
+			# This will attempt to update the fork to match the upstream master
+			git fetch upstream
+			git merge upstream/master
+			git push
+		fi
 	}
 
 # This function shortens the amount of code needed to clean the build directories if desired, make them if needed, and enter them
 # $1 is the path to the build directory, $2 is the name of the package to be built
 	function setupAndEnterBuildDir
 	{
-		display "Setting up and entering $2 build directory"
+		display "Setting up and entering $2 build directory: $1"
 		if [ -d "$1" ]
 		then
 			if [ -n "$REMOVE_ALL" ]
@@ -149,6 +187,8 @@
 			script options:
 				-h Display the help information
 				-r Remove everything from the build directories and start fresh
+				-o Build the packages offline (Note: This requires that the source code was downloaded already)
+				-x build an x-code project from the source files instead of the cmake build.
 		EOF
 		exit
 	}
@@ -156,7 +196,7 @@
 #This function processes the user's options for running the script
 	function processOptions
 	{
-		while getopts "rh" option
+		while getopts "rhox" option
 		do
 			case $option in
 				r)
@@ -164,6 +204,12 @@
 					;;
 				h)
 					displayUsageAndExit
+					;;
+				o)
+					BUILD_OFFLINE="Yep"
+					;;
+				x)
+					BUILD_XCODE="Yep"
 					;;
 				*)
 					display "Unsupported option $option"
@@ -176,6 +222,8 @@
 
 		echo ""
 		echo "REMOVE_ALL         = ${REMOVE_ALL:-Nope}"
+		echo "BUILD_XCODE        = ${BUILD_XCODE:-Nope}"
+		echo "BUILD_OFFLINE      = ${BUILD_OFFLINE:-Nope}"
 	}
 
 # This Function processes a given file using otool to see what files it is currently linked to.
@@ -186,6 +234,10 @@
 	{
 		target=$1
 		
+		#This is needed because I didn't always delete this rpath like I should have when distributing DMG's
+		install_name_tool -delete_rpath "/Users/rlancaste/AstroRoot/craft-root/netpbm/lib" $target >/dev/null 2>&1
+		
+		#These are needed to add the new rpaths to QT and the libraries associated with this build.
 		install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
 		install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
         	
@@ -257,15 +309,20 @@
 	display "This will use an existing KStars App to setup a Development Environment for KStars and INDI on your Mac that does not depend on Craft or Homebrew.  It assumes the KStars app bundle is at /Applications/KStars.app.  It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
 
 # Before starting, check to see if the remote servers are accessible
-	display "Checking Connections"
+	if [ -n "${BUILD_OFFLINE}" ]
+	then
+		display "Not checking connections because build-offline was selected.  All repos must already be downloaded to the source folders."
+	else
+		display "Checking Connections"
 	
-	checkForConnection "INDI Repository" "https://github.com/${INDI_REPO}.git"
-	checkForConnection "INDI 3rd Party Repository" "https://github.com/${THIRDPARTY_REPO}.git"
-	checkForConnection "KStars Repository" "https://github.com/${KSTARS_REPO}.git"
-	checkForConnection "INDI Web Manager Repository" "https://github.com/${WEBMANAGER_REPO}.git"
+		checkForConnection "INDI Repository" "https://github.com/${INDI_REPO}.git"
+		checkForConnection "INDI 3rd Party Repository" "https://github.com/${THIRDPARTY_REPO}.git"
+		checkForConnection "KStars Repository" "https://github.com/${KSTARS_REPO}.git"
+		checkForConnection "INDI Web Manager Repository" "https://github.com/${WEBMANAGER_REPO}.git"
+	fi
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${KStarsApp} || -z ${sourceINDIWebManagerApp} || -z ${INDIWebManagerApp} ]]
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${sourceINDIWebManagerApp} ]]
 	then
   		display "One or more critical directory variables is blank, please edit build-env.sh."
   		exit 1
@@ -305,23 +362,29 @@
 			fi
 		fi  
 	else
-		display "Installing Homebrew."
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		if [ -n "${BUILD_OFFLINE}" ]
+		then
+			display "Homebrew was not found on your system and you selected the BUILD OFFLINE option. Please install Homebrew next time you have an internet connection, exiting now."
+			exit
+		else
+			display "Installing Homebrew."
+			/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		fi
 	fi
 
 # This will install KStars and INDI dependencies from Homebrew.
 # These items are needed from Homebrew.  If you don't want homebrew, then you need to install them another way and get them in your PATH
-	display "Installing Homebrew Dependencies."
+	display "Checking/Installing Homebrew Dependencies."
 	brew upgrade
 	
-	brew install gpsd 
-	brew install cmake
-	brew install gettext
-	brew install libusb
+	brewInstallIfNeeded gpsd 
+	brewInstallIfNeeded cmake
+	brewInstallIfNeeded gettext
+	brewInstallIfNeeded libusb
 	
 	# Ruby is installed on OS X by default, but the system ruby can't be changed and we need logger-colors.
-	brew install ruby
-	export PATH=/usr/local/opt/ruby/bin:$PATH
+	brewInstallIfNeeded ruby
+	export PATH=$(brew --prefix ruby)/bin:$PATH
 	gem install logger-colors
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
@@ -444,13 +507,25 @@
 		else
 			downloadOrUpdateRepository "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}"
 		fi
-	
-		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
-	
-		display "Building INDI Core Drivers"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
-		make -j $(expr $(sysctl -n hw.ncpu) + 2)
-		make install
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
+		else
+			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
+		fi
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building INDI Core Drivers using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
+			xcodebuild -project libindi.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building INDI Core Drivers"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			make install
+		fi
 	fi
 
 # This section will build INDI 3rd Party libraries and drivers.
@@ -463,20 +538,44 @@
 		else
 			downloadOrUpdateRepository "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}"
 		fi
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+		else
+			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+		fi
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building INDI 3rd Party Libraries using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building INDI 3rd Party Libraries"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			make install 
+		fi
 	
-		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
-	
-		display "Building INDI 3rd Party Libraries"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
-		make -j $(expr $(sysctl -n hw.ncpu) + 2)
-		make install 
-	
-		setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
-	
-		display "Building INDI 3rd Party Drivers"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
-		make -j $(expr $(sysctl -n hw.ncpu) + 2)
-		make install
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+		else
+			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+		fi
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building INDI 3rd Party Drivers using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building INDI 3rd Party Drivers"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			make install
+		fi
 	fi
 
 # This section will build KStars
@@ -485,22 +584,43 @@
 	then
 		downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
 
-		setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
-	
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/kstars-build" "KStars"
+		else
+			setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
+		fi
+		
+		#This will set the KStars app bundle the script will be building inside of.  It also makes sure the path to it exists.
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			export KStarsApp="${XCODE_BUILD_FOLDER}/kstars-build/kstars/Debug/KStars.app"
+			mkdir -p "${XCODE_BUILD_FOLDER}/kstars-build/kstars/Debug"
+		else
+			export KStarsApp="${BUILD_FOLDER}/kstars-build/kstars/KStars.app"
+			mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
+		fi
+		
 		# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
 		# It is very important that you build on top of an existing KStars app bundle since this script will not set up
 		# all the ancillary files that KStars needs in the app bundle in order to run.
 		if [ ! -d "${KStarsApp}" ]
 		then
-			mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
 			cp -rf "${sourceKStarsApp}" "${KStarsApp}"
 			reLinkAppBundle "${KStarsApp}"
 		fi
 
-		display "Building KStars"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
-		make -j $(expr $(sysctl -n hw.ncpu) + 2)
-		make install
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building KStars using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+			xcodebuild -project kstars.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building KStars"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			make install
+		fi
 
 		ln -sf "${KStarsApp}" "${TOP_FOLDER}/KStars.app"
 	fi
@@ -516,21 +636,41 @@
 			downloadOrUpdateRepository "${WEBMANAGER_SRC_FOLDER}" "INDI Web Manager App" "${WEBMANAGER_REPO}"
 		fi
 
-		setupAndEnterBuildDir "${BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
+		else
+			setupAndEnterBuildDir "${BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
+		fi
 	
+		#This will set the INDIWebManagerApp app bundle the script will be building inside of.  It also makes sure the path to it exists.
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			export INDIWebManagerApp="${XCODE_BUILD_FOLDER}/webmanager-build/Debug/INDIWebManagerApp.app"
+			mkdir -p "${XCODE_BUILD_FOLDER}/webmanager-build/Debug"
+		else
+			export INDIWebManagerApp="${BUILD_FOLDER}/webmanager-build/INDIWebManagerApp.app"
+			mkdir -p "${BUILD_FOLDER}/webmanager-build/"
+		fi
 		# This will copy the source INDIWebManagerApp app into the build directory and delete and/or replace any files necessary
 		# It is very important that you build on top of an existing INDIWebManagerApp app bundle since this script will not set up
 		# all the ancillary files that INDIWebManagerApp needs in the app bundle in order to run.
 		if [ ! -d "${INDIWebManagerApp}" ]
 		then
-			mkdir -p "${BUILD_FOLDER}/webmanager-build/"
 			cp -rf "${sourceINDIWebManagerApp}" "${INDIWebManagerApp}"
 			reLinkAppBundle "${INDIWebManagerApp}"
 		fi
-
-		display "Building INDI Web Manager App"
-		cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
-		make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building INDI Web Manager App using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			xcodebuild -project INDIWebManagerApp.xcodeproj -target "INDIWebManagerApp" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building INDI Web Manager App"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+		fi
 
 		ln -sf "${INDIWebManagerApp}" "${TOP_FOLDER}/INDIWebManagerApp.app"
 	fi
