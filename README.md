@@ -107,7 +107,7 @@ If you just plan to build, test, change, and submit changes to the code and not 
 will work just fine.  Once you have the certificate, all you need to do is to run these commands to get setup to work in XCode, replacing *YOUR ITENTITY* with your code signing certificate identity.
 
 ```
-export CODE_SIGN_IDENTITY="*YOUR IDENTITY*"
+export CODE_SIGN_IDENTITY="YOUR IDENTITY"
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh -x
 ```
 
