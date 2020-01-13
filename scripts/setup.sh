@@ -11,6 +11,9 @@
 # It also uses that to get the top folder file name so that it can use that in the scripts.
 # Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+	
+# This enables the script to search more than one line in functions, it is needed for the function removeRPathsFromFile
+shopt -s extglob
 
 # This resets the script options to default values.
 	REMOVE_ALL=""
@@ -234,37 +237,40 @@
 	{
 		target=$1
 		
-		#This is needed because I didn't always delete this rpath like I should have when distributing DMG's
-		install_name_tool -delete_rpath "/Users/rlancaste/AstroRoot/craft-root/netpbm/lib" $target >/dev/null 2>&1
-		
-		#These are needed to add the new rpaths to QT and the libraries associated with this build.
-		install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
-		install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
-        	
-		entries=$(otool -L $target | sed '1d' | awk '{print $1}')
-		#echo "Processing $target"
+		# This determines if it is a Mach-O file that can be processed
+		if [[ "$(/usr/bin/file "${target}")" =~ ^${target}:\ *Mach-O\ .*$ ]]
+    	then
+			
+			removeRPathsFromFile "${target}"
+			#These are needed to add the new rpaths to QT and the libraries associated with this build.
+			install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
+			install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
+			
+			entries=$(otool -L $target | sed '1d' | awk '{print $1}')
+			#echo "Processing $target"
 
-		for entry in $entries
-		do
-			baseEntry=$(echo ${entry} | sed 's/^.*Frameworks//' | sed 's/^.*@loader_path//')
+			for entry in $entries
+			do
+				baseEntry=$(echo ${entry} | sed 's/^.*Frameworks//' | sed 's/^.*@loader_path//')
 			
-			if [[ $baseEntry == /Qt* ]]
-			then
+				if [[ $baseEntry == /Qt* ]]
+				then
 			
-				newname=""
-				newname="@rpath${baseEntry}"
-				echo "    change reference $entry -> $newname" 
+					newname=""
+					newname="@rpath${baseEntry}"
+					echo "    change reference $entry -> $newname" 
 
-				install_name_tool -change \
-				$entry \
-				$newname \
-				$target
-			fi
+					install_name_tool -change \
+					$entry \
+					$newname \
+					$target
+				fi
 			
-		done
-		#echo ""
-		#echo "   otool for $target after"
-		#otool -L $target | awk '{printf("\t%s\n", $0)}'
+			done
+			#echo ""
+			#echo "   otool for $target after"
+			#otool -L $target | awk '{printf("\t%s\n", $0)}'
+		fi
 	
 	}
 
@@ -289,7 +295,41 @@
         	fi
 		done
 	}
-	
+
+# This function will remote all rpaths currently in a file
+# Thank you to this forum: https://stackoverflow.com/questions/12521802/print-rpath-of-an-executable-on-macos/12522096
+	function removeRPathsFromFile
+	{
+		file=$1
+		
+		IFS=$'\n'
+		_next_path_is_rpath=""
+		
+		/usr/bin/otool -l "${file}" | grep RPATH -A2 |
+		while read line
+		do
+			case "${line}" in
+				*(\ )cmd\ LC_RPATH)
+					_next_path_is_rpath="yes"
+					;;
+				*(\ )path\ *\ \(offset\ +([0-9])\))
+					if [ -z "${_next_path_is_rpath}" ]
+					then
+						continue
+					fi
+					line="${line#* path }"
+					line="${line% (offset *}"
+					if [ ${#} -gt 1 ]
+					then
+						line=$'\t'"${line}"
+					fi
+					install_name_tool -delete_rpath "${line}" "${file}"
+					#echo "Deleting rpath ${line} from ${file}"
+					_next_path_is_rpath=""
+					;;
+			esac
+		done
+	}
 	
 	
 	
