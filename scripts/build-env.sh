@@ -87,10 +87,10 @@
 	export MACOSX_DEPLOYMENT_TARGET=10.12
 	
 # These are the build options, you can make parts not build by just commenting out the line with a #
-	export BUILD_INDI="Yep"
-	export BUILD_THIRDPARTY="Yep"
+	#export BUILD_INDI="Yep"
+	#export BUILD_THIRDPARTY="Yep"
 	export BUILD_KSTARS="Yep"
-	export BUILD_WEBMANAGER="Yep"
+	#export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
