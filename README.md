@@ -103,14 +103,21 @@ and navigate to one of the following paths for the build folder as shown below.
 ## Testing changes to INDI Core in QT Creator
 Normally a person would select the executable they are working on and hit the "run" button in QT Creator to test changes to a program.  And while this works really well for testing your changes to
 both KStars and INDI Web Manager, INDI works best when the indiserver starts the driver.  For testing INDI Core changes, you can select indiserver under the "run configuration" menu
-and then type your driver in the command line arguments like this: -vvv ./indi_simulator_ccd ./indi_simulator_telescope ./indi_simulator_focus  Please see the Screenshot below
+and then type your driver in the command line arguments like this:
+```
+ -vvv ./indi_simulator_ccd ./indi_simulator_telescope ./indi_simulator_focus  
+```
+ Please see the Screenshot below:
 
 ![indicoreRunConfig](images/indicoreRunConfig.png "INDI Core Run Configuration")
 
 ## Testing changes to INDI 3rd Party Drivers in QT Creator
 Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the other repo, and usually the third party drivers build in subfolders.
 But if you already built INDI Core before you built the 3rd Party drivers, then its not too difficult to use the "custom executable" function.  For example, here is the command line arguments that would be needed for DSI:
--vvv ../ThirdParty-Drivers /indi-dsi/indi_dsi_ccd  In the screenshots below you can see how the custom executable can be selected and the command line arguments entered.
+```
+-vvv ../ThirdParty-Drivers /indi-dsi/indi_dsi_ccd
+```  
+In the screenshots below you can see how the custom executable can be selected and the command line arguments entered:
 
 ![AddRunConfig](images/addCustomExec.png "Add Run Configuration")
 ![SelectExecutable](images/selectCustomExec.png "Select Custom Executable")
@@ -122,8 +129,10 @@ stars for testing purposes.  Please follow these steps to get it set up.
 1. KStars for Mac has the ability to download the GSC data in in the Startup Wizard.  Do this first.
 2. Follow all the instructions above to get INDI Setup and ready to run in QT Creator.
 3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
+```
 GSCDAT: $(HOME)/Library/Application Support/kstars/gsc
 PATH: $(HOME)/Projects/KStars-INDI-Mac-Dev/ASTRO-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
 Please see the screenshot below:
 ![EnvironmentVariables](images/gscRunEnv.png "Environment Variables for GSC")
 
