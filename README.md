@@ -116,6 +116,16 @@ But if you already built INDI Core before you built the 3rd Party drivers, then 
 ![SelectExecutable](images/selectCustomExec.png "Select Custom Executable")
 ![indithirdpartyRunConfig](images/thirdpartyRunConfig.png "INDI 3rd Party Run Configuration")
 
+## Getting INDI Running in QT Creator to display simulated stars with GSC
+The INDI Simulator CCD can optionally use the Hubble Guide Star Catalog and the GSC executable to generate very realistic simulated 
+stars for testing purposes.  Please follow these steps to get it set up.
+1. KStars for Mac has the ability to download the GSC data in in the Startup Wizard.  Do this first.
+2. Follow all the instructions above to get INDI Setup and ready to run in QT Creator.
+3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
+GSCDAT: $(HOME)/Library/Application Support/kstars/gsc
+PATH: $(HOME)/Projects/KStars-INDI-Mac-Dev/ASTRO-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
+Please see the screenshot below:
+![EnvironmentVariables](images/gscRunEnv.png "Environment Variables for GSC")
 
 # Building with XCode instead of QT Creator
 If you run this script with the -x option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
