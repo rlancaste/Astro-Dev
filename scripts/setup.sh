@@ -126,15 +126,15 @@ shopt -s extglob
 				display "Downloading $2 GIT repository"
 				cd "${FORKED_SRC_FOLDER}"
 				git clone https://github.com/"$4".git
-			else
-				display "Updating $2 GIT repository"
-				cd "$1"
-				git pull
 			fi
 		
 			# This will attempt to update the fork to match the upstream master
+			display "Updating $2 GIT repository"
+			cd "$1"
+			git remote add upstream https://github.com/"$3".git
 			git fetch upstream
-			git merge upstream/master
+			git rebase upstream/master
+			git pull
 			git push
 		fi
 	}

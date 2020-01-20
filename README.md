@@ -100,6 +100,23 @@ and navigate to one of the following paths for the build folder as shown below.
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
+## Testing changes to INDI Core in QT Creator
+Normally a person would select the executable they are working on and hit the "run" button in QT Creator to test changes to a program.  And while this works really well for testing your changes to
+both KStars and INDI Web Manager, INDI works best when the indiserver starts the driver.  For testing INDI Core changes, you can select indiserver under the "run configuration" menu
+and then type your driver in the command line arguments like this: -vvv ./indi_simulator_ccd ./indi_simulator_telescope ./indi_simulator_focus  Please see the Screenshot below
+
+![indicoreRunConfig](images/indicoreRunConfig.png "INDI Core Run Configuration")
+
+## Testing changes to INDI 3rd Party Drivers in QT Creator
+Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the other repo, and usually the third party drivers build in subfolders.
+But if you already built INDI Core before you built the 3rd Party drivers, then its not too difficult to use the "custom executable" function.  For example, here is the command line arguments that would be needed for DSI:
+-vvv ../ThirdParty-Drivers /indi-dsi/indi_dsi_ccd  In the screenshots below you can see how the custom executable can be selected and the command line arguments entered.
+
+![AddRunConfig](images/addCustomExec.png "Add Run Configuration")
+![SelectExecutable](images/selectCustomExec.png "Select Custom Executable")
+![indithirdpartyRunConfig](images/thirdpartyRunConfig.png "INDI 3rd Party Run Configuration")
+
+
 # Building with XCode instead of QT Creator
 If you run this script with the -x option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
 open it up and use XCode to edit the code.  If you would like to do this, you should have XCode already installed and setup.  You should also already have or you can create a code signing certificate.
