@@ -19,6 +19,8 @@ shopt -s extglob
 	REMOVE_ALL=""
 	BUILD_XCODE=""
 	BUILD_OFFLINE=""
+	BUILD_TRANSLATIONS=""
+	
 	
 # This function checks to see if a connection to a website exists.
 	function checkForConnection
@@ -199,7 +201,7 @@ shopt -s extglob
 #This function processes the user's options for running the script
 	function processOptions
 	{
-		while getopts "rhox" option
+		while getopts "rhoxt" option
 		do
 			case $option in
 				r)
@@ -214,6 +216,9 @@ shopt -s extglob
 				x)
 					BUILD_XCODE="Yep"
 					;;
+				t)
+					BUILD_TRANSLATIONS="Yep"
+					;;
 				*)
 					display "Unsupported option $option"
 					displayUsageAndExit
@@ -227,6 +232,7 @@ shopt -s extglob
 		echo "REMOVE_ALL         = ${REMOVE_ALL:-Nope}"
 		echo "BUILD_XCODE        = ${BUILD_XCODE:-Nope}"
 		echo "BUILD_OFFLINE      = ${BUILD_OFFLINE:-Nope}"
+		echo "BUILD_TRANSLATIONS = ${BUILD_TRANSLATIONS:-Nope}"
 	}
 
 # This Function processes a given file using otool to see what files it is currently linked to.
@@ -657,8 +663,17 @@ shopt -s extglob
 			xcodebuild -project kstars.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building KStars"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
-			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			if [ -n "${BUILD_TRANSLATIONS}" ]
+			then
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				make -j $(expr $(sysctl -n hw.ncpu) + 2)
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			else
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			fi
+			
 			make install
 		fi
 

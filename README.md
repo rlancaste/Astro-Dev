@@ -47,6 +47,7 @@ The setup.sh script does not have a lot of options right now, but here they are:
 - The -h option shows information about how to use the script.
 - The -o option allows you to build the software offline without checking Repos or connections.  Make sure it is all installed first
 - The -x option will build with xcodebuild instead of make and will set up an XCode project
+- The -t option will download and build kstars translations for international use
 
 # Using the newly built programs
 
