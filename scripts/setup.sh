@@ -165,10 +165,22 @@ shopt -s extglob
 		App="$1"
 		rm -rf "${App}/Contents/Frameworks"
 		rm -r "${App}/Contents/Resources/qml"
-		rm "${App}/Contents/Resources/qt.conf"
 		rm -r "${App}/Contents/Plugins"
 		rm -r "${App}/Contents/MacOS/indi"
 		ln -sf "${DEV_ROOT}/bin" "${App}/Contents/MacOS/indi"
+		
+		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
+		#This command will cause them to look to the lib directory and QT.
+		processDirectory "${App}/Contents/MacOS"
+	}
+	
+# This function will remove and rewrite the qt.conf file so that KStars and INDI Web Manager can find required Resources
+# It used to be in the function above, but I found that if the QT version gets changed, this file needs to be recreated, so I separated it.
+function writeQTConf
+	{
+		App="$1"
+		
+		rm "${App}/Contents/Resources/qt.conf"
 		
 		##################
 		cat > "${App}/Contents/Resources/qt.conf" <<- EOF
@@ -180,9 +192,6 @@ shopt -s extglob
 		EOF
 		##################
 		
-		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
-		#This command will cause them to look to the lib directory and QT.
-		processDirectory "${App}/Contents/MacOS"
 	}
 
 #This will print out how to use the script
@@ -655,6 +664,8 @@ shopt -s extglob
 			cp -rf "${sourceKStarsApp}" "${KStarsApp}"
 			reLinkAppBundle "${KStarsApp}"
 		fi
+		
+		writeQTConf ${KStarsApp}
 
 		if [ -n "${BUILD_XCODE}" ]
 		then
@@ -715,6 +726,8 @@ shopt -s extglob
 			cp -rf "${sourceINDIWebManagerApp}" "${INDIWebManagerApp}"
 			reLinkAppBundle "${INDIWebManagerApp}"
 		fi
+		
+		writeQTConf ${INDIWebManagerApp}
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then

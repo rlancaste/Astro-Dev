@@ -47,7 +47,7 @@
 		# This is the path to the INDI Web Manager App bundle the script will copy to setup the INDI Web Manager build folder
 	export sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
 		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
-	export QT_PATH="${HOME}/Qt/5.12.3/clang_64"
+	export QT_PATH="${HOME}/Qt/5.14.2/clang_64"
 		# This sets the path to GET TEXT which is needed for building some packages.  This assumes it is in homebrew, but if not, change it.
 	export GETTEXT_PATH=$(brew --prefix gettext)
 		# This is a list of paths that will be used by find_package to locate libraries when building
