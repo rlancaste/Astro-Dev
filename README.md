@@ -66,16 +66,15 @@ purpose.  It is recommended that you use QT Creator because it has the ability t
 but XCode has some very nice features, especially its code analysis algorithms. 
 
 ## Forking the Repo and The source folder
-For INDI, INDI 3rd Party, and INDI Web Manager, you should use the forked repo options in build-env.sh outlined below
+For INDI, INDI 3rd Party, KStars, and INDI Web Manager, you should use the forked repo options in build-env.sh outlined below
 to create a forked-src folder for whichever program you would like to edit the code for.  Of course, you COULD edit the one in the src folder if you like, but then when you
 go to submit a pull request for your changes, you would need to fork the repo and put your changes in there anyway.  So my recommendation is that you leave the src folder alone
-and make any changes that you want to make in the forked src folder for that program.  For KStars, the forked repo is not necessary because you will use arc and phabricator to submit changes,
-so editing the code in the src folder is just fine.
+and make any changes that you want to make in the forked src folder for that program.
 
-## Editing [build-env.sh](scripts/build-env.sh) to fork whichever repo you would like to edit
-To make this script automatically create a fork for you so you can make edits:
-1. In [build-env.sh](scripts/build-env.sh), uncomment the forked repo line for the program you would like to edit
-2. Enter your [gibhub.com](https://github.com/) username.  Get an account if you don't have one.
+## Forking the Repo and modifying [build-env.sh](scripts/build-env.sh) for whichever repo you would like to edit
+1. Make sure you have a GitHub account (or KDE GitLab for KStars).  Go to the REPO on the website and click "Fork"
+2. In [build-env.sh](scripts/build-env.sh), uncomment the forked repo line for the program you would like to edit
+2. Enter your [gibhub.com](https://github.com/) or for KStars, GitLab username.
 3. Run the [setup.sh](scripts/setup.sh) script again with the -r option.  
 
 ## Importing the source folder in QT Creator

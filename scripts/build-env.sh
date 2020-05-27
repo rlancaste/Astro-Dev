@@ -62,10 +62,10 @@
 # These are the urls for the repositories that will be used for building
 # The prefix https://github.com/ and the suffix .git is asssumed.
 
-	 export INDI_REPO="indilib/indi"
-	 export THIRDPARTY_REPO="indilib/indi-3rdparty"
-	 export KSTARS_REPO="KDE/kstars"
-	 export WEBMANAGER_REPO="rlancaste/INDIWebManagerApp"
+	 export INDI_REPO="https://github.com/indilib/indi.git"
+	 export THIRDPARTY_REPO="https://github.com/indilib/indi-3rdparty.git"
+	 export KSTARS_REPO="https://github.com/KDE/kstars.git"
+	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	 
 # These are the urls for the forks of the repositories that you will be using for editing these repos
 # To use this section:
@@ -75,10 +75,12 @@
 # If you want to later change back to the standard repo, just comment out that line with a # again and run the setup script with the -r option again.
 # You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
 
-	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own username.
-	 #export FORKED_INDI_REPO="${GIT_USERNAME}/indi"
-	 #export FORKED_THIRDPARTY_REPO="${GIT_USERNAME}/indi-3rdparty"
-	 #export FORKED_WEBMANAGER_REPO="${GIT_USERNAME}/INDIWebManagerApp"
+	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own github username.
+	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
+	 #export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
+	 #export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
+	 #export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
+	 #export FORKED_WEBMANAGER_REPO="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
@@ -90,7 +92,7 @@
 	export BUILD_INDI="Yep"
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_KSTARS="Yep"
-	export BUILD_WEBMANAGER="Yep"
+	#export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
@@ -131,6 +133,15 @@ then
 else
 	echo "Using 3rd Party Repo: ${THIRDPARTY_REPO}"
 	export THIRDPARTY_SRC_FOLDER="${SRC_FOLDER}/indi-3rdParty"
+fi
+
+if [ -n "${FORKED_KSTARS_REPO}" ]
+then
+	echo "Using forked KStars Repo: ${FORKED_KSTARS_REPO}" 
+	export KSTARS_SRC_FOLDER="${FORKED_SRC_FOLDER}/kstars"
+else
+	echo "Using KStars Repo: ${KSTARS_REPO}"
+	export KSTARS_SRC_FOLDER="${SRC_FOLDER}/kstars"
 fi
 
 if [ -n "${FORKED_WEBMANAGER_REPO}" ]

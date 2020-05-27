@@ -76,7 +76,7 @@ shopt -s extglob
 			then
 				display "Downloading $2 GIT repository"
 				cd "${SRC_FOLDER}"
-				git clone https://github.com/"$3".git
+				git clone "$3"
 			else
 				display "Updating $2 GIT repository"
 				cd "$1"
@@ -108,36 +108,28 @@ shopt -s extglob
 			then
 				display "The Forked Repo is not downloaded, checking if a $2 Fork is needed."
 				# This will check to see if the repo already exists
-				git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
+				git ls-remote "$4" -q >/dev/null 2>&1
 				if [ $? -eq 0 ]
 				then
 					echo "The Forked Repo already exists, it can just get cloned."
 				else
-					echo "The $2 Repo has not been forked yet, attempting to do so now."
-					# This will attempt to make a fork with your username, if one exists, it will not create another
-					curl -u $GIT_USERNAME https://api.github.com/repos/$3/forks -d ''	
-				fi
-			
-				# This will verify yet again if the repo exists.
-				git ls-remote https://github.com/"$4".git -q >/dev/null 2>&1
-				if [ ! $? -eq 0 ]
-				then
-					display "Error, the fork was not able to be created, you should do so manually and start the script again."
+					echo "The $2 Repo has not been forked yet, please go to the website and fork it first, then run the script again."	
+					exit
 				fi
 			
 				display "Downloading $2 GIT repository"
 				cd "${FORKED_SRC_FOLDER}"
-				git clone https://github.com/"$4".git
+				git clone "$4"
 			fi
 		
 			# This will attempt to update the fork to match the upstream master
 			display "Updating $2 GIT repository"
 			cd "$1"
-			git remote add upstream https://github.com/"$3".git
-			git fetch upstream
-			git rebase upstream/master
-			git pull
-			git push
+			#git remote add upstream "$3"
+			#git fetch upstream
+			#git rebase upstream/master
+			#git pull
+			#git push
 		fi
 	}
 
@@ -370,10 +362,10 @@ function writeQTConf
 	else
 		display "Checking Connections"
 	
-		checkForConnection "INDI Repository" "https://github.com/${INDI_REPO}.git"
-		checkForConnection "INDI 3rd Party Repository" "https://github.com/${THIRDPARTY_REPO}.git"
-		checkForConnection "KStars Repository" "https://github.com/${KSTARS_REPO}.git"
-		checkForConnection "INDI Web Manager Repository" "https://github.com/${WEBMANAGER_REPO}.git"
+		checkForConnection "INDI Repository" "${INDI_REPO}"
+		checkForConnection "INDI 3rd Party Repository" "${THIRDPARTY_REPO}"
+		checkForConnection "KStars Repository" "${KSTARS_REPO}"
+		checkForConnection "INDI Web Manager Repository" "${WEBMANAGER_REPO}"
 	fi
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
@@ -632,14 +624,19 @@ function writeQTConf
 			make install
 		fi
 	fi
-
+	
 # This section will build KStars
 
 	if [ -n "${BUILD_KSTARS}" ]
 	then
-		downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
-
-		if [ -n "${BUILD_XCODE}" ]
+		if [ -n "${FORKED_KSTARS_REPO}" ]
+		then
+			createOrUpdateFork "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}" "${FORKED_KSTARS_REPO}"
+		else
+			downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
+		fi
+		
+        if [ -n "${BUILD_XCODE}" ]
 		then
 			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/kstars-build" "KStars"
 		else
@@ -665,8 +662,8 @@ function writeQTConf
 			reLinkAppBundle "${KStarsApp}"
 		fi
 		
-		writeQTConf ${KStarsApp}
-
+		writeQTConf "${KStarsApp}"
+		
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building KStars using XCode"
