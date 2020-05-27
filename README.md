@@ -148,8 +148,8 @@ export CODE_SIGN_IDENTITY="YOUR IDENTITY"
 ```
 
 # Submitting changes to the software
-- For INDI, INDI Web Manager, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit your changes and then go to GitHub and make a pull request.
+- For INDI, INDI Web Manager, KStars, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit & push your changes and then go to GitHub and make a pull request.
 - [submitINDICoreChanges.sh](scripts/submitINDICoreChanges.sh)
 - [submitINDIThirdPartyChanges.sh](scripts/submitINDIThirdPartyChanges.sh)
+- [submitKStarsChanges](scripts/submitKStarsChanges.sh) 
 - [submitINDIWebManagerAppChanges.sh](scripts/submitINDIWebManagerAppChanges.sh)
-- For KStars, if you made your changes in the KStars source folder, you can use the [submitKStarsChanges](scripts/submitKStarsChanges.sh) script to submit your changes with phabricator and arcanist.
