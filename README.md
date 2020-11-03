@@ -100,9 +100,16 @@ and navigate to one of the following paths for the build folder as shown below.
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
-## Configuring QT Creator to run the program for Testing
+## Configuring QT Creator to build and run the program for Testing
+For the build settings, you can really speed things up if you specify the target and the number of processors you have in the build options, but if you want to build all you can select that too.
+
+![Build](images/build.png "Build")
+![The Build Options](images/buildOptions.png "The Build Options")
+
 Under Projects, Build and Run, Run There is a new option in QT creator to "Add Build library search path to DYLD Library Path"  It seems to get checked by default 
 which has been causing some conflicts between the libjpeg provided by OS X and the one used by KStars and INDI.  Please uncheck this box to avoid the errors.
+
+![Build](images/run.png "Run")
 ![The DYLD Box](images/DYLDBox.png "Uncheck the DYLD Box")
 
 ## Testing changes to INDI Core in QT Creator
