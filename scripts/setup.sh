@@ -125,11 +125,9 @@ shopt -s extglob
 			# This will attempt to update the fork to match the upstream master
 			display "Updating $2 GIT repository"
 			cd "$1"
-			#git remote add upstream "$3"
-			#git fetch upstream
-			#git rebase upstream/master
-			#git pull
-			#git push
+			git remote add upstream "$3"
+			git fetch upstream
+			git pull upstream master
 		fi
 	}
 
