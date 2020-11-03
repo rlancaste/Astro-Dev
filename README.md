@@ -100,6 +100,11 @@ and navigate to one of the following paths for the build folder as shown below.
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
+## Configuring QT Creator to run the program for Testing
+Under Projects, Build and Run, Run There is a new option in QT creator to "Add Build library search path to DYLD Library Path"  It seems to get checked by default 
+which has been causing some conflicts between the libjpeg provided by OS X and the one used by KStars and INDI.  Please uncheck this box to avoid the errors.
+![The DYLD Box](images/DYLDBox.png "Uncheck the DYLD Box")
+
 ## Testing changes to INDI Core in QT Creator
 Normally a person would select the executable they are working on and hit the "run" button in QT Creator to test changes to a program.  And while this works really well for testing your changes to
 both KStars and INDI Web Manager, INDI works best when the indiserver starts the driver.  For testing INDI Core changes, you can select indiserver under the "run configuration" menu
