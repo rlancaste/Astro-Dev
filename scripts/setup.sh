@@ -466,7 +466,7 @@ function writeQTConf
 			if [[ ${fileName} == *dylib ]]
 			then
 				shortName=$(echo ${fileName} | sed 's/\..*$//' | sed 's/-.*//')
-				longName=${shortName}.5.54.0.dylib
+				longName=${shortName}.${KF5_VERSION}.dylib
 				shortName=${shortName}.dylib
 				if [[ ${fileName} != ${shortName} ]]
 				then
@@ -475,6 +475,14 @@ function writeQTConf
 					if [[ ${fileName} == libKF5* ]]
 					then
 						cp -f "${libDir}/${fileName}" "${libDir}/${longName}"
+					fi
+					if [[ ${fileName} == libstellarsolver* ]]
+					then
+						cp -f "${libDir}/${fileName}" "${libDir}/libstellarsolver.1.5.dylib"
+					fi
+					if [[ ${fileName} == libqt5keychain* ]]
+					then
+						cp -f "${libDir}/${fileName}" "${libDir}/libqt5keychain.0.9.1.dylib"
 					fi
 				else 
 					echo "Skipping ${fileName} since it is already the simple name"
@@ -524,10 +532,10 @@ function writeQTConf
 		tar -xzf "${DIR}/archive/cmake.zip" -C "${DEV_ROOT}/lib" 
 	fi
 
-	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.54.0.dylib" ]
+	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.67.0.dylib" ]
 	then
 		# Note this file isn't even needed at all, we just need to put it in there because the build fails if it isn't present.
-		cp -f "${DIR}/archive/libKF5KIOGui.5.54.0.dylib" "${DEV_ROOT}/lib"
+		cp -f "${DIR}/archive/libKF5KIOGui.5.67.0.dylib" "${DEV_ROOT}/lib"
 	fi
 
 	mkdir -p "${DEV_ROOT}/share/"
