@@ -543,6 +543,7 @@ function writeQTConf
 		tar -xzf "${DIR}/archive/share-kf5.zip" -C "${DEV_ROOT}/share" 
 		ln -sf "${DEV_ROOT}/share/kf5" "${HOME}/Library/Application Support/kf5"
 		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/share|'$DEV_ROOT'/share|g' ${DEV_ROOT}/share/kf5/kdoctools/customization/dtd/kdedbx45.dtd
+		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/share|'$DEV_ROOT'/share|g' ${DEV_ROOT}/share/kf5/kdoctools/customization/kde-include-common.xsl
 	fi
 	
 	if [ ! -d "${DEV_ROOT}/share/xml" ]
