@@ -87,8 +87,8 @@
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
 
-	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.12
-	export MACOSX_DEPLOYMENT_TARGET=10.12
+	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.13
+	export MACOSX_DEPLOYMENT_TARGET=10.13
 	
 # These are the build options, you can make parts not build by just commenting out the line with a #
 	export BUILD_INDI="Yep"
