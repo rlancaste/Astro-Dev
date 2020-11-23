@@ -26,6 +26,23 @@
 # Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
+	
+# This sets important system paths that the script will need to execute.  Please verify these paths.
+
+		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
+	export QT_PATH="${HOME}/Qt/5.14.2/clang_64"
+		# This is your path to the SDK on your system.  It will be used in the ASTRO-ROOT/lib/cmake folder files to find the SDK on your system for building.
+	export SDK_PATH="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk"
+
+
+# These are the Paths to the Applications that will be used as a basis for the build so that you don't have to run the craft script
+# Please make sure these applications are installed if you want to build those programs and make sure the path is right.
+
+		# This is the path to the KStars App bundle the script will copy to setup the lib folder and kstars build folder
+	export sourceKStarsApp="/Applications/KStars.app"
+		# This is the path to the (optional) INDI Web Manager App bundle the script will copy to setup the INDI Web Manager build folder
+	export sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
+
 
 # This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
 # Beware that none of them should have spaces in the file path.
@@ -42,14 +59,9 @@
 	export XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build"
 		# This is the root folder for "installing" the software to facilitate building
 	export DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
-		# This is the path to the KStars App bundle the script will copy to setup the lib folder and kstars build folder
-	export sourceKStarsApp="/Applications/KStars.app"
-		# This is the path to the INDI Web Manager App bundle the script will copy to setup the INDI Web Manager build folder
-	export sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
-		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
-	export QT_PATH="${HOME}/Qt/5.14.2/clang_64"
-		# This is the version number for the long names of all the KF5 libraries.
-	export KF5_VERSION="5.67.0"
+	
+	
+#These paths should not need to be changed on most systems
 		# This sets the path to GET TEXT which is needed for building some packages.  This assumes it is in homebrew, but if not, change it.
 	export GETTEXT_PATH=$(brew --prefix gettext)
 		# This is a list of paths that will be used by find_package to locate libraries when building
@@ -99,6 +111,8 @@
 display "Environment Variables Set."
 
 echo "DIR                      is [${DIR}]"
+echo "QT_PATH                  is [${QT_PATH}]"
+echo "SDK_PATH                 is [${SDK_PATH}]"
 echo "TOP_FOLDER               is [${TOP_FOLDER}]"
 echo "SRC_FOLDER               is [${SRC_FOLDER}]"
 echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"

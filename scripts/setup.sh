@@ -306,6 +306,11 @@ function writeQTConf
 	{
 		directory=$1
 		echo "Processing all of the CMake files in $directory"
+		SDK_IN_ZIP="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk"
+		#if [ "${SDK_PATH}" = "${SDK_IN_ZIP}" ]
+        #then
+        #	echo "Your requested SDK Path matches the path in the zip file, so the path to the SDK will not be updated in the cmake files."
+        #fi
 		for file in ${directory}/*
 		do
         	if [ -d "${file}" ]
@@ -315,6 +320,11 @@ function writeQTConf
         		#echo "Changing file: $file to have paths based on: $DEV_ROOT"
         		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/lib|'$DEV_ROOT'/lib|g' ${file}
         		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/include|'$DEV_ROOT'/include|g' ${file}
+        		if [ "${SDK_PATH}" != "${SDK_IN_ZIP}" ]
+        		then
+        			#echo "Updating SDK Path in: $file to: $SDK_PATH"
+        			sed -i.bak 's|'$SDK_IN_ZIP'|'$SDK_PATH'|g' ${file}
+        		fi
         	fi
 		done
 	}
@@ -479,6 +489,8 @@ function writeQTConf
 			# If the file is a kf5 library, it also seems to need the FULL version number, not just the one in the KStars APP.
 			# So this makes versions with those names as well so that KStars can find the libraries.
 			# This is not necessarily the best idea, but it works.
+			KF5_VERSION="5.67.0"
+			
 			if [[ ${fileName} == *dylib ]]
 			then
 				shortName=$(echo ${fileName} | sed 's/\..*$//' | sed 's/-.*//')
