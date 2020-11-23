@@ -600,12 +600,7 @@ function writeQTConf
 			downloadOrUpdateRepository "${INDI_SRC_FOLDER}" "INDI Core" "${INDI_REPO}"
 		fi
 		
-		if [ -n "${BUILD_XCODE}" ]
-		then
-			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
-		else
-			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/indi-core" "INDI Core"
-		fi
+		setupAndEnterBuildDir "${INDI_BUILD_FOLDER}" "INDI Core"
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
@@ -631,12 +626,7 @@ function writeQTConf
 			downloadOrUpdateRepository "${THIRDPARTY_SRC_FOLDER}" "INDI 3rd Party" "${THIRDPARTY_REPO}"
 		fi
 		
-		if [ -n "${BUILD_XCODE}" ]
-		then
-			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
-		else
-			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
-		fi
+		setupAndEnterBuildDir "${THIRDPARTY_LIBRARIES_BUILD_FOLDER}" "ThirdParty Libraries"
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
@@ -650,12 +640,7 @@ function writeQTConf
 			make install 
 		fi
 	
-		if [ -n "${BUILD_XCODE}" ]
-		then
-			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
-		else
-			setupAndEnterBuildDir "${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
-		fi
+		setupAndEnterBuildDir "${THIRDPARTY_DRIVERS_BUILD_FOLDER}" "ThirdParty Drivers"
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
@@ -681,21 +666,16 @@ function writeQTConf
 			downloadOrUpdateRepository "${KSTARS_SRC_FOLDER}" "KStars" "${KSTARS_REPO}"
 		fi
 		
-        if [ -n "${BUILD_XCODE}" ]
-		then
-			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/kstars-build" "KStars"
-		else
-			setupAndEnterBuildDir "${BUILD_FOLDER}/kstars-build" "KStars"
-		fi
+        setupAndEnterBuildDir "${KSTARS_BUILD_FOLDER}" "KStars"
 		
 		#This will set the KStars app bundle the script will be building inside of.  It also makes sure the path to it exists.
 		if [ -n "${BUILD_XCODE}" ]
 		then
-			export KStarsApp="${XCODE_BUILD_FOLDER}/kstars-build/kstars/Debug/KStars.app"
-			mkdir -p "${XCODE_BUILD_FOLDER}/kstars-build/kstars/Debug"
+			export KStarsApp="${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app"
+			mkdir -p "${KSTARS_BUILD_FOLDER}/kstars/Debug"
 		else
-			export KStarsApp="${BUILD_FOLDER}/kstars-build/kstars/KStars.app"
-			mkdir -p "${BUILD_FOLDER}/kstars-build/kstars/"
+			export KStarsApp="${KSTARS_BUILD_FOLDER}/kstars/KStars.app"
+			mkdir -p "${KSTARS_BUILD_FOLDER}/kstars/"
 		fi
 		
 		# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
@@ -744,21 +724,16 @@ function writeQTConf
 			downloadOrUpdateRepository "${WEBMANAGER_SRC_FOLDER}" "INDI Web Manager App" "${WEBMANAGER_REPO}"
 		fi
 
-		if [ -n "${BUILD_XCODE}" ]
-		then
-			setupAndEnterBuildDir "${XCODE_BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
-		else
-			setupAndEnterBuildDir "${BUILD_FOLDER}/webmanager-build" "INDI Web Manager App"
-		fi
+		setupAndEnterBuildDir "${WEBMANAGER_BUILD_FOLDER}" "INDI Web Manager App"
 	
 		#This will set the INDIWebManagerApp app bundle the script will be building inside of.  It also makes sure the path to it exists.
 		if [ -n "${BUILD_XCODE}" ]
 		then
-			export INDIWebManagerApp="${XCODE_BUILD_FOLDER}/webmanager-build/Debug/INDIWebManagerApp.app"
-			mkdir -p "${XCODE_BUILD_FOLDER}/webmanager-build/Debug"
+			export INDIWebManagerApp="${WEBMANAGER_BUILD_FOLDER}/Debug/INDIWebManagerApp.app"
+			mkdir -p "${WEBMANAGER_BUILD_FOLDER}/Debug"
 		else
-			export INDIWebManagerApp="${BUILD_FOLDER}/webmanager-build/INDIWebManagerApp.app"
-			mkdir -p "${BUILD_FOLDER}/webmanager-build/"
+			export INDIWebManagerApp="${WEBMANAGER_BUILD_FOLDER}/INDIWebManagerApp.app"
+			mkdir -p "${WEBMANAGER_BUILD_FOLDER}"
 		fi
 		# This will copy the source INDIWebManagerApp app into the build directory and delete and/or replace any files necessary
 		# It is very important that you build on top of an existing INDIWebManagerApp app bundle since this script will not set up

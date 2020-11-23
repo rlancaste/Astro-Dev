@@ -55,8 +55,12 @@
 	export FORKED_SRC_FOLDER="${TOP_FOLDER}/src-forked"
 		# This is the enclosing folder for the build folders of INDI, KStars, and INDI Web Manager
 	export BUILD_FOLDER="${TOP_FOLDER}/build"
+		# This is the enclosing folder for the forked build folders of INDI, KStars, and INDI Web Manager
+	export FORKED_BUILD_FOLDER="${TOP_FOLDER}/forked-build"
 		# This is the enclosing folder for the xcode build folders of INDI, KStars, and INDI Web Manager
 	export XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build"
+		# This is the enclosing folder for the forked xcode build folders of INDI, KStars, and INDI Web Manager
+	export FORKED_XCODE_BUILD_FOLDER="${TOP_FOLDER}/forked-xcode-build"
 		# This is the root folder for "installing" the software to facilitate building
 	export DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
 	
@@ -85,15 +89,15 @@
 # To use this section:
 #		1. Make sure the user name has been edited to match your github user name
 #		2. Uncomment the one(s) for which you would like to make/use a forked repo to edit (remove the #)
-#		3. Run the setup script with the -r option selected.
-# If you want to later change back to the standard repo, just comment out that line with a # again and run the setup script with the -r option again.
+#		3. Run the setup script again to build the forked version.
+# If you want to later change back to the standard repo, just comment out that line with a # again and run the setup script again.
 # You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
 
 	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own github username.
 	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
-	 #export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
-	 #export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	 #export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
+	 export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
+	 export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
+	 export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
 	 #export FORKED_WEBMANAGER_REPO="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 
 # This sets the minimum OS X version you are compiling for
@@ -131,40 +135,57 @@ echo "PATH                     is [${PATH}]"
 echo "OSX Deployment target    is [${QMAKE_MACOSX_DEPLOYMENT_TARGET}]"
 
 
-export KSTARS_SRC_FOLDER="${SRC_FOLDER}/kstars"
+# The following if statements set up each of the source and build folders for each build based upon the options you selected above.
+# This includes whether you want to use Xcode or not for the whole build and whether you want to use your own fork or not for each build
+
+if [ -n "${BUILD_XCODE}" ]
+then
+	export BUILD_FOLDER="${XCODE_BUILD_FOLDER}"
+	export FORKED_BUILD_FOLDER="${FORKED_XCODE_BUILD_FOLDER}"
+fi
 
 if [ -n "${FORKED_INDI_REPO}" ]
 then
 	echo "Using forked INDI Repo: ${FORKED_INDI_REPO}" 
 	export INDI_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi"
+	export INDI_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/indi-core"
 else
 	echo "Using INDI Repo: ${INDI_REPO}"
 	export INDI_SRC_FOLDER="${SRC_FOLDER}/indi"
+	export INDI_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/indi-core"
 fi
 
 if [ -n "${FORKED_THIRDPARTY_REPO}" ]
 then
 	echo "Using forked 3rd Party Repo: ${FORKED_THIRDPARTY_REPO}" 
 	export THIRDPARTY_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi-3rdParty"
+	export THIRDPARTY_LIBRARIES_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+	export THIRDPARTY_DRIVERS_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
 else
 	echo "Using 3rd Party Repo: ${THIRDPARTY_REPO}"
 	export THIRDPARTY_SRC_FOLDER="${SRC_FOLDER}/indi-3rdParty"
+	export THIRDPARTY_LIBRARIES_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+	export THIRDPARTY_DRIVERS_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
 fi
 
 if [ -n "${FORKED_KSTARS_REPO}" ]
 then
 	echo "Using forked KStars Repo: ${FORKED_KSTARS_REPO}" 
 	export KSTARS_SRC_FOLDER="${FORKED_SRC_FOLDER}/kstars"
+	export KSTARS_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/kstars-build"
 else
 	echo "Using KStars Repo: ${KSTARS_REPO}"
 	export KSTARS_SRC_FOLDER="${SRC_FOLDER}/kstars"
+	export KSTARS_BUILD_FOLDER="${BUILD_FOLDER}/kstars-build"
 fi
 
 if [ -n "${FORKED_WEBMANAGER_REPO}" ]
 then
 	echo "Using forked Web Manaager Repo: ${FORKED_WEBMANAGER_REPO}" 
 	export WEBMANAGER_SRC_FOLDER="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
+	export WEBMANAGER_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/webmanager-build"
 else
 	echo "Using Web Manager Repo: ${WEBMANAGER_REPO}"
 	export WEBMANAGER_SRC_FOLDER="${SRC_FOLDER}/INDIWebManagerApp"
+	export WEBMANAGER_BUILD_FOLDER="${BUILD_FOLDER}/webmanager-build"
 fi
