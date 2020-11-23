@@ -18,7 +18,7 @@ not matching.
 2. (Optional) Download and install [INDIWebManager.app](https://github.com/rlancaste/INDIWebManagerApp/releases) (if not done already)
 3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
 4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
-	Note: If you are using the QT Installer, when you run the install tool, select a version greater than 5.10 (5.12 preferably), install MacOS and QT Data Visualizations along with QT Creator.
+	Note: If you are using the QT Installer, when you run the install tool, select a version greater than 5.10 (5.14 or 5.15 preferably), install MacOS and QT Data Visualizations along with QT Creator.
 	![Screenshot of QT Installer](images/QTInstallerOptions.png "Screenshot of QT Installer")
 5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
@@ -35,11 +35,13 @@ git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 
 # [build-env.sh](scripts/build-env.sh) options
 There are a large number of variables that you can customize in build-env.sh.  They fall in several main categories.
-1. Path Variables.  These options are listed first.  Most of them should not need to be changed, with the exception of the path to QT.  The rest are set automatically based on the path the script is installed to.  You can change them but don't need to do so.
-2. REPO Path Variables.  These are the paths to the official repos.  You should not need to change them unless there is a problem.
-3. FORKED REPO Path Variables.  If you plan to edit INDI, INDI 3rd Party, or INDI Web Manager, you need to uncomment whichever one you like, make sure the path gets set right to your fork, and then run the setup script again with the -r option.
-4. Development Targets.  These are the minimum system for which executables will be built.  10.12 should be fine.
-5. Script Build Options.  These determine which items the script should build.  You can comment out the ones you don't want to do right now.
+1. System Path Variables.  These NEED to be modified to reflect the QT and MacOS SDK on your system.
+2. Source App Path Variables.  You will only need to change these if you have KStars or INDI WebManagerApp installed someplace else.  But make sure they are installed!
+3. Script Path Variables.  Most of them should not need to be changed, they are set automatically based on the path the script is installed to.  You can change them but don't need to do so.
+4. REPO Path Variables.  These are the paths to the official repos.  You should not need to change them unless there is a problem.
+5. FORKED REPO Path Variables.  If you plan to edit INDI, INDI 3rd Party, or INDI Web Manager, you need to uncomment whichever one you like, make sure the path gets set right to your fork, and then run the setup script again with the -r option.
+6. Development Targets.  These are the minimum system for which executables will be built.  10.13 should be fine.  That is the minimum version supported by QT right now.
+7. Script Build Options.  These determine which items the script should build.  You can comment out the ones you don't want to do right now.
 
 # [setup.sh](scripts/setup.sh) options
 The setup.sh script does not have a lot of options right now, but here they are:
@@ -82,7 +84,7 @@ In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt i
 You can use one of the paths shown below.
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi/CMakeLists.txt
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi-3rdparty/CMakeLists.txt
-- ~/Projects/KStars-INDI-Mac-Dev/src/kstars/CMakeLists.txt
+- ~/Projects/KStars-INDI-Mac-Dev/src-forked/kstars/CMakeLists.txt
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/INDIWebManagerApp/CMakeLists.txt
 
 ![OpenProject](images/OpenProject.png "Open Project")
