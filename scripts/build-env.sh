@@ -81,7 +81,7 @@
 	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
 	 #export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
 	 #export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	 export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
+	 #export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
 	 #export FORKED_WEBMANAGER_REPO="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 
 # This sets the minimum OS X version you are compiling for

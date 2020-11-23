@@ -301,6 +301,24 @@ function writeQTConf
 		done
 	}
 
+#This function will recursively process all the files in the CMAKE directory to correct the hard coded paths in there and relink them
+	function processCMakeDirectory
+	{
+		directory=$1
+		echo "Processing all of the CMake files in $directory"
+		for file in ${directory}/*
+		do
+        	if [ -d "${file}" ]
+        	then
+        		processCMakeDirectory "${file}"
+        	else
+        		#echo "Changing file: $file to have paths based on: $DEV_ROOT"
+        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/lib|'$DEV_ROOT'/lib|g' ${file}
+        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/include|'$DEV_ROOT'/include|g' ${file}
+        	fi
+		done
+	}
+
 # This function will remote all rpaths currently in a file
 # Thank you to this forum: https://stackoverflow.com/questions/12521802/print-rpath-of-an-executable-on-macos/12522096
 	function removeRPathsFromFile
@@ -528,6 +546,7 @@ function writeQTConf
 	if [ ! -d "${DEV_ROOT}/lib/cmake" ]
 	then
 		tar -xzf "${DIR}/archive/cmake.zip" -C "${DEV_ROOT}/lib" 
+		processCMakeDirectory "${DEV_ROOT}/lib/cmake"
 	fi
 
 	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.67.0.dylib" ]
