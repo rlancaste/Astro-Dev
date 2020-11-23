@@ -75,7 +75,7 @@ and make any changes that you want to make in the forked src folder for that pro
 1. Make sure you have a GitHub account (or KDE GitLab for KStars).  Go to the REPO on the website and click "Fork"
 2. In [build-env.sh](scripts/build-env.sh), uncomment the forked repo line for the program you would like to edit
 2. Enter your [gibhub.com](https://github.com/) or for KStars, GitLab username.
-3. Run the [setup.sh](scripts/setup.sh) script again with the -r option.  
+3. Run the [setup.sh](scripts/setup.sh) script again.  
 
 ## Importing the source folder in QT Creator
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
@@ -91,12 +91,12 @@ You can use one of the paths shown below.
 ## Selecting the build folder in Qt Creator
 MAKE SURE that you use the already built build folder for KStars or INDI Web Manager App.  DO NOT make a new build folder, because the app bundles require 
 a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Select the "Choose" button
-and navigate to one of the following paths for the build folder as shown below.
-- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/indi-core
-- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/ThirdParty-Drivers
-- ~/Projects/KStars-INDI-Mac-Dev/build/indi-build/ThirdParty-Libraries
-- ~/Projects/KStars-INDI-Mac-Dev/build/kstars-build
-- ~/Projects/KStars-INDI-Mac-Dev/build/webmanager-build
+and navigate to one of the following paths for the forked build (or optionally the regular build) folder as shown below.
+- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/indi-core
+- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/ThirdParty-Drivers
+- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/ThirdParty-Libraries
+- ~/Projects/KStars-INDI-Mac-Dev/forked-build/kstars-build
+- ~/Projects/KStars-INDI-Mac-Dev/forked-build/webmanager-build
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
@@ -137,7 +137,7 @@ In the screenshots below you can see how the custom executable can be selected a
 
 ## Getting INDI Running in QT Creator to display simulated stars with GSC
 The INDI Simulator CCD can optionally use the Hubble Guide Star Catalog and the GSC executable to generate very realistic simulated 
-stars for testing purposes.  Please follow these steps to get it set up.
+stars for testing purposes.  Please follow these steps to get it set up. Note that this is not needed for KStars because it already does this internally.
 1. KStars for Mac has the ability to download the GSC data in in the Startup Wizard.  Do this first.
 2. Follow all the instructions above to get INDI Setup and ready to run in QT Creator.
 3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
