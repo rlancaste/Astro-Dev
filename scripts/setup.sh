@@ -655,6 +655,43 @@ function writeQTConf
 		fi
 	fi
 	
+# This section will build StellarSolver.
+
+	if [ -n "${BUILD_STELLARSOLVER}" ]
+	then
+		if [ -n "${FORKED_STELLARSOLVER_REPO}" ]
+		then
+			createOrUpdateFork "${STELLAR_SRC_FOLDER}" "StellarSolver" "${STELLARSOLVER_REPO}" "${FORKED_STELLARSOLVER_REPO}"
+		else
+			downloadOrUpdateRepository "${STELLAR_SRC_FOLDER}" "StellarSolver" "${STELLARSOLVER_REPO}"
+		fi
+		
+		setupAndEnterBuildDir "${STELLAR_BUILD_FOLDER}" "StellarSolver"
+		
+		#This will set the StellarSolver app bundle for linking.
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			export StellarApp="${STELLAR_BUILD_FOLDER}/Debug/StellarSolverTester.app"
+		else
+			export StellarApp="${STELLAR_BUILD_FOLDER}/StellarSolverTester.app"
+		fi
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			display "Building StellarSolver using XCode"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+		else
+			display "Building StellarSolver"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			processTarget "${StellarApp}/Contents/MacOS/StellarSolverTester" # This makes sure it links to the right QT etc.
+			make install 
+		fi
+		
+		ln -sf "${StellarApp}" "${TOP_FOLDER}/StellarSolverTester.app"
+	fi
+	
 # This section will build KStars
 
 	if [ -n "${BUILD_KSTARS}" ]

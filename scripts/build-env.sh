@@ -82,6 +82,7 @@
 
 	 export INDI_REPO="https://github.com/indilib/indi.git"
 	 export THIRDPARTY_REPO="https://github.com/indilib/indi-3rdparty.git"
+	 export STELLARSOLVER_REPO="https://github.com/rlancaste/stellarsolver.git"
 	 export KSTARS_REPO="https://github.com/KDE/kstars.git"
 	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	 
@@ -97,6 +98,7 @@
 	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
 	 #export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
 	 #export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
+	 #export FORKED_STELLARSOLVER_REPO="https://github.com/${GIT_USERNAME}/stellarsolver.git"
 	 #export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
 	 #export FORKED_WEBMANAGER_REPO="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 
@@ -109,6 +111,7 @@
 # These are the build options, you can make parts not build by just commenting out the line with a #
 	export BUILD_INDI="Yep"
 	export BUILD_THIRDPARTY="Yep"
+	export BUILD_STELLARSOLVER="Yep"
 	export BUILD_KSTARS="Yep"
 	#export BUILD_WEBMANAGER="Yep"
 	
@@ -166,6 +169,17 @@ else
 	export THIRDPARTY_SRC_FOLDER="${SRC_FOLDER}/indi-3rdParty"
 	export THIRDPARTY_LIBRARIES_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
 	export THIRDPARTY_DRIVERS_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+fi
+
+if [ -n "${FORKED_STELLARSOLVER_REPO}" ]
+then
+	echo "Using forked StellarSolver Repo: ${FORKED_STELLARSOLVER_REPO}" 
+	export STELLAR_SRC_FOLDER="${FORKED_SRC_FOLDER}/stellarsolver"
+	export STELLAR_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/stellar-build"
+else
+	echo "Using StellarSolver Repo: ${STELLARSOLVER_REPO}"
+	export STELLAR_SRC_FOLDER="${SRC_FOLDER}/stellarsolver"
+	export STELLAR_BUILD_FOLDER="${BUILD_FOLDER}/stellar-build"
 fi
 
 if [ -n "${FORKED_KSTARS_REPO}" ]
