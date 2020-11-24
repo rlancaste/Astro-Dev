@@ -14,7 +14,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 display "This script will submit your INDI 3rd Party Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${sourceINDIWebManagerApp} ]]
+	if [[ -z ${FORKED_SRC_FOLDER} || -z ${FORKED_THIRDPARTY_REPO} ]]
 	then
   		display "One or more critical directory variables is blank, please edit build-env.sh."
   		exit 1
@@ -23,7 +23,7 @@ display "This script will submit your INDI 3rd Party Changes in the forked repo.
 # Check to see that the user has actually already make a forked source folder for INDI 3rd Party
 if [ ! -d "${FORKED_SRC_FOLDER}/indi-3rdParty" ]
 then
-	echo "No Forked INDI 3rd Party git repo detected.  Please make sure to run setup.sh first and make changes to submit."
+	echo "No Forked INDI 3rd Party git repo detected.  Please make sure to fork the repo, edit build-env.sh, run setup.sh, and make changes to submit."
 	exit
 fi
 

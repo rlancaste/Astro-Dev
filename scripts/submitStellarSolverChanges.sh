@@ -11,28 +11,31 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # Prepare to run the script by setting all of the environment variables	
 	source "${DIR}/build-env.sh"
 	
-display "This script will submit your KStars Changes in the forked-src folder to your fork on GITLAB.  You must have made changes in the forked-src folder for this to work.."
+display "This script will submit your StellarSolver Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${FORKED_SRC_FOLDER} || -z ${FORKED_KSTARS_REPO} ]]
+	if [[ -z ${FORKED_STELLARSOLVER_REPO} || -z ${FORKED_SRC_FOLDER} ]]
 	then
   		display "One or more critical directory variables is blank, please edit build-env.sh."
   		exit 1
 	fi
 
-# Check to see that the user has actually already make a forked source folder for KStars
-if [ ! -d "${FORKED_SRC_FOLDER}/kstars" ]
+# Check to see that the user has actually already make a forked source folder for INDI Web Manager App
+if [ ! -d "${FORKED_SRC_FOLDER}/stellarsolver" ]
 then
-	echo "No Forked KStars repo detected.  Please make sure to fork the repo, edit build-env.sh, run setup.sh, and make changes to submit."
+	echo "No Forked StellarSolver git repo detected.  Please make sure to fork the repo, edit build-env.sh, run setup.sh, and make changes to submit."
 	exit
 fi
 
 # Change to the forked source directory so that the changes can be submitted.
-	cd "${FORKED_SRC_FOLDER}/kstars"
+	cd "${FORKED_SRC_FOLDER}/stellarsolver"
 	
 # Get the commit message, commit the changes, and make a pull request.
 	read -p "Please type a message for your commit: " commitMsg
 	git commit -am "${commitMsg}"
 	git push
-	display "Please go to https://github.com/${FORKED_KSTARS_REPO} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+	display "Please go to https://github.com/${FORKED_STELLARSOLVER_REPO} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+
+
+
 		
