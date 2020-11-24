@@ -796,6 +796,13 @@ fi
 			display "Building KStars using XCode"
 			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 			xcodebuild -project kstars.xcodeproj -target "kstars" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+			
+			# This is needed because sometimes in XCode you use the Debug folder and sometimes the Release folder.
+			mkdir - p  "${KSTARS_BUILD_FOLDER}/kstars/Release"
+			cp -rf "${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app" "${KSTARS_BUILD_FOLDER}/kstars/Release/KStars.app"
+			
+			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app"
+			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/kstars/Release/KStars.app"
 		else
 			display "Building KStars"
 			if [ -n "${BUILD_TRANSLATIONS}" ]
