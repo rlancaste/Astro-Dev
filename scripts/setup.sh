@@ -393,6 +393,72 @@ function writeQTConf
 		checkForConnection "KStars Repository" "${KSTARS_REPO}"
 		checkForConnection "INDI Web Manager Repository" "${WEBMANAGER_REPO}"
 	fi
+	
+# The following if statements set up each of the source and build folders for each build based upon the options you selected in build-env.
+# This includes whether you want to use Xcode or not for the whole build and whether you want to use your own fork or not for each build
+
+if [ -n "${BUILD_XCODE}" ]
+then
+	export BUILD_FOLDER="${XCODE_BUILD_FOLDER}"
+	export FORKED_BUILD_FOLDER="${FORKED_XCODE_BUILD_FOLDER}"
+fi
+
+if [ -n "${FORKED_INDI_REPO}" ]
+then
+	echo "Using forked INDI Repo: ${FORKED_INDI_REPO}" 
+	export INDI_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi"
+	export INDI_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/indi-core"
+else
+	echo "Using INDI Repo: ${INDI_REPO}"
+	export INDI_SRC_FOLDER="${SRC_FOLDER}/indi"
+	export INDI_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/indi-core"
+fi
+
+if [ -n "${FORKED_THIRDPARTY_REPO}" ]
+then
+	echo "Using forked 3rd Party Repo: ${FORKED_THIRDPARTY_REPO}" 
+	export THIRDPARTY_SRC_FOLDER="${FORKED_SRC_FOLDER}/indi-3rdParty"
+	export THIRDPARTY_LIBRARIES_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+	export THIRDPARTY_DRIVERS_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+else
+	echo "Using 3rd Party Repo: ${THIRDPARTY_REPO}"
+	export THIRDPARTY_SRC_FOLDER="${SRC_FOLDER}/indi-3rdParty"
+	export THIRDPARTY_LIBRARIES_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
+	export THIRDPARTY_DRIVERS_BUILD_FOLDER="${BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+fi
+
+if [ -n "${FORKED_STELLARSOLVER_REPO}" ]
+then
+	echo "Using forked StellarSolver Repo: ${FORKED_STELLARSOLVER_REPO}" 
+	export STELLAR_SRC_FOLDER="${FORKED_SRC_FOLDER}/stellarsolver"
+	export STELLAR_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/stellar-build"
+else
+	echo "Using StellarSolver Repo: ${STELLARSOLVER_REPO}"
+	export STELLAR_SRC_FOLDER="${SRC_FOLDER}/stellarsolver"
+	export STELLAR_BUILD_FOLDER="${BUILD_FOLDER}/stellar-build"
+fi
+
+if [ -n "${FORKED_KSTARS_REPO}" ]
+then
+	echo "Using forked KStars Repo: ${FORKED_KSTARS_REPO}" 
+	export KSTARS_SRC_FOLDER="${FORKED_SRC_FOLDER}/kstars"
+	export KSTARS_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/kstars-build"
+else
+	echo "Using KStars Repo: ${KSTARS_REPO}"
+	export KSTARS_SRC_FOLDER="${SRC_FOLDER}/kstars"
+	export KSTARS_BUILD_FOLDER="${BUILD_FOLDER}/kstars-build"
+fi
+
+if [ -n "${FORKED_WEBMANAGER_REPO}" ]
+then
+	echo "Using forked Web Manaager Repo: ${FORKED_WEBMANAGER_REPO}" 
+	export WEBMANAGER_SRC_FOLDER="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
+	export WEBMANAGER_BUILD_FOLDER="${FORKED_BUILD_FOLDER}/webmanager-build"
+else
+	echo "Using Web Manager Repo: ${WEBMANAGER_REPO}"
+	export WEBMANAGER_SRC_FOLDER="${SRC_FOLDER}/INDIWebManagerApp"
+	export WEBMANAGER_BUILD_FOLDER="${BUILD_FOLDER}/webmanager-build"
+fi
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
 	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${sourceINDIWebManagerApp} ]]
@@ -679,13 +745,12 @@ function writeQTConf
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building StellarSolver using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
-			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			xcodebuild -project StellarSolver.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building StellarSolver"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
-			processTarget "${StellarApp}/Contents/MacOS/StellarSolverTester" # This makes sure it links to the right QT etc.
 			make install 
 		fi
 		
@@ -729,18 +794,18 @@ function writeQTConf
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building KStars using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 			xcodebuild -project kstars.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building KStars"
 			if [ -n "${BUILD_TRANSLATIONS}" ]
 			then
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			else
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			fi
 			
@@ -786,11 +851,11 @@ function writeQTConf
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI Web Manager App using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
 			xcodebuild -project INDIWebManagerApp.xcodeproj -target "INDIWebManagerApp" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI Web Manager App"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 		fi
 
