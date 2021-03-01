@@ -626,6 +626,8 @@ fi
 		tar -xzf "${DIR}/archive/cmake.zip" -C "${DEV_ROOT}/lib" 
 		processCMakeDirectory "${DEV_ROOT}/lib/cmake"
 	fi
+	
+	sed -i.bak 's|^get_filename_component(_qt5Gui_install_prefix.*$|get_filename_component(_qt5Gui_install_prefix '$QT_PATH' ABSOLUTE)|g' ${DEV_ROOT}/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake
 
 	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.67.0.dylib" ]
 	then
