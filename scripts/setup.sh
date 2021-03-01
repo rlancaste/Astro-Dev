@@ -26,12 +26,12 @@ shopt -s extglob
 	function checkForConnection
 	{
 		testCommand=$(curl -Is $2 | head -n 1)
-		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* ]]
+		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 200"* ]]
   		then 
   			echo "$1 connection was found."
   		else
   			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please make sure all the repos are downloaded and use the BUILD OFFLINE option to run setup.sh."
+  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in build-kstars.sh."
   			exit
 		fi
 	}
