@@ -96,11 +96,11 @@
 
 	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own github username.
 	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
-	 #export FORKED_INDI_REPO="https://github.com/${GIT_USERNAME}/indi.git"
-	 #export FORKED_THIRDPARTY_REPO="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	 #export FORKED_STELLARSOLVER_REPO="https://github.com/${GIT_USERNAME}/stellarsolver.git"
-	 #export FORKED_KSTARS_REPO="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
-	 #export FORKED_WEBMANAGER_REPO="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
+	 #export FORKED_INDI_REPO="git@github.com:${GIT_USERNAME}/indi.git"
+	 #export FORKED_THIRDPARTY_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"
+	 #export FORKED_STELLARSOLVER_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
+	 #export FORKED_KSTARS_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
+	 #export FORKED_WEBMANAGER_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
 
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12

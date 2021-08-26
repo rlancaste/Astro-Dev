@@ -128,6 +128,7 @@ shopt -s extglob
 			git remote add upstream "$3"
 			git fetch upstream
 			git pull upstream master
+			git push
 		fi
 	}
 
