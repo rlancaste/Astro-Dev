@@ -776,11 +776,11 @@ fi
 		#This will set the KStars app bundle the script will be building inside of.  It also makes sure the path to it exists.
 		if [ -n "${BUILD_XCODE}" ]
 		then
-			export KStarsApp="${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app"
-			mkdir -p "${KSTARS_BUILD_FOLDER}/kstars/Debug"
+			export KStarsApp="${KSTARS_BUILD_FOLDER}/bin/Debug/KStars.app"
+			mkdir -p "${KSTARS_BUILD_FOLDER}/bin/Debug"
 		else
-			export KStarsApp="${KSTARS_BUILD_FOLDER}/kstars/KStars.app"
-			mkdir -p "${KSTARS_BUILD_FOLDER}/kstars/"
+			export KStarsApp="${KSTARS_BUILD_FOLDER}/bin/KStars.app"
+			mkdir -p "${KSTARS_BUILD_FOLDER}/bin/"
 		fi
 		
 		# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
@@ -801,11 +801,11 @@ fi
 			xcodebuild -project kstars.xcodeproj -target "kstars" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 			
 			# This is needed because sometimes in XCode you use the Debug folder and sometimes the Release folder.
-			mkdir - p  "${KSTARS_BUILD_FOLDER}/kstars/Release"
-			cp -rf "${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app" "${KSTARS_BUILD_FOLDER}/kstars/Release/KStars.app"
+			mkdir - p  "${KSTARS_BUILD_FOLDER}/bin/Release"
+			cp -rf "${KSTARS_BUILD_FOLDER}/bin/Debug/KStars.app" "${KSTARS_BUILD_FOLDER}/bin/Release/KStars.app"
 			
-			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/kstars/Debug/KStars.app"
-			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/kstars/Release/KStars.app"
+			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/bin/Debug/KStars.app"
+			codesign --force --deep -s "${CODE_SIGN_IDENTITY}" "${KSTARS_BUILD_FOLDER}/bin/Release/KStars.app"
 		else
 			display "Building KStars"
 			if [ -n "${BUILD_TRANSLATIONS}" ]
