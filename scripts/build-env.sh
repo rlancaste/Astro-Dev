@@ -83,7 +83,7 @@
 	 export INDI_REPO="https://github.com/indilib/indi.git"
 	 export THIRDPARTY_REPO="https://github.com/indilib/indi-3rdparty.git"
 	 export STELLARSOLVER_REPO="https://github.com/rlancaste/stellarsolver.git"
-	 export KSTARS_REPO="https://github.com/KDE/kstars.git"
+	 export KSTARS_REPO="git@invent.kde.org:education/kstars.git"
 	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	 
 # These are the urls for the forks of the repositories that you will be using for editing these repos
