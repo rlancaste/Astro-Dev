@@ -157,8 +157,8 @@ shopt -s extglob
 		rm -rf "${App}/Contents/Frameworks"
 		rm -r "${App}/Contents/Resources/qml"
 		rm -r "${App}/Contents/Plugins"
-		rm -r "${App}/Contents/MacOS/indi"
-		ln -sf "${DEV_ROOT}/bin" "${App}/Contents/MacOS/indi"
+		rm -r "${App}/Contents/MacOS/indi"*
+		ln -sf "${DEV_ROOT}/bin/indi"* "${App}/Contents/MacOS/"
 		
 		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
 		#This command will cause them to look to the lib directory and QT.
@@ -326,6 +326,12 @@ function writeQTConf
         			#echo "Updating SDK Path in: $file to: $SDK_PATH"
         			sed -i.bak 's|'$SDK_IN_ZIP'|'$SDK_PATH'|g' ${file}
         		fi
+        		baseDir=$(basename ${directory})
+        		if [[ "${file}" == *Config.cmake ]] && [[ "${baseDir}" == Qt5* ]]
+        		then
+        			package="${baseDir:3}"
+        			sed -i.bak 's|^get_filename_component(_qt5'$package'_install_prefix.*$|get_filename_component(_qt5'$package'_install_prefix '$QT_PATH' ABSOLUTE)|g' ${DEV_ROOT}/lib/cmake/Qt5"${package}"/Qt5"${package}"Config.cmake
+        		fi
         	fi
 		done
 	}
@@ -364,8 +370,6 @@ function writeQTConf
 			esac
 		done
 	}
-	
-	
 	
 	
 ########################################################################################
@@ -516,16 +520,9 @@ fi
 # These items are needed from Homebrew.  If you don't want homebrew, then you need to install them another way and get them in your PATH
 	display "Checking/Installing Homebrew Dependencies."
 	brew upgrade
-	
-	brewInstallIfNeeded gpsd 
+	 
 	brewInstallIfNeeded cmake
 	brewInstallIfNeeded gettext
-	brewInstallIfNeeded libusb
-	
-	# Ruby is installed on OS X by default, but the system ruby can't be changed and we need logger-colors.
-	brewInstallIfNeeded ruby
-	export PATH=$(brew --prefix ruby)/bin:$PATH
-	gem install logger-colors
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
 	if [ -n "${REMOVE_ALL}" ]
@@ -556,7 +553,7 @@ fi
 			# If the file is a kf5 library, it also seems to need the FULL version number, not just the one in the KStars APP.
 			# So this makes versions with those names as well so that KStars can find the libraries.
 			# This is not necessarily the best idea, but it works.
-			KF5_VERSION="5.67.0"
+			KF5_VERSION="5.90.0"
 			
 			if [[ ${fileName} == *dylib ]]
 			then
@@ -602,12 +599,12 @@ fi
 
 # There are some files that are not included in KStars.app, but are needed to build INDI and KStars.
 # This will install them from the archive folder in this repo.
-	display "Copying any missing binary, include, and share files into the Root DEV folder"
+	display "Copying any missing binary, include, lib, and share files into the Root DEV folder"
 
 	if [ ! -d "${DEV_ROOT}/bin" ]
 	then
 		tar -xzf "${DIR}/archive/bin.zip" -C "${DEV_ROOT}"
-		cp -fr "${sourceKStarsApp}/Contents/MacOS/indi"/* "${DEV_ROOT}/bin/"
+		cp -fr "${sourceKStarsApp}/Contents/MacOS"/* "${DEV_ROOT}/bin/"
 		processDirectory "${DEV_ROOT}/bin"
 	fi
 
@@ -616,9 +613,9 @@ fi
 		tar -xzf "${DIR}/archive/include.zip" -C "${DEV_ROOT}" 
 	fi
 
-	if [ ! -d "${DEV_ROOT}/lib/libexec/kf5" ]
+	if [ ! -d "${DEV_ROOT}/lib/libexec" ]
 	then
-		tar -xzf "${DIR}/archive/libexec-kf5.zip" -C "${DEV_ROOT}/lib" 
+		tar -xzf "${DIR}/archive/libexec.zip" -C "${DEV_ROOT}/lib" 
 		processDirectory "${DEV_ROOT}/lib/libexec"
 	fi
 
@@ -628,12 +625,12 @@ fi
 		processCMakeDirectory "${DEV_ROOT}/lib/cmake"
 	fi
 	
-	sed -i.bak 's|^get_filename_component(_qt5Gui_install_prefix.*$|get_filename_component(_qt5Gui_install_prefix '$QT_PATH' ABSOLUTE)|g' ${DEV_ROOT}/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake
+	#sed -i.bak 's|[$]{_IMPORT_PREFIX}|'$QT_PATH'|g' ${DEV_ROOT}/lib/cmake/Qt5Keychain/Qt5KeychainLibraryDepends.cmake
 
-	if [ ! -f "${DEV_ROOT}/lib/libKF5KIOGui.5.67.0.dylib" ]
+	#these are some library files that are not in the DMG, but are needed to allow it to compile
+	if [ ! -f "${DEV_ROOT}/lib/libjpeg.a" ]
 	then
-		# Note this file isn't even needed at all, we just need to put it in there because the build fails if it isn't present.
-		cp -f "${DIR}/archive/libKF5KIOGui.5.67.0.dylib" "${DEV_ROOT}/lib"
+		tar --strip-components=1 -xzf "${DIR}/archive/libs.zip" -C "${DEV_ROOT}/lib/"
 	fi
 
 	mkdir -p "${DEV_ROOT}/share/"

@@ -113,7 +113,7 @@
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
 	export BUILD_KSTARS="Yep"
-	#export BUILD_WEBMANAGER="Yep"
+	export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
