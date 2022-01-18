@@ -83,7 +83,8 @@
 	 export INDI_REPO="https://github.com/indilib/indi.git"
 	 export THIRDPARTY_REPO="https://github.com/indilib/indi-3rdparty.git"
 	 export STELLARSOLVER_REPO="https://github.com/rlancaste/stellarsolver.git"
-	 export KSTARS_REPO="git@invent.kde.org:education/kstars.git"
+	 #export KSTARS_REPO="https://github.com/KDE/kstars.git" # Note: Use this one if you don't have a Gitlab account and just want to build kstars
+	 export KSTARS_REPO="git@invent.kde.org:education/kstars.git" # Note: Use this one for development on Gitlab
 	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	 
 # These are the urls for the forks of the repositories that you will be using for editing these repos
@@ -113,7 +114,7 @@
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
 	export BUILD_KSTARS="Yep"
-	export BUILD_WEBMANAGER="Yep"
+	#export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 

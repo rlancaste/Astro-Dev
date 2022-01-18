@@ -631,6 +631,7 @@ fi
 	if [ ! -f "${DEV_ROOT}/lib/libjpeg.a" ]
 	then
 		tar --strip-components=1 -xzf "${DIR}/archive/libs.zip" -C "${DEV_ROOT}/lib/"
+		processDirectory "${DEV_ROOT}/lib"
 	fi
 
 	mkdir -p "${DEV_ROOT}/share/"
