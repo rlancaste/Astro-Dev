@@ -252,9 +252,35 @@ function writeQTConf
 			install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
 			install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
 			
-			entries=$(otool -L $target | sed '1d' | awk '{print $1}')
+			IGNORED_OTOOL_OUTPUT="/usr/lib/|/System/"
+			entries=$(otool -L $target | sed '1d' | awk '{print $1}' | egrep -v "$IGNORED_OTOOL_OUTPUT")
 			#echo "Processing $target"
+			
+			if [[ "${target}" == *.dylib ]]
+			then
+				newname="@rpath/$(basename $target)"	
+			
+				install_name_tool -id \
+				$newname \
+				$target
+				
+				for entry in $entries
+				do
+					if [[ "${entry}" != @rpath* ]]
+					then
+						baseEntry=$(basename $entry)
+						newname=""
+						newname="@rpath/${baseEntry}"
+						echo "    change reference $entry -> $newname" 
 
+						install_name_tool -change \
+						$entry \
+						$newname \
+						$target
+					fi
+				done
+			fi
+			
 			for entry in $entries
 			do
 				baseEntry=$(echo ${entry} | sed 's/^.*Frameworks//' | sed 's/^.*@loader_path//')
