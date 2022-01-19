@@ -256,6 +256,7 @@ function writeQTConf
 			entries=$(otool -L $target | sed '1d' | awk '{print $1}' | egrep -v "$IGNORED_OTOOL_OUTPUT")
 			#echo "Processing $target"
 			
+			#This section had to be added since I had to add some dylibs that were still linked to my craft root.
 			if [[ "${target}" == *.dylib ]]
 			then
 				newname="@rpath/$(basename $target)"	
@@ -271,7 +272,7 @@ function writeQTConf
 						baseEntry=$(basename $entry)
 						newname=""
 						newname="@rpath/${baseEntry}"
-						echo "    change reference $entry -> $newname" 
+						#echo "    change reference $entry -> $newname" 
 
 						install_name_tool -change \
 						$entry \
@@ -281,6 +282,7 @@ function writeQTConf
 				done
 			fi
 			
+			#This section converts any things packaged by Craft
 			for entry in $entries
 			do
 				baseEntry=$(echo ${entry} | sed 's/^.*Frameworks//' | sed 's/^.*@loader_path//')
