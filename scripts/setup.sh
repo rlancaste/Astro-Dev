@@ -347,8 +347,7 @@ function writeQTConf
         		processCMakeDirectory "${file}"
         	else
         		#echo "Changing file: $file to have paths based on: $DEV_ROOT"
-        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/lib|'$DEV_ROOT'/lib|g' ${file}
-        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/include|'$DEV_ROOT'/include|g' ${file}
+        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root|'$DEV_ROOT'|g' ${file}
         		if [ "${SDK_PATH}" != "${SDK_IN_ZIP}" ]
         		then
         			#echo "Updating SDK Path in: $file to: $SDK_PATH"

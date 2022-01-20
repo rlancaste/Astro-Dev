@@ -30,7 +30,7 @@
 # This sets important system paths that the script will need to execute.  Please verify these paths.
 
 		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
-	export QT_PATH="${HOME}/Qt/5.15.1/clang_64"
+	export QT_PATH="${HOME}/Qt/5.15.2/clang_64"
 		# This is your path to the SDK on your system.  It will be used in the ASTRO-ROOT/lib/cmake folder files to find the SDK on your system for building.
 	export SDK_PATH="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk"
 
