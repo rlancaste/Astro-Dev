@@ -550,6 +550,13 @@ fi
 	 
 	brewInstallIfNeeded cmake
 	brewInstallIfNeeded gettext
+	
+	# It would be good to sort this out.  gpg2 should be built in craft.  This is needed for translations to work.
+	brewInstallIfNeeded gpg
+	brewInstallIfNeeded svn
+	
+	# This is because gpg is not called gpg2 and translations call on gpg2.  Fix this??
+	ln -sf $(brew --prefix)/bin/gpg $(brew --prefix)/bin/gpg2
 
 # This will remove all the files in the ASTRO development root folder so it can start fresh.
 	if [ -n "${REMOVE_ALL}" ]
