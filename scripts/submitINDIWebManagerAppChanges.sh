@@ -34,7 +34,7 @@ fi
 	read -p "Please type a message for your commit: " commitMsg
 	git commit -am "${commitMsg}"
 	git push
-	display "Please go to https://github.com/${FORKED_WEBMANAGER_REPO} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+	display "Please go to https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
 
 
 
