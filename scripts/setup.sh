@@ -604,7 +604,7 @@ fi
 					fi
 					if [[ ${fileName} == libstellarsolver* ]]
 					then
-						cp -f "${libDir}/${fileName}" "${libDir}/libstellarsolver.1.5.dylib"
+						cp -f "${libDir}/${fileName}" "${libDir}/libstellarsolver.2.1.dylib"
 					fi
 					if [[ ${fileName} == libqt5keychain* ]]
 					then
