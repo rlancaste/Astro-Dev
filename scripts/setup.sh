@@ -425,7 +425,19 @@ function writeQTConf
 		#checkForConnection "KStars Repository" "${KSTARS_REPO}"
 		checkForConnection "INDI Web Manager Repository" "${WEBMANAGER_REPO}"
 	fi
-	
+
+## This makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly
+	if [ -n "${BUILD_XCODE}" ]
+	then
+		if [ -n "${CODE_SIGN_IDENTITY}" ]
+		then
+			display "Building for XCode and code signing with the identity ${CODE_SIGN_IDENTITY}."
+		else
+			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Before you run this script, execute the command: export CODE_SIGN_IDENTITY=XXXXXXX"
+			exit 1
+		fi
+	fi
+
 # The following if statements set up each of the source and build folders for each build based upon the options you selected in build-env.
 # This includes whether you want to use Xcode or not for the whole build and whether you want to use your own fork or not for each build
 
