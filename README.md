@@ -12,20 +12,19 @@ please see my other repository [KStars-on-OSX-Craft](https://github.com/rlancast
 # Getting set up
 
 1. Clone my other Repo and run build-kstars.sh [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft) (if not done already)
-2. Download and install [Qt Creator](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
-3. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
+2. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
 mkdir ~/Projects
 cd  ~/Projects
 git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
-4. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system.
-5. Enable the options you want for building in that script as well
-7. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal or just copy and paste the following into Terminal and run the script.
+3. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system.
+4. Enable the options you want for building in that script as well
+5. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal or just copy and paste the following into Terminal and run the script.
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
 ```
-8. Now either use the programs, or get set up to edit the software.
+6. Now either use the programs, or get set up to edit the software.
 
 # [build-env.sh](scripts/build-env.sh) options
 There are a large number of variables that you can customize in build-env.sh.  They fall in several main categories.
@@ -59,7 +58,7 @@ If you want a truly portable app bundle, you will need to use the KStars-on-OSX-
 
 One of the primary goals of this repository is to make it easy to make changes to the code.  You can use either XCode or QT Creator for this
 purpose.  It is recommended that you use QT Creator because it has the ability to edit the UI files and it is designed for QT development,
-but XCode has some very nice features, especially its code analysis algorithms. 
+but XCode has some very nice features, especially its code analysis algorithms.  You can get [QT creator](https://www.qt.io/) from QT, from Craft, or Homebrew, but be sure to use the Craft installed QT.
 
 ## Forking the Repo and The source folder
 For INDI, INDI 3rd Party, KStars, and INDI Web Manager, you should use the forked repo options in build-env.sh outlined below
