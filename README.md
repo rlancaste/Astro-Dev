@@ -6,27 +6,21 @@ A Script to easily build INDI, INDI Web Manager, and KStars for Mac using existi
 # About the repository
 This repository was written by myself, Rob Lancaster, for the purpose of making it easier to get set up to easily build the latest versions of INDI, 3rd Party Drivers, KStars, and INDI Web Manager App on a Mac computer
 as well as to be able to edit the source code to test out ideas or to diagnose problems.  This script is not meant for distribution of any of these items.  For building the latest versions and distributing them as a DMG,
-please see my other repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).  This script, unlike those in the craft-based repository, does not attempt to build everything from scratch, but instead starts with already built APP bundles that 
-have already been downloaded to your computer.  So it is very necessary that you download KStars.app first!  If you want to build or edit the INDI Web Manager App, you should download that one too, otherwise this script 
-will skip that step.  So downloading KStars is required, but INDI Web Manager App is optional but recommended.  You will also need a version of QT, obtained from Homebrew, Craft, or installed using the official QT open source installer.
-It is highly recommended that the version number of QT that you download should match the version that was originally used to build the app(s) you downloaded.  If the QT versions are different, there could be issues with functions 
-not matching.
+please see my other repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).  This script is built on top of the Craft build from the other REPO, so please be sure to use the other REPO first and
+ run build-kstars.sh to get any needed dependencies built first!  Also  you might want to install QT Creator first, but please use the QT installed by Craft not a different version.
 
 # Getting set up
 
-1. Download and install [KStars.app](https://edu.kde.org/kstars/#download) (if not done already)
-2. (Optional) Download and install [INDIWebManager.app](https://github.com/rlancaste/INDIWebManagerApp/releases) (if not done already)
-3. Install each program, run it and set it up so that you can use it.  Your settings should all transfer to your new build when you make it.
-4. Download and install [Qt](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
-	Note: If you are using the QT Installer, when you run the install tool, select a version greater than 5.10 (5.14 or 5.15 preferably), install MacOS and QT Data Visualizations along with QT Creator.
-	![Screenshot of QT Installer](images/QTInstallerOptions.png "Screenshot of QT Installer")
-5. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
+1. Clone my other Repo and run build-kstars.sh [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft) (if not done already)
+2. Download and install [Qt Creator](https://www.qt.io) from whatever source (Homebrew, Craft, QT Installer)
+3. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
 ```
 mkdir ~/Projects
 cd  ~/Projects
 git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
-6. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system, most important: the QT path.
+4. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system.
+5. Enable the options you want for building in that script as well
 7. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal or just copy and paste the following into Terminal and run the script.
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
@@ -55,8 +49,8 @@ The setup.sh script does not have a lot of options right now, but here they are:
 
 At this point you have a currently up to date version of INDI, INDI-3rd Party, KStars, and (optionally) INDI Web Manager App.
 You can use these programs if you like, they should be fully functional and bleeding edge, 
-but note that they are not portable, they rely on the files in the folders used to build these programs. This includes the QT version 
-you linked it to, as well as the files in the ASTRO-ROOT directory.  So please don't delete these files, move the Dev folder to another location, or delete/replace QT.
+but note that they are not portable, they rely on the files in the folders used to build these programs 
+you linked it to, as well as files in the ASTRO-ROOT directory.  So please don't delete these files, move the Dev folder to another location, or delete/replace QT.
 If you do need to make a change like these, just re-run the setup script with the -r option and it will rebuild everything.  You CAN copy
 the KStars.app or INDI Web Manager.app bundles to any other location on your computer and they should work just fine as long as the build folders don't get deleted.
 If you want a truly portable app bundle, you will need to use the KStars-on-OSX-Craft repository to do that.

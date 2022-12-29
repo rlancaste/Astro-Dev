@@ -28,27 +28,18 @@
 	
 	
 # This sets important system paths that the script will need to execute.  Please verify these paths.
-
-		# This is the path to QT, it needs to point to the QT root folder whether it is Homebrew, Craft, or Installed QT
-	export QT_PATH="${HOME}/Qt/5.15.2/clang_64"
-		# This is your path to the SDK on your system.  It will be used in the ASTRO-ROOT/lib/cmake folder files to find the SDK on your system for building.
-	export SDK_PATH="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk"
-
-
-# These are the Paths to the Applications that will be used as a basis for the build so that you don't have to run the craft script
-# Please make sure these applications are installed if you want to build those programs and make sure the path is right.
-
-		# This is the path to the KStars App bundle the script will copy to setup the lib folder and kstars build folder
-	export sourceKStarsApp="/Applications/KStars.app"
-		# This is the path to the (optional) INDI Web Manager App bundle the script will copy to setup the INDI Web Manager build folder
-	export sourceINDIWebManagerApp="/Applications/INDIWebManagerApp.app"
-
+		# This is the AstroRoot Root Folder that will be used as a basis for building
+	export ASTRO_ROOT="${HOME}/AstroRoot"
+		# This is the Craft Root Folder that will be used as a basis for building
+	export CRAFT_ROOT="${ASTRO_ROOT}/craft-root"
+	
 
 # This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
 # Beware that none of them should have spaces in the file path.
 
 		#This is the base path
-	export TOP_FOLDER=$( cd "${DIR}/../" && pwd )
+	#export TOP_FOLDER=$( cd "${DIR}/../" && pwd ) # This makes it the project folder
+	export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder instead
 		# This is the enclosing folder for the source code of INDI, KStars, and INDI Web Manager
 	export SRC_FOLDER="${TOP_FOLDER}/src"
 		# This is the enclosing folder for the forked source code of INDI, KStars, and INDI Web Manager
@@ -56,13 +47,13 @@
 		# This is the enclosing folder for the build folders of INDI, KStars, and INDI Web Manager
 	export BUILD_FOLDER="${TOP_FOLDER}/build"
 		# This is the enclosing folder for the forked build folders of INDI, KStars, and INDI Web Manager
-	export FORKED_BUILD_FOLDER="${TOP_FOLDER}/forked-build"
+	export FORKED_BUILD_FOLDER="${TOP_FOLDER}/build-forked"
 		# This is the enclosing folder for the xcode build folders of INDI, KStars, and INDI Web Manager
 	export XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build"
 		# This is the enclosing folder for the forked xcode build folders of INDI, KStars, and INDI Web Manager
-	export FORKED_XCODE_BUILD_FOLDER="${TOP_FOLDER}/forked-xcode-build"
-		# This is the root folder for "installing" the software to facilitate building
-	export DEV_ROOT="${TOP_FOLDER}/ASTRO-ROOT"
+	export FORKED_XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build-forked"
+		# This is the Development Root folder where we will be "installing" built software
+	export DEV_ROOT="${TOP_FOLDER}/DEV_ROOT"
 	
 	
 #These paths should not need to be changed on most systems
@@ -105,31 +96,25 @@
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
 
-	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.13
-	export MACOSX_DEPLOYMENT_TARGET=10.13
+	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.15
+	export MACOSX_DEPLOYMENT_TARGET=10.15
 	
 # These are the build options, you can make parts not build by just commenting out the line with a #
 	export BUILD_INDI="Yep"
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
 	export BUILD_KSTARS="Yep"
-	#export BUILD_WEBMANAGER="Yep"
+	export BUILD_WEBMANAGER="Yep"
 	
 display "Environment Variables Set."
 
 echo "DIR                      is [${DIR}]"
-echo "QT_PATH                  is [${QT_PATH}]"
-echo "SDK_PATH                 is [${SDK_PATH}]"
 echo "TOP_FOLDER               is [${TOP_FOLDER}]"
 echo "SRC_FOLDER               is [${SRC_FOLDER}]"
 echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"
 echo "BUILD_FOLDER             is [${BUILD_FOLDER}]"
+echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
-echo "sourceKStarsApp          is [${sourceKStarsApp}]"
-echo "KStarsApp                is [${KStarsApp}]"
-echo "sourceINDIWebManagerApp  is [${sourceINDIWebManagerApp}]"
-echo "INDIWebManagerApp        is [${INDIWebManagerApp}]"
-echo "QT_PATH                  is [${QT_PATH}]"
 echo "GETTEXT_PATH             is [${GETTEXT_PATH}]"
 
 echo "PREFIX_PATH              is [${PREFIX_PATH}]"

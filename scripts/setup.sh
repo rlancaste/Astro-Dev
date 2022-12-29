@@ -54,7 +54,12 @@ shopt -s extglob
 			echo "brew : $* is already installed"
 		fi
 	}
-
+	
+#This function links a file or folder in the dev directory to one in the craft-root directory
+	function craftLink
+	{
+		ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
+	}
 	
 # This function will download a git repo if needed, and will update it if not
 # Note that this function should only be used on the real repo, not the forked one.  For that see the next function.
@@ -148,22 +153,6 @@ shopt -s extglob
 		fi
 		cd "$1"
 	}
-
-# This function will take a newly copied app bundle for building purposes, delete directories, and link it to the system QT
-# $1 is the path to the App bundle to be processed.
-	function reLinkAppBundle
-	{
-		App="$1"
-		rm -rf "${App}/Contents/Frameworks"
-		rm -r "${App}/Contents/Resources/qml"
-		rm -r "${App}/Contents/Plugins"
-		rm -r "${App}/Contents/MacOS/indi"*
-		ln -sf "${DEV_ROOT}/bin/indi"* "${App}/Contents/MacOS/"
-		
-		#This Directory needs to be processed because there are number of executables that will be looking in Frameworks for their libraries
-		#This command will cause them to look to the lib directory and QT.
-		processDirectory "${App}/Contents/MacOS"
-	}
 	
 # This function will remove and rewrite the qt.conf file so that KStars and INDI Web Manager can find required Resources
 # It used to be in the function above, but I found that if the QT version gets changed, this file needs to be recreated, so I separated it.
@@ -176,7 +165,7 @@ function writeQTConf
 		##################
 		cat > "${App}/Contents/Resources/qt.conf" <<- EOF
 		[Paths]
-		Prefix = ${QT_PATH}
+		Prefix = ${DEV_ROOT}
 		Plugins = plugIns
 		Imports = qml
 		Qml2Imports = qml
@@ -248,9 +237,8 @@ function writeQTConf
     	then
 			
 			removeRPathsFromFile "${target}"
-			#These are needed to add the new rpaths to QT and the libraries associated with this build.
+			#These are needed to add the new rpaths to the libraries associated with this build.
 			install_name_tool -add_rpath "${DEV_ROOT}/lib" $target >/dev/null 2>&1
-			install_name_tool -add_rpath "${QT_PATH}/lib" $target >/dev/null 2>&1
 			
 			IGNORED_OTOOL_OUTPUT="/usr/lib/|/System/"
 			entries=$(otool -L $target | sed '1d' | awk '{print $1}' | egrep -v "$IGNORED_OTOOL_OUTPUT")
@@ -330,39 +318,6 @@ function writeQTConf
 		done
 	}
 
-#This function will recursively process all the files in the CMAKE directory to correct the hard coded paths in there and relink them
-	function processCMakeDirectory
-	{
-		directory=$1
-		echo "Processing all of the CMake files in $directory"
-		SDK_IN_ZIP="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk"
-		#if [ "${SDK_PATH}" = "${SDK_IN_ZIP}" ]
-        #then
-        #	echo "Your requested SDK Path matches the path in the zip file, so the path to the SDK will not be updated in the cmake files."
-        #fi
-		for file in ${directory}/*
-		do
-        	if [ -d "${file}" ]
-        	then
-        		processCMakeDirectory "${file}"
-        	else
-        		#echo "Changing file: $file to have paths based on: $DEV_ROOT"
-        		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root|'$DEV_ROOT'|g' ${file}
-        		if [ "${SDK_PATH}" != "${SDK_IN_ZIP}" ]
-        		then
-        			#echo "Updating SDK Path in: $file to: $SDK_PATH"
-        			sed -i.bak 's|'$SDK_IN_ZIP'|'$SDK_PATH'|g' ${file}
-        		fi
-        		baseDir=$(basename ${directory})
-        		if [[ "${file}" == *Config.cmake ]] && [[ "${baseDir}" == Qt5* ]]
-        		then
-        			package="${baseDir:3}"
-        			sed -i.bak 's|^get_filename_component(_qt5'$package'_install_prefix.*$|get_filename_component(_qt5'$package'_install_prefix '$QT_PATH' ABSOLUTE)|g' ${DEV_ROOT}/lib/cmake/Qt5"${package}"/Qt5"${package}"Config.cmake
-        		fi
-        	fi
-		done
-	}
-
 # This function will remote all rpaths currently in a file
 # Thank you to this forum: https://stackoverflow.com/questions/12521802/print-rpath-of-an-executable-on-macos/12522096
 	function removeRPathsFromFile
@@ -411,7 +366,7 @@ function writeQTConf
 	processOptions $@
 
 # Display the Welcome message.
-	display "This will use an existing KStars App to setup a Development Environment for KStars and INDI on your Mac that does not depend on Craft or Homebrew.  It assumes the KStars app bundle is at /Applications/KStars.app.  It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
+	display "This will setup a Development Environment for KStars and INDI on your Mac.  It is based on Craft. It will place the development directory at the location specified.  It will use QT Located in your home directory.  Edit this script if that is incorrect."
 
 # Before starting, check to see if the remote servers are accessible
 	if [ -n "${BUILD_OFFLINE}" ]
@@ -505,29 +460,17 @@ else
 fi
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} || -z ${sourceKStarsApp} || -z ${sourceINDIWebManagerApp} ]]
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
 	then
   		display "One or more critical directory variables is blank, please edit build-env.sh."
   		exit 1
 	fi
 	
 # This checks the most important variables to see if the paths exist.  If they don't, it terminates the script with a message.
-	if [ ! -d "${QT_PATH}" ]
+	if [ ! -d "${CRAFT_ROOT}" ]
 	then
-		display "QT Does Not Exist at the directory specified, please install QT or edit this script."
+		display "Craft Does Not Exist at the directory specified, please install Craft or edit this script."
 		exit 1
-	fi
-	
-	if [ ! -d "${sourceKStarsApp}" ]
-	then
-		display "The source KStars app does not exist at the directory specified. This script relies on an existing KStars APP bundle in order to set up the development environment.  Please download KStars.app or edit this script."
-		exit 1
-	fi
-	
-	if [ ! -d "${sourceINDIWebManagerApp}" ]
-	then
-		display "The source INDI Web Manager App does not exist at the directory specified.  Skipping Web Manager build.  If you want to build the INDI Web Manager App, either download an existing copy, or edit this script to change the path to it."
-		BUILD_WEBMANAGER=""
 	fi
 	
 #This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
@@ -569,137 +512,30 @@ fi
 	
 	# This is because gpg is not called gpg2 and translations call on gpg2.  Fix this??
 	ln -sf $(brew --prefix)/bin/gpg $(brew --prefix)/bin/gpg2
-
-# This will remove all the files in the ASTRO development root folder so it can start fresh.
-	if [ -n "${REMOVE_ALL}" ]
-	then
-		if [ -d "${DEV_ROOT}" ]
-		then
-			rm -fr "${DEV_ROOT}"
-			rm "${TOP_FOLDER}/INDIWebManagerApp.app"
-			rm "${TOP_FOLDER}/KStars.app"
-		fi
-	fi
-
-# This section will copy the dynamic libraries that KStars and INDI will need from an existing KStars.app bundle
-	if [ ! -d "${DEV_ROOT}/lib" ]
-	then
-		display "Copying Dynamic Libraries from an existing KStars.app"
-		mkdir -p "${DEV_ROOT}/lib"
-		libDir="${DEV_ROOT}/lib"
-		cp -fr "${sourceKStarsApp}/Contents/Frameworks"/* "${DEV_ROOT}/lib/"
-
-		display "Making Simple Dynamics Library copies so find_package can find them."
-		for file in "${libDir}"/*
-		do
-			fileName=$(basename ${file})
-		
-		
-			# This will make copies of the dynamic libraries in the lib folder without version numbers
-			# If the file is a kf5 library, it also seems to need the FULL version number, not just the one in the KStars APP.
-			# So this makes versions with those names as well so that KStars can find the libraries.
-			# This is not necessarily the best idea, but it works.
-			KF5_VERSION="5.90.0"
-			
-			if [[ ${fileName} == *dylib ]]
-			then
-				shortName=$(echo ${fileName} | sed 's/\..*$//' | sed 's/-.*//')
-				longName=${shortName}.${KF5_VERSION}.dylib
-				shortName=${shortName}.dylib
-				if [[ ${fileName} != ${shortName} ]]
-				then
-					echo "Copying ${fileName} to ${shortName}"
-					cp -f "${libDir}/${fileName}" "${libDir}/${shortName}"
-					if [[ ${fileName} == libKF5* ]]
-					then
-						cp -f "${libDir}/${fileName}" "${libDir}/${longName}"
-					fi
-					if [[ ${fileName} == libstellarsolver* ]]
-					then
-						cp -f "${libDir}/${fileName}" "${libDir}/libstellarsolver.2.1.dylib"
-					fi
-					if [[ ${fileName} == libqt5keychain* ]]
-					then
-						cp -f "${libDir}/${fileName}" "${libDir}/libqt5keychain.0.9.1.dylib"
-					fi
-				else 
-					echo "Skipping ${fileName} since it is already the simple name"
-				fi
-			fi
-		
-			#  If this is a directory it is one of the QT Frameworks bundled with KStars, and since it will cause issues to have 2 different Qt copies linked in the same project, we have to delete this one.
-			#  And then link it to the other.  Unfortunately we can't just use this QT version since it has no header files.
-			if [ -d "${file}" ]
-			then
-				if [[ ${fileName} == Qt* ]]
-				then
-					rm -r "${file}"
-				fi
-			fi
-		done
 	
-		# This makes use of the functions above to relink the files in the lib directory
-		display "Removing links to App Frameworks directory and linking to Qt Directory and lib directory instead."
-		processDirectory "${DEV_ROOT}/lib"
-	fi
-
-# There are some files that are not included in KStars.app, but are needed to build INDI and KStars.
-# This will install them from the archive folder in this repo.
-	display "Copying any missing binary, include, lib, and share files into the Root DEV folder"
-
-	if [ ! -d "${DEV_ROOT}/bin" ]
-	then
-		tar -xzf "${DIR}/archive/bin.zip" -C "${DEV_ROOT}"
-		cp -fr "${sourceKStarsApp}/Contents/MacOS"/* "${DEV_ROOT}/bin/"
-		processDirectory "${DEV_ROOT}/bin"
-	fi
-
-	if [ ! -d "${DEV_ROOT}/include" ]
-	then
-		tar -xzf "${DIR}/archive/include.zip" -C "${DEV_ROOT}" 
-	fi
-
-	if [ ! -d "${DEV_ROOT}/lib/libexec" ]
-	then
-		tar -xzf "${DIR}/archive/libexec.zip" -C "${DEV_ROOT}/lib" 
-		processDirectory "${DEV_ROOT}/lib/libexec"
-	fi
-
-	if [ ! -d "${DEV_ROOT}/lib/cmake" ]
-	then
-		tar -xzf "${DIR}/archive/cmake.zip" -C "${DEV_ROOT}/lib" 
-		processCMakeDirectory "${DEV_ROOT}/lib/cmake"
-	fi
+# This sets up the development root directory for "installation"
+	mkdir -p "${DEV_ROOT}/bin"
+	export PATH="${DEV_ROOT}/bin:${CRAFT_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
+	craftLink bin/meinproc5
+	craftLink bin/desktoptojson
+	craftLink bin/checkXML5
+	craftLink bin/qmake
+	craftLink bin/moc
+	craftLink bin/rcc
+	craftLink bin/uic
+	craftLink bin/qdbuscpp2xml
+	craftLink bin/qdbusxml2cpp
 	
-	#sed -i.bak 's|[$]{_IMPORT_PREFIX}|'$QT_PATH'|g' ${DEV_ROOT}/lib/cmake/Qt5Keychain/Qt5KeychainLibraryDepends.cmake
-
-	#these are some library files that are not in the DMG, but are needed to allow it to compile
-	if [ ! -f "${DEV_ROOT}/lib/libjpeg.a" ]
-	then
-		tar --strip-components=1 -xzf "${DIR}/archive/libs.zip" -C "${DEV_ROOT}/lib/"
-		processDirectory "${DEV_ROOT}/lib"
-	fi
-
-	mkdir -p "${DEV_ROOT}/share/"
-
-	if [ ! -d "${DEV_ROOT}/share/kf5" ]
-	then
-		tar -xzf "${DIR}/archive/share-kf5.zip" -C "${DEV_ROOT}/share" 
-		ln -sf "${DEV_ROOT}/share/kf5" "${HOME}/Library/Application Support/kf5"
-		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/share|'$DEV_ROOT'/share|g' ${DEV_ROOT}/share/kf5/kdoctools/customization/dtd/kdedbx45.dtd
-		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/share|'$DEV_ROOT'/share|g' ${DEV_ROOT}/share/kf5/kdoctools/customization/kde-include-common.xsl
-		sed -i.bak 's|/Users/rlancaste/AstroRoot/craft-root/share|'$DEV_ROOT'/share|g' ${DEV_ROOT}/share/kf5/kdoctools/customization/xsl/all-l10n.xml
-	fi
+	mkdir -p "${DEV_ROOT}/include"
+	ln -s ${CRAFT_ROOT}/include/* ${DEV_ROOT}/include/
 	
-	if [ ! -d "${DEV_ROOT}/share/xml" ]
-	then
-		tar -xzf "${DIR}/archive/share-xml.zip" -C "${DEV_ROOT}/share" 
-	fi
-
-	if [ ! -d "${DEV_ROOT}/share/ECM" ]
-	then
-		tar -xzf "${DIR}/archive/share-ECM.zip" -C "${DEV_ROOT}/share" 
-	fi
+	mkdir -p "${DEV_ROOT}/lib"
+	ln -s ${CRAFT_ROOT}/lib/* ${DEV_ROOT}/lib/
+	
+	craftLink plugins
+	craftLink .//mkspecs
+	craftLink qml
+	
 
 # This is the start of the build section of the Script.
 
@@ -792,11 +628,11 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building StellarSolver using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
 			xcodebuild -project StellarSolver.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building StellarSolver"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install 
 		fi
@@ -827,21 +663,12 @@ fi
 			mkdir -p "${KSTARS_BUILD_FOLDER}/bin/"
 		fi
 		
-		# This will copy the source KStars app into the build directory and delete and/or replace any files necessary
-		# It is very important that you build on top of an existing KStars app bundle since this script will not set up
-		# all the ancillary files that KStars needs in the app bundle in order to run.
-		if [ ! -d "${KStarsApp}" ]
-		then
-			cp -rf "${sourceKStarsApp}" "${KStarsApp}"
-			reLinkAppBundle "${KStarsApp}"
-		fi
-		
 		writeQTConf "${KStarsApp}"
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building KStars using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 			xcodebuild -project kstars.xcodeproj -target "kstars" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 			
 			# This is needed because sometimes in XCode you use the Debug folder and sometimes the Release folder.
@@ -854,12 +681,12 @@ fi
 			display "Building KStars"
 			if [ -n "${BUILD_TRANSLATIONS}" ]
 			then
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			else
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
 				cmake --build . --target kstars -- -j$(expr $(sysctl -n hw.ncpu) + 2)
 			fi
 			
@@ -891,25 +718,17 @@ fi
 			export INDIWebManagerApp="${WEBMANAGER_BUILD_FOLDER}/INDIWebManagerApp.app"
 			mkdir -p "${WEBMANAGER_BUILD_FOLDER}"
 		fi
-		# This will copy the source INDIWebManagerApp app into the build directory and delete and/or replace any files necessary
-		# It is very important that you build on top of an existing INDIWebManagerApp app bundle since this script will not set up
-		# all the ancillary files that INDIWebManagerApp needs in the app bundle in order to run.
-		if [ ! -d "${INDIWebManagerApp}" ]
-		then
-			cp -rf "${sourceINDIWebManagerApp}" "${INDIWebManagerApp}"
-			reLinkAppBundle "${INDIWebManagerApp}"
-		fi
 		
 		writeQTConf ${INDIWebManagerApp}
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI Web Manager App using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
 			xcodebuild -project INDIWebManagerApp.xcodeproj -target "INDIWebManagerApp" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI Web Manager App"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib;${QT_PATH}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 		fi
 

@@ -31,9 +31,23 @@ fi
 	cd "${FORKED_SRC_FOLDER}/indi-3rdParty"
 	
 # Get the commit message, commit the changes, and make a pull request.
+	read -p "Please type a new branch name for your commit or type none to commit to the current branch: " branchName
 	read -p "Please type a message for your commit: " commitMsg
+	
+	if [ "${branchName}" != "none" ]
+	then
+		git checkout -b "${branchName}"
+	fi
+	
 	git commit -am "${commitMsg}"
-	git push
+	
+	if [ "${branchName}" != "none" ]
+	then
+		git push origin "${branchName}"
+	else
+		git push
+	fi
+	
 	display "Please go to https://github.com/${GIT_USERNAME}/indi-3rdparty.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
 
 
