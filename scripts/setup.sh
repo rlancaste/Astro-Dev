@@ -20,6 +20,7 @@ shopt -s extglob
 	BUILD_XCODE=""
 	BUILD_OFFLINE=""
 	BUILD_TRANSLATIONS=""
+	FIX_3RDPARTY_LIBS=""
 	
 	
 # This function checks to see if a connection to a website exists.
@@ -183,6 +184,7 @@ function writeQTConf
 				-r Remove everything from the build directories and start fresh
 				-o Build the packages offline (Note: This requires that the source code was downloaded already)
 				-x build an x-code project from the source files instead of the cmake build.
+				-f Fix MacOS Libraries when building 3rd Party (Uses the 3rd Party FIX_MACOS_LIBS option)
 		EOF
 		exit
 	}
@@ -190,7 +192,7 @@ function writeQTConf
 #This function processes the user's options for running the script
 	function processOptions
 	{
-		while getopts "rhoxt" option
+		while getopts "rhoxft" option
 		do
 			case $option in
 				r)
@@ -204,6 +206,9 @@ function writeQTConf
 					;;
 				x)
 					BUILD_XCODE="Yep"
+					;;
+				f)
+					FIX_3RDPARTY_LIBS="Yep"
 					;;
 				t)
 					BUILD_TRANSLATIONS="Yep"
@@ -222,6 +227,7 @@ function writeQTConf
 		echo "BUILD_XCODE        = ${BUILD_XCODE:-Nope}"
 		echo "BUILD_OFFLINE      = ${BUILD_OFFLINE:-Nope}"
 		echo "BUILD_TRANSLATIONS = ${BUILD_TRANSLATIONS:-Nope}"
+		echo "FIX_3RDPARTY_LIBS  = ${FIX_3RDPARTY_LIBS:-Nope}"
 	}
 
 # This Function processes a given file using otool to see what files it is currently linked to.
@@ -583,11 +589,21 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI 3rd Party Libraries using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			if [ -n "${FIX_3RDPARTY_LIBS}" ]
+			then
+				cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			else
+				cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			fi
 			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI 3rd Party Libraries"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			if [ -n "${FIX_3RDPARTY_LIBS}" ]
+			then
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			else
+				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			fi
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install 
 		fi
