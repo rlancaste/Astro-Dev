@@ -31,7 +31,7 @@
 		# This is the AstroRoot Root Folder that will be used as a basis for building
 	export ASTRO_ROOT="${HOME}/AstroRoot"
 		# This is the Craft Root Folder that will be used as a basis for building
-	export CRAFT_ROOT="${ASTRO_ROOT}/craft-root"
+	export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
 	
 
 # This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
@@ -103,8 +103,14 @@
 	export BUILD_INDI="Yep"
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
-	export BUILD_KSTARS="Yep"
+	#export BUILD_KSTARS="Yep"
 	export BUILD_WEBMANAGER="Yep"
+	
+# These are the Program Build options for key programs with multiple options.  Just turn them on or off as needed.
+	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
+	export STELLAR_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF -DUSE_QT5=OFF"
+	export KSTARS_BUILD_OPTIONS="-DBUILD_QT5=OFF -DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
+	export WEBMANAGER_BUILD_OPTIONS="-DUSE_QT5=OFF"
 	
 display "Environment Variables Set."
 
@@ -121,3 +127,7 @@ echo "PREFIX_PATH              is [${PREFIX_PATH}]"
 echo "PATH                     is [${PATH}]"
 
 echo "OSX Deployment target    is [${QMAKE_MACOSX_DEPLOYMENT_TARGET}]"
+
+echo "GENERAL_BUILD_OPTIONS    are [${GENERAL_BUILD_OPTIONS}]"
+echo "STELLAR_BUILD_OPTIONS    are [${STELLAR_BUILD_OPTIONS}]"
+echo "KSTARS_BUILD_OPTIONS     are [${KSTARS_BUILD_OPTIONS}]"

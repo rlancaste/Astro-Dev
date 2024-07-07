@@ -520,31 +520,21 @@ fi
 	ln -sf $(brew --prefix)/bin/gpg $(brew --prefix)/bin/gpg2
 	
 # This sets up the development root directory for "installation"
-	mkdir -p "${DEV_ROOT}/bin"
+	mkdir -p "${DEV_ROOT}"
 	export PATH="${DEV_ROOT}/bin:${CRAFT_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
-	craftLink bin/meinproc5
-	craftLink bin/desktoptojson
-	craftLink bin/checkXML5
-	craftLink bin/qmake
-	craftLink bin/moc
-	craftLink bin/rcc
-	craftLink bin/uic
-	craftLink bin/qdbuscpp2xml
-	craftLink bin/qdbusxml2cpp
 	
-	mkdir -p "${DEV_ROOT}/include"
-	ln -s ${CRAFT_ROOT}/include/* ${DEV_ROOT}/include/
-	
-	mkdir -p "${DEV_ROOT}/lib"
-	ln -s ${CRAFT_ROOT}/lib/* ${DEV_ROOT}/lib/
-	
-	mkdir -p "${DEV_ROOT}/share"
-	craftLink share/kf5
-	
+	craftLink bin
+	craftLink doc
+	craftLink include
+	craftLink lib
+	craftLink libexec
 	craftLink plugins
 	craftLink .//mkspecs
 	craftLink qml
+	craftLink share
 	
+# This provides a link for kdoctools to be found.
+	ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
 
 # This is the start of the build section of the Script.
 
@@ -563,11 +553,11 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI Core Drivers using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} "${INDI_SRC_FOLDER}"
 			xcodebuild -project libindi.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI Core Drivers"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${INDI_SRC_FOLDER}"
+			cmake ${GENERAL_BUILD_OPTIONS} "${INDI_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install
 		fi
@@ -591,18 +581,18 @@ fi
 			display "Building INDI 3rd Party Libraries using XCode"
 			if [ -n "${FIX_3RDPARTY_LIBS}" ]
 			then
-				cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+				cmake -G Xcode ${GENERAL_BUILD_OPTIONS} -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 "${THIRDPARTY_SRC_FOLDER}"
 			else
-				cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+				cmake -G Xcode ${GENERAL_BUILD_OPTIONS} -DBUILD_LIBS=1 "${THIRDPARTY_SRC_FOLDER}"
 			fi
 			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI 3rd Party Libraries"
 			if [ -n "${FIX_3RDPARTY_LIBS}" ]
 			then
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+				cmake ${GENERAL_BUILD_OPTIONS} -DBUILD_LIBS=1 -DFIX_MACOS_LIBS=1 "${THIRDPARTY_SRC_FOLDER}"
 			else
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_LIBS=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+				cmake ${GENERAL_BUILD_OPTIONS} -DBUILD_LIBS=1 "${THIRDPARTY_SRC_FOLDER}"
 			fi
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install 
@@ -613,11 +603,11 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI 3rd Party Drivers using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} "${THIRDPARTY_SRC_FOLDER}"
 			xcodebuild -project libindi-3rdparty.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI 3rd Party Drivers"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${THIRDPARTY_SRC_FOLDER}"
+			cmake ${GENERAL_BUILD_OPTIONS} "${THIRDPARTY_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install
 		fi
@@ -647,11 +637,11 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building StellarSolver using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${STELLAR_BUILD_OPTIONS} "${STELLAR_SRC_FOLDER}"
 			xcodebuild -project StellarSolver.xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building StellarSolver"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DBUILD_TESTER=1 -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${STELLAR_SRC_FOLDER}"
+			cmake ${GENERAL_BUILD_OPTIONS} ${STELLAR_BUILD_OPTIONS} "${STELLAR_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install 
 		fi
@@ -687,7 +677,7 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building KStars using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${KSTARS_BUILD_OPTIONS} "${KSTARS_SRC_FOLDER}"
 			xcodebuild -project kstars.xcodeproj -target "kstars" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 			
 			# This is needed because sometimes in XCode you use the Debug folder and sometimes the Release folder.
@@ -700,12 +690,12 @@ fi
 			display "Building KStars"
 			if [ -n "${BUILD_TRANSLATIONS}" ]
 			then
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake  ${GENERAL_BUILD_OPTIONS} -DFETCH_TRANSLATIONS=ON -DKDE_L10N_AUTO_TRANSLATIONS=ON ${KSTARS_BUILD_OPTIONS} "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake ${GENERAL_BUILD_OPTIONS} -DFETCH_TRANSLATIONS=OFF -DKDE_L10N_AUTO_TRANSLATIONS=ON ${KSTARS_BUILD_OPTIONS} "${KSTARS_SRC_FOLDER}"
 				make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			else
-				cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_DOC=OFF -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${KSTARS_SRC_FOLDER}"
+				cmake ${GENERAL_BUILD_OPTIONS} ${KSTARS_BUILD_OPTIONS} "${KSTARS_SRC_FOLDER}"
 				cmake --build . --target kstars -- -j$(expr $(sysctl -n hw.ncpu) + 2)
 			fi
 			
@@ -743,11 +733,11 @@ fi
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building INDI Web Manager App using XCode"
-			cmake -G Xcode -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${WEBMANAGER_BUILD_OPTIONS} "${WEBMANAGER_SRC_FOLDER}"
 			xcodebuild -project INDIWebManagerApp.xcodeproj -target "INDIWebManagerApp" -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building INDI Web Manager App"
-			cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH="${DEV_ROOT}/lib" -DCMAKE_INSTALL_PREFIX="${DEV_ROOT}" -DKDE_INSTALL_BUNDLEDIR="${DEV_ROOT}" -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" "${WEBMANAGER_SRC_FOLDER}"
+			cmake ${GENERAL_BUILD_OPTIONS} ${WEBMANAGER_BUILD_OPTIONS} "${WEBMANAGER_SRC_FOLDER}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			make install
 		fi
