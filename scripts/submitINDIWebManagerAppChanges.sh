@@ -30,11 +30,31 @@ fi
 # Change to the forked source directory so that the changes can be submitted.
 	cd "${FORKED_SRC_FOLDER}/INDIWebManagerApp"
 	
-# Get the commit message, commit the changes, and make a pull request.
-	read -p "Please type a message for your commit: " commitMsg
-	git commit -am "${commitMsg}"
-	git push
-	display "Please go to https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+# Check to make sure that you are not in the master branch, and make a branch if needed.
+# Then committing changes in the new branch or the current branch
+# Then sending the changes to the server
+	branch=$(git rev-parse --abbrev-ref HEAD)
+	echo "You are on branch ${branch}"
+	read -p "Do you want to switch to another branch before committing? Type y for yes." switch
+	if [[ "$branch" == "master" && "$switch" != "y" ]]
+	then
+		echo "You should not commit or submit your changes to the master branch.  This script will not do that. Make another branch for changes to submit."
+		read -p "Hit [Enter] to end the script now." closing
+		exit
+	elif [[ "$switch" == "y" ]]
+	then
+		read -p "What do you want your new branch to be called?" newBranch
+		git checkout -b "${newBranch}"
+		read -p "Please type a message for your commit: " commitMsg
+		git commit -am "${commitMsg}"
+		git push -u origin "${newBranch}"
+	else
+		read -p "Please type a message for your commit: " commitMsg
+		git commit -am "${commitMsg}"
+		git push -u origin "$branch"
+	fi
+	
+display "Please go to https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
 
 
 

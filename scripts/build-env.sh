@@ -103,8 +103,8 @@
 	export BUILD_INDI="Yep"
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
-	#export BUILD_KSTARS="Yep"
-	export BUILD_WEBMANAGER="Yep"
+	export BUILD_KSTARS="Yep"
+	#export BUILD_WEBMANAGER="Yep"
 	
 # These are the Program Build options for key programs with multiple options.  Just turn them on or off as needed.
 	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
