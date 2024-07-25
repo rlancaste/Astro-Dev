@@ -76,6 +76,7 @@
 	 export STELLARSOLVER_REPO="https://github.com/rlancaste/stellarsolver.git"
 	 export KSTARS_REPO="https://github.com/KDE/kstars.git"
 	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
+	 export CRAFTBLUEPRINTS_REPO="https://invent.kde.org/packaging/craft-blueprints-kde.git"
 	 
 # These are the urls for the forks of the repositories that you will be using for editing these repos
 # To use this section:
@@ -92,6 +93,7 @@
 	 #export FORKED_STELLARSOLVER_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
 	 #export FORKED_KSTARS_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
 	 #export FORKED_WEBMANAGER_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
+	 #export FORKED_CRAFTBLUEPRINTS_REPO="git@invent.kde.org:${GITLAB_USERNAME}/craft-blueprints-kde.git"
 
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
@@ -104,7 +106,8 @@
 	export BUILD_THIRDPARTY="Yep"
 	export BUILD_STELLARSOLVER="Yep"
 	export BUILD_KSTARS="Yep"
-	#export BUILD_WEBMANAGER="Yep"
+	export BUILD_WEBMANAGER="Yep"
+	export SETUP_CRAFTBLUEPRINTS="Yep"
 	
 # These are the Program Build options for key programs with multiple options.  Just turn them on or off as needed.
 	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"

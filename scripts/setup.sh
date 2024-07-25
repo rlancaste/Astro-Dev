@@ -465,6 +465,15 @@ else
 	export WEBMANAGER_BUILD_FOLDER="${BUILD_FOLDER}/webmanager-build"
 fi
 
+if [ -n "${FORKED_CRAFTBLUEPRINTS_REPO}" ]
+then
+	echo "Using forked KDE Craft Blueprints Repo: ${FORKED_CRAFTBLUEPRINTS_REPO}" 
+	export CRAFTBLUEPRINTS_SRC_FOLDER="${FORKED_SRC_FOLDER}/craft-blueprints-kde"
+else
+	echo "Using KDE Craft Blueprints Repo: ${WEBMANAGER_REPO}"
+	export CRAFTBLUEPRINTS_SRC_FOLDER="${SRC_FOLDER}/craft-blueprints-kde"
+fi
+
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
 	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${INDI_SRC_FOLDER} || -z ${THIRDPARTY_SRC_FOLDER} || -z ${KSTARS_SRC_FOLDER} || -z ${WEBMANAGER_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
 	then
@@ -743,6 +752,19 @@ fi
 		fi
 
 		ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${TOP_FOLDER}/INDIWebManagerApp.app"
+	fi
+
+# This section will setup Craft Blueprints
+
+if [ -n "${SETUP_CRAFTBLUEPRINTS}" ]
+	then
+		if [ -n "${FORKED_CRAFTBLUEPRINTS_REPO}" ]
+		then
+			createOrUpdateFork "${CRAFTBLUEPRINTS_SRC_FOLDER}" "Craft BluePrints" "${CRAFTBLUEPRINTS_REPO}" "${FORKED_CRAFTBLUEPRINTS_REPO}"
+		else
+			downloadOrUpdateRepository "${CRAFTBLUEPRINTS_SRC_FOLDER}" "Craft BluePrints" "${CRAFTBLUEPRINTS_REPO}"
+		fi
+
 	fi
 
 display "Script Execution Complete"
