@@ -32,6 +32,8 @@
 	export ASTRO_ROOT="${HOME}/AstroRoot"
 		# This is the Craft Root Folder that will be used as a basis for building
 	export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
+		#This is the location of the craft shortcuts directory
+	export SHORTCUTS_DIR="${ASTRO_ROOT}"/craft-shortcuts
 	
 
 # This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
