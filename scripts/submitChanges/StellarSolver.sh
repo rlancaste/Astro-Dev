@@ -13,20 +13,17 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	source "${DIR}/submit-engine.sh"
 
 # This section sets the critical options for finding the repo and forked src folder.
-	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/craft-blueprints-kde.git"
-	export SRC="${FORKED_SRC_FOLDER}/craft-blueprints-kde"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/stellarsolver.git"
+	export SRC="${FORKED_SRC_FOLDER}/stellarsolver"
 
 # Display the message explaining what this script does.
-	display "This script will submit your KDE Craft Blueprints Changes in the forked-src folder to your fork on GITLAB.  You must have made changes in the forked-src folder for this to work.."
+	display "This script will submit your StellarSolver Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
 
 # Before starting, check to see if the remote server is accessible
 	checkForConnection "${FORKED_REPO}"
-	
+
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch
 # Then sending the changes to the server
 	commitAndPushToServer
-
-# Display the final message
-	display "Please go to https://invent.kde.org/${GITLAB_USERNAME}/craft-blueprints-kde.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
-		

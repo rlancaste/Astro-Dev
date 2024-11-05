@@ -11,25 +11,19 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Prepare to run the script by setting all of the environment variables	
 	source "${DIR}/submit-engine.sh"
-
+	
 # This section sets the critical options for finding the repo and forked src folder.
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
-	export SRC="${FORKED_SRC_FOLDER}/stellarsolver"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
+	export SRC="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
 
 # Display the message explaining what this script does.
-	display "This script will submit your StellarSolver Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
+	display "This script will submit your INDI Web Manager App Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
 
 # Before starting, check to see if the remote server is accessible
-	checkForConnection "${FORKED_REPO}"
-
+	checkForConnection "${REPO_HTML_PAGE}"
+	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch
 # Then sending the changes to the server
 	commitAndPushToServer
-
-# Display the final message
-	display "Please go to https://github.com/${GIT_USERNAME}/stellarsolver.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
-
-
-
-		

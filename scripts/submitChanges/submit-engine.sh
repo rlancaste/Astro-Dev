@@ -13,7 +13,7 @@
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # This sets the script with the Build environment variables.
-	source ${DIR}/build-env.sh
+	source ${DIR}/../settings.sh
 	
 # This function checks to see if a connection to a website exists.
 	function checkForConnection
@@ -42,7 +42,7 @@
 		cd "${SRC}"
 		branch=$(git rev-parse --abbrev-ref HEAD)
 		echo "You are on branch ${branch}"
-		read -p "Do you want to switch to another branch before committing? Type y for yes." switch
+		read -p "Do you want to switch to another branch before committing? Type y for yes. " switch
 		if [[ "$branch" == "master" && "$switch" != "y" ]]
 		then
 			echo "You should not commit or submit your changes to the master branch.  This script will not do that. Make another branch for changes to submit."
@@ -50,14 +50,24 @@
 			exit
 		elif [[ "$switch" == "y" ]]
 		then
-			read -p "What do you want your new branch to be called?" newBranch
+			read -p "What do you want your new branch to be called? " newBranch
 			git checkout -b "${newBranch}"
-			read -p "Please type a message for your commit: " commitMsg
+			echo "Please type a message for your commit. Note that no quotes are required."
+			read -p "Your commit message: " commitMsg
 			git commit -am "${commitMsg}"
 			git push -u origin "${newBranch}"
 		else
-			read -p "Please type a message for your commit: " commitMsg
+			echo "Please type a message for your commit. Note that no quotes are required."
+			read -p "Your commit message: " commitMsg
 			git commit -am "${commitMsg}"
 			git push -u origin "$branch"
 		fi
+		read -p "Do you want to switch back to the master branch? Type y for yes. " switchBack
+		if [[ "$switchBack" == "y" ]]
+		then
+			git checkout "master"
+		fi
+		# Display the final message
+			display "Please go to ${REPO_HTML_PAGE} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+
 	}

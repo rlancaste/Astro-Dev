@@ -17,7 +17,7 @@
 	export USE_FORKED_REPO="Yes"
 
 # This sets up and provides access to all of the methods required to run the script.
-	source ${DIR}/build-engine.sh
+	source ${DIR}/../build/build-engine.sh
 
 # This section sets the options for building the package.
 	export REPO="https://invent.kde.org/packaging/craft-blueprints-kde.git"

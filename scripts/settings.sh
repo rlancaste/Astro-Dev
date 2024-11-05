@@ -19,13 +19,7 @@
 	
 		# This will display the message in the title bar.
 		echo "\033]0;$*\007"
-	}
-
-# This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
-# It also uses that to get the top folder file name so that it can use that in the scripts.
-# Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
-	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-	
+	}	
 	
 # This sets important system paths that the script will need to execute.  Please verify these paths.
 		# This is the AstroRoot Root Folder that will be used as a basis for building
@@ -39,9 +33,8 @@
 # This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
 # Beware that none of them should have spaces in the file path.
 
-		#This is the base path
-	#export TOP_FOLDER=$( cd "${DIR}/../" && pwd ) # This makes it the project folder
-	export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder instead
+		# This is the base path.  Note, you could set this to your own project folder or the top folder of this repo instead.
+	export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder, which I personally prefer.
 		# This is the enclosing folder for the source code of INDI, KStars, and INDI Web Manager
 	export SRC_FOLDER="${TOP_FOLDER}/src"
 		# This is the enclosing folder for the forked source code of INDI, KStars, and INDI Web Manager
@@ -88,7 +81,6 @@
 	
 display "Environment Variables Set."
 
-echo "DIR                      is [${DIR}]"
 echo "TOP_FOLDER               is [${TOP_FOLDER}]"
 echo "SRC_FOLDER               is [${SRC_FOLDER}]"
 echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"

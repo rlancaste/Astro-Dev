@@ -14,22 +14,16 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # This section sets the critical options for finding the repo and forked src folder.
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi.git"
 	export SRC="${FORKED_SRC_FOLDER}/indi"
 
 # Display the message explaining what this script does.
 	display "This script will submit your INDI Core Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
 
 # Before starting, check to see if the remote server is accessible
-	checkForConnection "${FORKED_REPO}"
+	checkForConnection "${REPO_HTML_PAGE}"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch
 # Then sending the changes to the server
 	commitAndPushToServer
-
-# Display the final message
-	display "Please go to https://github.com/${GIT_USERNAME}/indi.git and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
-
-
-
-		

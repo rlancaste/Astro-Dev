@@ -82,7 +82,7 @@ EOF
 
 # Prepare to run the script by setting all of the environment variables	
 # If you want to customize any of those variables, you can edit this file
-	source ${DIR}/build-env.sh
+	source ${DIR}/../settings.sh
 
 # Display the Welcome message.
 	display "This script will test KStars and INDI Builds in Craft.  You can test the latest master or the latest stable releases of packages important to KStars/INDI development.  You can also test your own recipes in the blueprints folder and packaging with craft."

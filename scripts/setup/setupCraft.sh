@@ -89,7 +89,7 @@ EOF
 	processOptions $@
 	
 # Prepare to run the script by setting all of the environment variables	
-	source ${DIR}/build-env.sh
+	source ${DIR}/../settings.sh
 	
 # Set the working directory to /tmp because otherwise setup.py for craft will be placed in the user directory and that is messy.
 	cd /tmp

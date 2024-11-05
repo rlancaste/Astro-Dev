@@ -366,7 +366,7 @@ function writeQTConf
 
 # Prepare to run the script by setting all of the environment variables	
 # If you want to customize any of those variables, you can edit this file
-	source ${DIR}/build-env.sh
+	source ${DIR}/../settings.sh
 
 #Process the command line options to determine what to do.
 	processOptions $@
