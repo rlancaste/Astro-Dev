@@ -15,11 +15,11 @@
 # The following commands call on the different scripts to build each package needed for INDI/KStars Development
 # Comment out any of them you don't need to run by putting a # on the front of it.
 
-	source ${DIR}/build-indi.sh
-	source ${DIR}/build-indi3rdParty.sh
-	source ${DIR}/build-stellarsolver.sh
-	source ${DIR}/build-kstars.sh
-	source ${DIR}/build-indiwebmanagerapp.sh
+	source ${DIR}/INDICore.sh
+	source ${DIR}/INDI3rdParty.sh
+	source ${DIR}/StellarSolver.sh
+	source ${DIR}/KStars.sh
+	source ${DIR}/INDIWebManagaerApp.sh
 
 
 

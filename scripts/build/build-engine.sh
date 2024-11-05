@@ -16,12 +16,12 @@
 	function checkForConnection
 	{
 		testCommand=$(curl -Is $2 | head -n 1)
-		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 200"* ]]
+		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 302"* || "${testCommand}" == *"HTTP/2 200"* ]]
   		then 
   			echo "$1 connection was found."
   		else
   			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in build-kstars.sh."
+  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the appropriate script."
   			exit
 		fi
 	}
@@ -39,6 +39,7 @@
 				exit
 			fi
 		else
+			checkForConnection "${PACKAGE_NAME}" "${REPO}"
 			mkdir -p "${SRC_FOLDER}"
 			if [ ! -d "${SRC}" ]
 			then
@@ -66,6 +67,7 @@
 				exit
 			fi
 		else
+			checkForConnection "${PACKAGE_NAME}" "${REPO_HTML_PAGE}"
 			# This will download the fork if needed, or update it to the latest version if necessary
 			mkdir -p "${FORKED_SRC_FOLDER}"
 			if [ ! -d "${SRC}" ]
@@ -115,7 +117,7 @@
 		display "Setting up and entering ${PACKAGE_NAME} build directory: ${BUILD}"
 		if [ -d "${BUILD}" ]
 		then
-			if [ -n "$REMOVE_ALL" ]
+			if [ -n "${CLEAN_BUILD}" ]
 			then
 				rm -r "${BUILD}"/*
 			fi
@@ -151,19 +153,6 @@
 # Prepare to run the script by setting all of the environment variables	
 # If you want to customize any of those variables, you can edit this file
 	source ${DIR}/../settings.sh
-
-# Before starting, check to see if the remote servers are accessible
-	if [ -n "${BUILD_OFFLINE}" ]
-	then
-		display "Not checking connections because build-offline was selected.  All repos must already be downloaded to the source folders."
-	else
-		display "Checking Connections"
-	
-		#checkForConnection "INDI Repository" "${INDI_REPO}"
-		#checkForConnection "INDI 3rd Party Repository" "${THIRDPARTY_REPO}"
-		#checkForConnection "KStars Repository" "${KSTARS_REPO}"
-		#checkForConnection "INDI Web Manager Repository" "${WEBMANAGER_REPO}"
-	fi
 
 ## This makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly
 	if [ -n "${BUILD_XCODE}" ]

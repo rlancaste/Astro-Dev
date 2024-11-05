@@ -22,6 +22,7 @@
 # This section sets the options for building the package.
 	export REPO="https://github.com/indilib/indi-3rdparty.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"	
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
 	export SRC="${TOP_SRC_FOLDER}/indi-3rdParty"
 	export BUILD="${TOP_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
 	export PACKAGE_NAME="INDI 3rd Party Libraries"

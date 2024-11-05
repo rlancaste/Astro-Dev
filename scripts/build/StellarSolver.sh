@@ -22,6 +22,7 @@
 # This section sets the options for building the package.
 	export REPO="https://github.com/rlancaste/stellarsolver.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/stellarsolver.git"
 	export SRC="${TOP_SRC_FOLDER}/stellarsolver"
 	export BUILD="${TOP_BUILD_FOLDER}/stellar-build"
 	export PACKAGE_NAME="StellarSolver"

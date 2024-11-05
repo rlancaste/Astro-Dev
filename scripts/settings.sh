@@ -16,9 +16,6 @@
 		echo "~ $*"
 		echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		echo ""
-	
-		# This will display the message in the title bar.
-		echo "\033]0;$*\007"
 	}	
 	
 # This sets important system paths that the script will need to execute.  Please verify these paths.
@@ -75,9 +72,9 @@
 	
 # These are the Program Build options that are common to all the builds.  You can change these as you desire.  Comment out the ones you don't want, Uncomment the ones you do.
 	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
-	#export BUILD_XCODE="Yep"
-	#export BUILD_OFFLINE="Yep"
-	#export REMOVE_ALL="Yep"
+	#export BUILD_XCODE="Yep"	# This option uses XCode and xcode projects for building.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
+	#export BUILD_OFFLINE="Yep" # This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
+	#export CLEAN_BUILD="Yep"	# This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.
 	
 display "Environment Variables Set."
 
@@ -93,5 +90,7 @@ echo "PREFIX_PATH              is [${PREFIX_PATH}]"
 echo "PATH                     is [${PATH}]"
 
 echo "OSX Deployment target    is [${QMAKE_MACOSX_DEPLOYMENT_TARGET}]"
-
 echo "GENERAL_BUILD_OPTIONS    are [${GENERAL_BUILD_OPTIONS}]"
+echo "BUILD_XCODE    		? [${BUILD_XCODE:-Nope}]"
+echo "BUILD_OFFLINE    	? [${BUILD_OFFLINE:-Nope}]"
+echo "CLEAN_BUILD    		? [${CLEAN_BUILD:-Nope}]"

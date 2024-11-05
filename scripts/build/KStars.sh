@@ -22,6 +22,7 @@
 # This section sets the options for building the package.
 	export REPO="https://github.com/KDE/kstars.git"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
+	export REPO_HTML_PAGE="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
 	export SRC="${TOP_SRC_FOLDER}/kstars"
 	export BUILD="${TOP_BUILD_FOLDER}/kstars-build"
 	export PACKAGE_NAME="KStars"

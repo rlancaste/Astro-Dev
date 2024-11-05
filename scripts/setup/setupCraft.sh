@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 #	Homebrew and Craft Setup Script for KStars and INDI Development
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -7,64 +7,15 @@
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
 
-DIR=$(dirname "$0")
+# This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
+# It also uses that to get the top folder file name so that it can use that in the scripts.
+# Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
+	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-REMOVE_ALL=""
-VERBOSE=""
-
-# This will print out how to use the script
-function usage
-{
-
-cat <<EOF
-	options:
-	    -h Display the options for the script
-	    -r Remove everything and do a fresh install
-	    -v Print out verbose output while building
-	    -q Craft is in quiet mode while building
-EOF
-}
-
-# This function prints the usage information if the user enters an invalid option or no option at all and quits the program 
-	function dieUsage
-	{
-		echo ""
-		echo $*
-		echo ""
-		usage
-		exit 9
-	}
-
-# This function processes the user's options for running the script
-	function processOptions
-	{
-		while getopts "hrvq" option
-		do
-			case $option in
-				h)
-					usage
-					exit
-					;;
-				r)
-					REMOVE_ALL="Yep"
-					;;
-				v)
-					VERBOSE="v"
-					;;
-				q)
-					VERBOSE="q"
-					;;
-				*)
-					dieUsage "Unsupported option $option"
-					;;
-			esac
-		done
-		shift $((${OPTIND} - 1))
-
-		echo ""
-		echo "REMOVE_ALL         = ${REMOVE_ALL:-Nope}"
-		echo "VERBOSE            = ${VERBOSE:-Nope}"
-	}
+# These are the options for running this script.  Uncomment any of the ones you want to set by removing the #, or comment out any you don't want by adding one.
+	#REMOVE_ALL="Yep"  # This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start fresh.
+	#VERBOSE="v"	   # This option will print more craft output than usual for increased debugging purposes.
+	#VERBOSE="q"	   # This option will print less craft output than usual for "quiet" building.
 
 # This function checks to see if a connection to a website exists.
 #
@@ -81,18 +32,25 @@ EOF
 		fi
 	}
 
+#This function installs a program with homebrew if it is not installed, otherwise it moves on.
+	function brewInstallIfNeeded
+	{
+		brew ls $1 > /dev/null 2>&1
+		if [ $? -ne 0 ]
+		then
+			echo "Installing : $*"
+			brew install $*
+		else
+			echo "brew : $* is already installed"
+		fi
+	}
+
 
 ########################################################################################
 # This is where the main part of the script starts!
-
-# Process the command line options to determine what to do.
-	processOptions $@
 	
 # Prepare to run the script by setting all of the environment variables	
 	source ${DIR}/../settings.sh
-	
-# Set the working directory to /tmp because otherwise setup.py for craft will be placed in the user directory and that is messy.
-	cd /tmp
 	
 # Before starting, check to see if the remote servers are accessible
 	display "Checking Connections"
@@ -100,8 +58,22 @@ EOF
 	checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 	
 # Announce the script is starting and what will be done.
-	display "Starting script to setup homebrew, craft, and the environment for KStars and INDI Development on Macs"
+	display "Starting script to setup homebrew and craft for Astronomy Software Development related to KStars and INDI on Macs"
 	
+	read -p "Do you wish to continue? If so, type y. " runscript
+	if [ "$runscript" != "y" ]
+	then
+		echo "Quitting the script as you requested."
+		exit
+	fi
+	
+# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
+	if [[ -z ${ASTRO_ROOT} || -z ${CRAFT_ROOT} || -z ${SHORTCUTS_DIR} ]]
+	then
+  		display "One or more critical directory variables is blank, please edit settings.sh."
+  		exit 1
+	fi
+
 # This installs the xcode command line tools if not installed yet.
 # Yes these tools will be automatically installed if the user has never used git before
 # But sometimes they need to be installed again.
@@ -132,27 +104,33 @@ EOF
 		fi  
 	fi
 
-# This will install KStars dependencies from Homebrew.
+# This will make sure Homebrew is up to date and display the message.
 	display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
 	brew upgrade
 	
-	# python is required for craft to work.
-	brew install python
+# python is required for craft to work.
+	brewInstallIfNeeded python
 	
-	# Craft does build ninja and install it to the craft directory, but QT Creator expects the homebrew version.
-	brew install ninja
+# Craft does build ninja and install it to the craft directory, but QT Creator expects the homebrew version for development.
+	brewInstallIfNeeded ninja
+
+# Craft does install both of these, but they are helpful to have in homebrew for development
+	brewInstallIfNeeded cmake
+	brewInstallIfNeeded gettext
 
 # This will create the Astro Directory if it doesn't exist
 	mkdir -p "${ASTRO_ROOT}"
 
 # This will install craft if it is not installed yet.  It will clear the old one if the REMOVE_ALL option was selected.
+	cd /tmp # Set the working directory to /tmp because otherwise setup.py for craft will be placed in the user directory and that is messy.
 	if [ -d "${CRAFT_ROOT}" ]
 	then
 		# This will remove the current craft if desired.
 		if [ -n "$REMOVE_ALL" ]
 		then
 			display "You have selected the REMOVE_ALL option.  Warning, this will clear the entire craft directory."
-			read runscript2"?Do you really wish to proceed? (y/n)" 
+			read runscript2"?Do you really wish to proceed? (y/n) " 
+			
 			if [ "$runscript2" != "y" ]
 			then
 				echo "Quitting the script as you requested."
@@ -162,6 +140,7 @@ EOF
 			then
 				rm -rf "${CRAFT_ROOT}"
 			fi
+			
 			mkdir -p "${CRAFT_ROOT}"
 			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 		fi
@@ -182,9 +161,9 @@ EOF
 # you can always change that option in the craft settings or you can use one of the other scripts.
 # To build the latest master, you can use the commented out code below.
 
-	display "Crafting KStars and all required dependencies including StellarSolver, INDI Drivers, and many others."
+	display "Setting KStars version to master and Crafting KStars and all required dependencies including StellarSolver, INDI Drivers, and many others."
 	
-	
+	craft --set version=master kstars 
 	craft -i"$VERBOSE" kstars
 		
 	display "CRAFT COMPLETE"

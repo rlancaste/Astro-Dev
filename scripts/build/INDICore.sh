@@ -22,6 +22,7 @@
 # This section sets the options for building the package.
 	export REPO="https://github.com/indilib/indi.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi.git"
 	export SRC="${TOP_SRC_FOLDER}/indi"
 	export BUILD="${TOP_BUILD_FOLDER}/indi-build/indi-core"
 	export PACKAGE_NAME="INDI Core Drivers"

@@ -22,6 +22,7 @@
 # This section sets the options for building the package.
 	export REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
+	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 	export SRC="${TOP_SRC_FOLDER}/INDIWebManagerApp"
 	export BUILD="${TOP_BUILD_FOLDER}/webmanager-build"
 	export PACKAGE_NAME="INDI Web Manager App"
