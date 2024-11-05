@@ -178,18 +178,14 @@ EOF
 	source "${CRAFT_ROOT}/craft/craftenv.sh"
 
 # This will build indi, including the 3rd Party drivers.
-# Note that crafting KStars builds all the other ones below, but the stable builds not their master versions
+# Note that crafting KStars builds INDI, INDI-3rd Party, StellarSolver, but the stable builds not their master versions
+# you can always change that option in the craft settings or you can use one of the other scripts.
 # To build the latest master, you can use the commented out code below.
 
 	display "Crafting KStars and all required dependencies including StellarSolver, INDI Drivers, and many others."
 	
-	#craft -i"$VERBOSE" --target master indi
 	
-	#craft -i"$VERBOSE" --target master indi-3rdparty-libs
-	
-	#craft -i"$VERBOSE" --target master indi-3rdparty
-	
-	craft -i"$VERBOSE" --target master kstars
+	craft -i"$VERBOSE" kstars
 		
 	display "CRAFT COMPLETE"
 	

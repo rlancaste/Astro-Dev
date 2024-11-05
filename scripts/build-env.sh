@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #	Build Environment setup script
-#﻿   Copyright (C) 2019 Robert Lancaster <rlancaste@gmail.com>
+#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
@@ -70,32 +70,9 @@
 	# pkgconfig is not needed, but can be found by adding it to the path.
 	#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
 
-# These are the urls for the repositories that will be used for building
-# The prefix https://github.com/ and the suffix .git is asssumed.
-
-	 export INDI_REPO="https://github.com/indilib/indi.git"
-	 export THIRDPARTY_REPO="https://github.com/indilib/indi-3rdparty.git"
-	 export STELLARSOLVER_REPO="https://github.com/rlancaste/stellarsolver.git"
-	 export KSTARS_REPO="https://github.com/KDE/kstars.git"
-	 export WEBMANAGER_REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
-	 export CRAFTBLUEPRINTS_REPO="https://invent.kde.org/packaging/craft-blueprints-kde.git"
-	 
-# These are the urls for the forks of the repositories that you will be using for editing these repos
-# To use this section:
-#		1. Make sure the user name has been edited to match your github user name
-#		2. Uncomment the one(s) for which you would like to make/use a forked repo to edit (remove the #)
-#		3. Run the setup script again to build the forked version.
-# If you want to later change back to the standard repo, just comment out that line with a # again and run the setup script again.
-# You should not need to actually change these paths, just uncomment them, they should automatically get forked and used
-
+# This option sets the Git Usernames for your forks on GitHub and Gitlab.  This is critical for functions of the script.
 	 export GIT_USERNAME="rlancaste" # be sure to edit this using your own github username.
 	 export GITLAB_USERNAME="lancaster" # be sure to edit this using your own gitlab username.
-	 #export FORKED_INDI_REPO="git@github.com:${GIT_USERNAME}/indi.git"
-	 #export FORKED_THIRDPARTY_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"
-	 #export FORKED_STELLARSOLVER_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
-	 #export FORKED_KSTARS_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
-	 #export FORKED_WEBMANAGER_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
-	 #export FORKED_CRAFTBLUEPRINTS_REPO="git@invent.kde.org:${GITLAB_USERNAME}/craft-blueprints-kde.git"
 
 # This sets the minimum OS X version you are compiling for
 # Note that the current version of qt can no longer build for anything less than 10.12
@@ -103,19 +80,11 @@
 	export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.15
 	export MACOSX_DEPLOYMENT_TARGET=10.15
 	
-# These are the build options, you can make parts not build by just commenting out the line with a #
-	export BUILD_INDI="Yep"
-	export BUILD_THIRDPARTY="Yep"
-	export BUILD_STELLARSOLVER="Yep"
-	export BUILD_KSTARS="Yep"
-	export BUILD_WEBMANAGER="Yep"
-	export SETUP_CRAFTBLUEPRINTS="Yep"
-	
-# These are the Program Build options for key programs with multiple options.  Just turn them on or off as needed.
+# These are the Program Build options that are common to all the builds.  You can change these as you desire.  Comment out the ones you don't want, Uncomment the ones you do.
 	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
-	export STELLAR_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF -DUSE_QT5=OFF"
-	export KSTARS_BUILD_OPTIONS="-DBUILD_QT5=OFF -DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
-	export WEBMANAGER_BUILD_OPTIONS="-DUSE_QT5=OFF"
+	#export BUILD_XCODE="Yep"
+	#export BUILD_OFFLINE="Yep"
+	#export REMOVE_ALL="Yep"
 	
 display "Environment Variables Set."
 
@@ -134,5 +103,3 @@ echo "PATH                     is [${PATH}]"
 echo "OSX Deployment target    is [${QMAKE_MACOSX_DEPLOYMENT_TARGET}]"
 
 echo "GENERAL_BUILD_OPTIONS    are [${GENERAL_BUILD_OPTIONS}]"
-echo "STELLAR_BUILD_OPTIONS    are [${STELLAR_BUILD_OPTIONS}]"
-echo "KSTARS_BUILD_OPTIONS     are [${KSTARS_BUILD_OPTIONS}]"

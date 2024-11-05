@@ -517,16 +517,21 @@ fi
 # These items are needed from Homebrew.  If you don't want homebrew, then you need to install them another way and get them in your PATH
 	display "Checking/Installing Homebrew Dependencies."
 	brew upgrade
-	 
+	
+	brew install python
+	
+	# Craft does build ninja and install it to the craft directory, but QT Creator expects the homebrew version.
+	brew install ninja
+
 	brewInstallIfNeeded cmake
 	brewInstallIfNeeded gettext
 	
 	# It would be good to sort this out.  gpg2 should be built in craft.  This is needed for translations to work.
-	brewInstallIfNeeded gpg
-	brewInstallIfNeeded svn
+	#brewInstallIfNeeded gpg
+	#brewInstallIfNeeded svn
 	
 	# This is because gpg is not called gpg2 and translations call on gpg2.  Fix this??
-	ln -sf $(brew --prefix)/bin/gpg $(brew --prefix)/bin/gpg2
+	#ln -sf $(brew --prefix)/bin/gpg $(brew --prefix)/bin/gpg2
 	
 # This sets up the development root directory for "installation"
 	mkdir -p "${DEV_ROOT}"
