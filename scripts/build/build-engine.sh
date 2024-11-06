@@ -161,7 +161,7 @@
 		then
 			display "Building for XCode and code signing with the identity ${CODE_SIGN_IDENTITY}."
 		else
-			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Before you run this script, execute the command: export CODE_SIGN_IDENTITY=XXXXXXX"
+			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Be sure to edit settings.sh to include both XCode options."
 			exit 1
 		fi
 	fi
