@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#	Homebrew and Craft Setup Script for KStars and INDI Development
+#	KStars and INDI Related Astronomy Software Development Setup Scripts
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
@@ -9,7 +9,6 @@
 
 # This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
 # It also uses that to get the top folder file name so that it can use that in the scripts.
-# Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # These are the options for running this script.  Uncomment any of the ones you want to set by removing the #, or comment out any you don't want by adding one.

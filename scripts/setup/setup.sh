@@ -1,6 +1,6 @@
 #/bin/bash
 
-#	KStars and INDI Development Setup Script
+#	KStars and INDI Related Astronomy Software Development Setup Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
@@ -9,7 +9,6 @@
 
 # This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
 # It also uses that to get the top folder file name so that it can use that in the scripts.
-# Beware of changing the path to the top folder, you will have to run the script again if you do so since it will break links.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
 #This function links a file or folder in the dev directory to one in the craft-root directory

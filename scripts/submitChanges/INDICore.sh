@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#	Submit Changes scripts
+#	KStars and INDI Related Astronomy Software Development Submit Changes scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
