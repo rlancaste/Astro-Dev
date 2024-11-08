@@ -47,16 +47,34 @@
 	
 # This sets up the development root directory for "installation"
 	mkdir -p "${DEV_ROOT}"
+
+# These links are needed on MacOS to successfully build outside of the main craft directories.
+# We should look into why they are needed.
+	if [[ "${OSTYPE}" == "darwin"* ]]
+	then
+
+		mkdir -p "${DEV_ROOT}/include"
+		mkdir -p "${DEV_ROOT}/lib"
 	
-	craftLink bin
-	craftLink doc
-	craftLink include
-	craftLink lib
-	craftLink libexec
-	craftLink plugins
-	craftLink .//mkspecs
-	craftLink qml
-	craftLink share
+		# This one is for several packages that can't seem to find GSL
+		craftLink include/gsl
+		# These are several libraries that were actually found by KStars, but then did not link properly without being in DEV Root.
+		craftLink lib/libcfitsio.dylib
+		craftLink lib/libgsl.dylib
+		craftLink lib/libgslcblas.dylib
+		craftLink lib/libwcslib.a
+		
+		# These links were needed to successfully build for awhile, but I think I have got the settings right so they are not needed now.
+		#craftLink bin
+		#craftLink doc
+		#craftLink lib
+		#craftLink libexec
+		#craftLink plugins
+		#craftLink .//mkspecs
+		#craftLink qml
+		#craftLink share
+	
+	fi
 	
 # This provides a link for kdoctools to be found.
 	ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"

@@ -49,12 +49,21 @@
 	
 	
 #These paths should not need to be changed on most systems
+
+	# This is a list of paths that will be used by find_package to locate libraries when building
+	# These paths are root directories that contain cmake files and dynamic libraries
+	export PREFIX_PATH="${CRAFT_ROOT};${DEV_ROOT};${GETTEXT_PATH}"
+	export RPATHS="${DEV_ROOT}/lib;${CRAFT_ROOT}/lib"
+	
+	# These are settings specifically needed for MacOS
+	if [[ "${OSTYPE}" == "darwin"* ]]
+	then
 		# This sets the path to GET TEXT which is needed for building some packages.  This assumes it is in homebrew, but if not, change it.
-	export GETTEXT_PATH=$(brew --prefix gettext)
-		# This is a list of paths that will be used by find_package to locate libraries when building
-		# These paths are root directories that contain cmake files and dynamic libraries
-	export PREFIX_PATH="${QT_PATH};${DEV_ROOT};${GETTEXT_PATH}"
-		# This is a list of paths to binaries that will be needed for building and running.  They are added to the PATH variable.
+		export GETTEXT_PATH=$(brew --prefix gettext)
+		export GSL_ROOT_DIR="${CRAFT_ROOT}"
+	fi
+	
+	# This is a list of paths to binaries that will be needed for building and running.  They are added to the PATH variable.
 	export PATH="${DEV_ROOT}/bin:${ASTRO_ROOT}/CraftRoot/bin:${ASTRO_ROOT}/CraftRoot/dev-utils/bin:${GETTEXT_PATH}/bin:$PATH"
 	
 	# pkgconfig is not needed, but can be found by adding it to the path.
@@ -71,7 +80,12 @@
 	export MACOSX_DEPLOYMENT_TARGET=10.15
 	
 # These are the Program Build options that are common to all the builds.  You can change these as you desire.  Comment out the ones you don't want, Uncomment the ones you do.
-	export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${DEV_ROOT}/lib -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
+	if [[ "${OSTYPE}" == "darwin"* ]]
+	then
+		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
+	else
+		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH}"
+	fi
 	#export BUILD_XCODE="Yep"			# This option uses XCode and xcode projects for building.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
 	#export CODE_SIGN_IDENTITY="XXXXX"	# For builds with xcode this is required. A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).
 	#export BUILD_OFFLINE="Yep" 		# This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
