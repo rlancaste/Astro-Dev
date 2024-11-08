@@ -22,7 +22,7 @@
 	export REPO="https://github.com/indilib/indi-3rdparty.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"	
 	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	export SRC="${TOP_SRC_FOLDER}/indi-3rdParty"
+	export SRC="${TOP_SRC_FOLDER}/indi-3rdparty"
 	export BUILD="${TOP_BUILD_FOLDER}/indi-build/ThirdParty-Libraries"
 	export PACKAGE_NAME="INDI 3rd Party Libraries"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_LIBS=ON"

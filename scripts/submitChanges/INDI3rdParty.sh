@@ -15,7 +15,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # This section sets the critical options for finding the repo and forked src folder.
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"	
 	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	export SRC="${FORKED_SRC_FOLDER}/indi-3rdParty"
+	export SRC="${FORKED_SRC_FOLDER}/indi-3rdparty"
 
 # Display the message explaining what this script does.
 	display "This script will submit your INDI 3rd Party Changes in the forked repo.  You must have made changes in the forked-src folder for this to work."
