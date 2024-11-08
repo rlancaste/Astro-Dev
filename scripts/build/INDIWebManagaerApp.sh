@@ -37,5 +37,8 @@
 # This method call will build the package using either xcode or cmake based on your setting
 	buildPackage
 	
-# This makes a nice link for launching the Application from the top folder.
-	ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${TOP_FOLDER}/INDIWebManagerApp.app"
+# This makes a nice link for launching the Application from the top folder on MacOS.
+	if [[ "${OSTYPE}" == "darwin"* ]]
+	then
+		ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${TOP_FOLDER}/INDIWebManagerApp.app"
+	fi
