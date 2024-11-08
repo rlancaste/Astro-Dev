@@ -26,8 +26,33 @@
   			echo "$1 connection was found."
   		else
   			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in build-kstars.sh."
+  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the script."
   			exit
+		fi
+	}
+
+# This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
+	function setupHomebrew
+	{
+		checkForConnection Homebrew "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+		
+		if [[ $(command -v brew) == "" ]]
+		then
+			display "Installing Homebrew."
+			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+		else
+			#This will remove all the homebrew packages if desired.
+			if [ -n "$REMOVE_ALL" ]
+			then
+				display "You have selected the REMOVE_ALL option.  Warning, this will clear all currently installed homebrew packages."
+				read runscript"?Do you really wish to proceed? (y/n)"
+				if [ "$runscript" != "y" ]
+				then
+					echo "Quitting the script as you requested."
+					exit
+				fi
+				brew remove --force $(brew list) --ignore-dependencies
+			fi  
 		fi
 	}
 
@@ -45,6 +70,7 @@
 	}
 
 
+
 ########################################################################################
 # This is where the main part of the script starts!
 	
@@ -53,11 +79,11 @@
 	
 # Before starting, check to see if the remote servers are accessible
 	display "Checking Connections"
-	checkForConnection Homebrew "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+
 	checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 	
 # Announce the script is starting and what will be done.
-	display "Starting script to setup homebrew and craft for Astronomy Software Development related to KStars and INDI on Macs"
+	display "Starting script to setup homebrew and craft for Astronomy Software Development related to KStars and INDI"
 	
 	read -p "Do you wish to continue? If so, type y. " runscript
 	if [ "$runscript" != "y" ]
@@ -73,49 +99,38 @@
   		exit 1
 	fi
 
-# This installs the xcode command line tools if not installed yet.
-# Yes these tools will be automatically installed if the user has never used git before
-# But sometimes they need to be installed again.
-	
-	if ! command -v xcode-select &> /dev/null
+# This will set up items required for MacOS
+
+	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		display "Installing xcode command line tools"
-		xcode-select --install
-	fi
-	
-# This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
-	if [[ $(command -v brew) == "" ]]
-	then
-		display "Installing Homebrew."
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	else
-		#This will remove all the homebrew packages if desired.
-		if [ -n "$REMOVE_ALL" ]
-		then
-			display "You have selected the REMOVE_ALL option.  Warning, this will clear all currently installed homebrew packages."
-			read runscript"?Do you really wish to proceed? (y/n)"
-			if [ "$runscript" != "y" ]
+
+		# This installs the xcode command line tools if not installed yet.
+		# Yes these tools will be automatically installed if the user has never used git before
+		# But sometimes they need to be installed again.
+			
+			if ! command -v xcode-select &> /dev/null
 			then
-				echo "Quitting the script as you requested."
-				exit
+				display "Installing xcode command line tools"
+				xcode-select --install
 			fi
-			brew remove --force $(brew list) --ignore-dependencies
-		fi  
+			
+		# This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
+			setupHomebrew
+		
+		# This will make sure Homebrew is up to date and display the message.
+			display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
+			brew upgrade
+			
+		# python is required for craft to work.
+			brewInstallIfNeeded python
+			
+		# Craft does build ninja and install it to the craft directory, but QT Creator expects the homebrew version for development.
+			brewInstallIfNeeded ninja
+		
+		# Craft does install both of these, but they are helpful to have in homebrew for development
+			brewInstallIfNeeded cmake
+			brewInstallIfNeeded gettext
 	fi
-
-# This will make sure Homebrew is up to date and display the message.
-	display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
-	brew upgrade
-	
-# python is required for craft to work.
-	brewInstallIfNeeded python
-	
-# Craft does build ninja and install it to the craft directory, but QT Creator expects the homebrew version for development.
-	brewInstallIfNeeded ninja
-
-# Craft does install both of these, but they are helpful to have in homebrew for development
-	brewInstallIfNeeded cmake
-	brewInstallIfNeeded gettext
 
 # This will create the Astro Directory if it doesn't exist
 	mkdir -p "${ASTRO_ROOT}"
@@ -148,14 +163,10 @@
 		mkdir -p "${CRAFT_ROOT}"
 		curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 	fi  
-	
-# This copies all the required craft settings
-	display "Copying Craft Settings and Blueprint settings specific to building on macs."
 		
 # This sets the craft environment based on the settings.
 	source "${CRAFT_ROOT}/craft/craftenv.sh"
 
-# This will build indi, including the 3rd Party drivers.
 # Note that crafting KStars builds INDI, INDI-3rd Party, StellarSolver, but the stable builds not their master versions
 # you can always change that option in the craft settings or you can use one of the other scripts.
 # To build the latest master, you can use the commented out code below.

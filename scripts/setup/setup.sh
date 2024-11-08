@@ -22,7 +22,7 @@
 	source ${DIR}/../settings.sh
 
 # Display the Welcome message.
-	display "This will setup a Development Environment for Astronomical Software related to KStars and INDI on your Mac.  It is based on Craft, which must already be setup using the setupCraft script. It will place the development directory at the location specified.  Edit settings.sh before running any scripts to configure your settings."
+	display "This will setup a Development Environment for Astronomical Software related to KStars and INDI on your Computer.  It is based on Craft, which must already be setup using the setupCraft script. It will place the development directory at the location specified.  Edit settings.sh before running any scripts to configure your settings."
 
 	read -p "Do you wish to continue? If so, type y. " runscript
 	if [ "$runscript" != "y" ]

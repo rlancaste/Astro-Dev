@@ -177,14 +177,21 @@ fi
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
 	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
 	then
-  		display "One or more critical directory variables is blank, please edit build-env.sh."
+  		display "One or more critical directory variables is blank, please edit settings.sh."
   		exit 1
 	fi
 	
-# This checks the most important variables to see if the paths exist.  If they don't, it terminates the script with a message.
+# This checks if craft exists.  If it doesn't, it terminates the script with a message.
 	if [ ! -d "${CRAFT_ROOT}" ]
 	then
-		display "Craft Does Not Exist at the directory specified, please install Craft or edit this script."
+		display "Craft Does Not Exist at the directory specified, please install Craft or edit settings.sh."
+		exit 1
+	fi
+	
+# This checks if the root install directory exists.  If it doesn't, it terminates the script with a message.
+	if [ ! -d "${DEV_ROOT}" ]
+	then
+		display "The Development Root Direcotry Does Not Exist at the directory specified, please run setup.sh."
 		exit 1
 	fi
 	
