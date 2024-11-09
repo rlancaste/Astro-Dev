@@ -7,8 +7,7 @@
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
 
-# This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
-# It also uses that to get the top folder file name so that it can use that in the scripts.
+# This gets the directory from which this script is running so it can access files or other scripts in the repo
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # This option must come before build-engine. It determines whether to use your own Forked Repository or the official one for building.
@@ -19,12 +18,12 @@
 	source ${DIR}/build-engine.sh
 
 # This section sets the options for building the package.
+	export PACKAGE_NAME="INDI Web Manager App"
 	export REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
 	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 	export SRC="${TOP_SRC_FOLDER}/INDIWebManagerApp"
 	export BUILD="${TOP_BUILD_FOLDER}/webmanager-build"
-	export PACKAGE_NAME="INDI Web Manager App"
 	export XCODE_PROJECT_NAME="INDIWebManagerApp"
 	export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF"
 

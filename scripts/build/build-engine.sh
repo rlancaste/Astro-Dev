@@ -7,26 +7,11 @@
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
 
-# This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
-# It also uses that to get the top folder file name so that it can use that in the scripts.
+# This gets the directory from which this script is running so it can access files or other scripts in the repo.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
-# This function checks to see if a connection to a website exists.
-	function checkForConnection
-	{
-		testCommand=$(curl -Is $2 | head -n 1)
-		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 302"* || "${testCommand}" == *"HTTP/2 200"* ]]
-  		then 
-  			echo "$1 connection was found."
-  		else
-  			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the appropriate script."
-  			exit
-		fi
-	}
-	
-# This function will download a git repo if needed, and will update it if not
-# Note that this function should only be used on the real repo, not the forked one.  For that see the next function.
+# This function will download a git repo if needed, and will update it if not.
+# Note that this function should only be used on the primary repo, not the forked one.  For that see the next function.
 
 	function downloadOrUpdateRepository
 	{
@@ -53,8 +38,8 @@
 		fi
 	}
 	
-# This function will create a Fork on Github or update an existing fork
-# It will also do all the functions of the function above for a Forked Repo
+# This function will create a Fork on Github or update an existing fork.
+# It will also do all the functions of the function above for a Forked Repo.
 
 	function createOrUpdateFork
 	{
@@ -141,7 +126,12 @@
 			display "Building ${PACKAGE_NAME} with the following options: ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS}"
 			cmake ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
-			make install
+			if [[ "${BUILD_FOUNDATION}" == "SYSTEM" ]]
+			then
+				sudo make install
+			else
+				make install
+			fi
 		fi
 	}
 	
@@ -153,7 +143,15 @@
 # If you want to customize any of those variables, you can edit this file
 	source ${DIR}/../settings.sh
 
-## This makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly
+# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
+	then
+  		display "One or more critical directory variables is blank, please edit settings.sh."
+  		exit 1
+	fi
+
+# This sets up the build for an XCode Build. It makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly.
+# Then it updates the build folders to reflect that the xcode build is the one being used.
 	if [ -n "${BUILD_XCODE}" ]
 	then
 		if [ -n "${CODE_SIGN_IDENTITY}" ]
@@ -163,29 +161,18 @@
 			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Be sure to edit settings.sh to include both XCode options."
 			exit 1
 		fi
+		export BUILD_FOLDER="${XCODE_BUILD_FOLDER}"
+		export FORKED_BUILD_FOLDER="${FORKED_XCODE_BUILD_FOLDER}"
 	fi
 
-# The following if statements set up each of the source and build folders for each build based upon the options you selected in build-env.
-# This includes whether you want to use Xcode or not for the whole build and whether you want to use your own fork or not for each build
-
-if [ -n "${BUILD_XCODE}" ]
-then
-	export BUILD_FOLDER="${XCODE_BUILD_FOLDER}"
-	export FORKED_BUILD_FOLDER="${FORKED_XCODE_BUILD_FOLDER}"
-fi
-
-# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
+# If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
+	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
-  		display "One or more critical directory variables is blank, please edit settings.sh."
-  		exit 1
-	fi
-	
-# This checks if craft exists.  If it doesn't, it terminates the script with a message.
-	if [ ! -d "${CRAFT_ROOT}" ]
-	then
-		display "Craft Does Not Exist at the directory specified, please install Craft or edit settings.sh."
-		exit 1
+		if [ ! -d "${CRAFT_ROOT}" ]
+		then
+			display "Craft Does Not Exist at the directory specified, but you have indicated you want to use it as a foundation for buildign. Please install Craft and/or edit settings.sh."
+			exit 1
+		fi
 	fi
 	
 # This checks if the root install directory exists.  If it doesn't, it terminates the script with a message.

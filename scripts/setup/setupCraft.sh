@@ -7,8 +7,7 @@
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
 
-# This gets the directory from which this script is running so it can access any files there such as other scripts or the archive files.
-# It also uses that to get the top folder file name so that it can use that in the scripts.
+# This gets the directory from which this script is running so it can access files or other scripts in the repo
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # These are the options for running this script.  Uncomment any of the ones you want to set by removing the #, or comment out any you don't want by adding one.
