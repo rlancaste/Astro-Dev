@@ -67,6 +67,21 @@
 			echo "brew : $* is already installed"
 		fi
 	}
+	
+# This function installs Craft on various operating systems
+	function installCraft
+	{
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			
+		elif [[ "$OSTYPE" == "win32" ]]
+		then
+			iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/KDE/craft/master/setup/install_craft.ps1'))
+		else
+			python3 -c "$(wget https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -O -)" --prefix "${CRAFT_ROOT}"
+		fi
+	}
 
 
 
@@ -82,7 +97,7 @@
 	checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 	
 # Announce the script is starting and what will be done.
-	display "Starting script to setup homebrew and craft for Astronomy Software Development related to KStars and INDI"
+	display "Starting script to setup Craft (and Homebrew on Mac) for Astronomy Software Development related to KStars and INDI"
 	
 	read -p "Do you wish to continue? If so, type y. " runscript
 	if [ "$runscript" != "y" ]
@@ -155,12 +170,12 @@
 			fi
 			
 			mkdir -p "${CRAFT_ROOT}"
-			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			installCraft
 		fi
 	else
 		display "Installing craft"
 		mkdir -p "${CRAFT_ROOT}"
-		curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+		installCraft
 	fi  
 		
 # This sets the craft environment based on the settings.
