@@ -38,7 +38,7 @@
 	buildPackage
 	
 # This section sets the options for building the package.  Note that for 3rd Party Drivers, there are only a few differences from the Libraries.
-	export BUILD="${TOP_BUILD_FOLDER}/indi-build/ThirdParty-Drivers"
+	export BUILD_SUBDIR="indi-build/ThirdParty-Drivers"
 	export PACKAGE_NAME="INDI 3rd Party Drivers"
 	export PACKAGE_BUILD_OPTIONS=""
 	
