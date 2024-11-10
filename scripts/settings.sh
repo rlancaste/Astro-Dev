@@ -104,20 +104,20 @@
 		then
 			export GETTEXT_PATH=$(brew --prefix gettext)
 			export PATH="${GETTEXT_PATH}/bin:${PATH}"
-			export PREFIX_PATH="${GETTEXT_PATH}/bin;${PREFIX_PATH}"
+			export PREFIX_PATHS="${GETTEXT_PATH}/bin;${PREFIX_PATHS}"
 		fi
 		
 	# The folders you are using for your build foundation need to be added to the path variables.
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
 				export PATH="${CRAFT_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
-				export PREFIX_PATH="${CRAFT_ROOT};${PREFIX_PATH}"
+				export PREFIX_PATHS="${CRAFT_ROOT};${PREFIX_PATHS}"
 				export RPATHS="${CRAFT_ROOT}/lib;${RPATHS}"
 				
 		elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 		then
 				export PATH="${HOMEBREW_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
-				export PREFIX_PATH="${HOMEBREW_ROOT};${PREFIX_PATH}"
+				export PREFIX_PATHS="${HOMEBREW_ROOT};${PREFIX_PATHS}"
 				export RPATHS="${HOMEBREW_ROOT}/lib;${RPATHS}"
 		fi
 	
@@ -126,7 +126,7 @@
 	
 	# The DEV_ROOT is the most important item to add to the path variables, the folder we will be using to "install" the programs.  Make sure it is added last so it appears first in the PATH.
 		export PATH="${DEV_ROOT}/bin:${PATH}"
-		export PREFIX_PATH="${DEV_ROOT};${PREFIX_PATH}"
+		export PREFIX_PATHS="${DEV_ROOT};${PREFIX_PATHS}"
 		export RPATHS="${DEV_ROOT}/lib;${RPATHS}"
 
 # This is a setting for MacOS.  This makes it possible to build for previous versions of the operating system.
@@ -140,28 +140,27 @@
 # These are the Program Build options that are common to all the builds. The variables above are heavily used to set this up.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
+		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATHS=${PREFIX_PATHS} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
 	else
-		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATH}"
+		export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATHS=${PREFIX_PATHS}"
 	fi
 		
-display "Environment Variables Set."
-
-echo "TOP_FOLDER               is [${TOP_FOLDER}]"
-echo "SRC_FOLDER               is [${SRC_FOLDER}]"
-echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"
-echo "BUILD_FOLDER             is [${BUILD_FOLDER}]"
-echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
-echo "DEV_ROOT                 is [${DEV_ROOT}]"
-echo "GETTEXT_PATH             is [${GETTEXT_PATH}]"
-
-echo "PREFIX_PATH              is [${PREFIX_PATH}]"
-echo "PATH                     is [${PATH}]"
+display "Setting Environment Variables."
 
 echo "BUILD_FOUNDATION         is [${BUILD_FOUNDATION}]"
-
 echo "BUILD_XCODE              ? [${BUILD_XCODE:-Nope}]"
 echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
 echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 
+echo "TOP_FOLDER               is [${TOP_FOLDER}]"
+echo "DEV_ROOT                 is [${DEV_ROOT}]"
+echo "SRC_FOLDER               is [${SRC_FOLDER}]"
+echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"
+echo "BUILD_FOLDER             is [${BUILD_FOLDER}]"
+echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
+
+echo "PREFIX_PATHS             are [${PREFIX_PATHS}]"
+echo "PATH                     is [${PATH}]"
 echo "GENERAL_BUILD_OPTIONS    are [${GENERAL_BUILD_OPTIONS}]"
+
+display "Environment Variables Set."
