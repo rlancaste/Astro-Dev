@@ -77,7 +77,7 @@
 			
 		elif [[ "$OSTYPE" == "win32" ]]
 		then
-			iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/KDE/craft/master/setup/install_craft.ps1'))
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && /bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 		else
 			python3 -c "$(wget https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -O -)" --prefix "${CRAFT_ROOT}"
 		fi
@@ -251,3 +251,4 @@
 
 
 display "Script execution complete"
+read -p "Ending Script. Hit enter to exit." var 
