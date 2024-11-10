@@ -21,7 +21,7 @@
 	export PACKAGE_NAME="INDI Core Drivers"
 	export REPO="https://github.com/indilib/indi.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
-	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi.git"
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
 	export SRC_SUBDIR="indi"
 	export BUILD_SUBDIR="indi-build/indi-core"
 	export PACKAGE_BUILD_OPTIONS=""

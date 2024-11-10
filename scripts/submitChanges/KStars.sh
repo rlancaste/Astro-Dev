@@ -16,7 +16,7 @@
 # This section sets the critical options for finding the repo and forked src folder.
 	export PACKAGE_NAME="KStars"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
-	export REPO_HTML_PAGE="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
+	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
 	export SRC="${FORKED_SRC_FOLDER}/kstars"
 
 # Check to make sure that you are not in the master branch, and make a branch if needed.

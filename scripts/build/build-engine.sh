@@ -51,7 +51,7 @@
 				exit
 			fi
 		else
-			checkForConnection "${PACKAGE_NAME}" "${REPO_HTML_PAGE}"
+			checkForConnection "${PACKAGE_NAME}" "${FORKED_REPO_HTML}"
 			# This will download the fork if needed, or update it to the latest version if necessary
 			mkdir -p "${TOP_SRC_DIR}"
 			if [ ! -d "${SRC_DIR}" ]

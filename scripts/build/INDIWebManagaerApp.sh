@@ -21,7 +21,7 @@
 	export PACKAGE_NAME="INDI Web Manager App"
 	export REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
-	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 	export SRC_SUBDIR="INDIWebManagerApp"
 	export BUILD_SUBDIR="webmanager-build"
 	export XCODE_PROJECT_NAME="INDIWebManagerApp"

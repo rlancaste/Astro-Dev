@@ -20,7 +20,7 @@
 	{
 	
 		# This checks to make sure all variables used in this method have values, since it might be bad if they do not.
-			if [[ -z ${PACKAGE_NAME} || -z ${REPO_HTML_PAGE} || -z ${SRC_SUBDIR} ]]
+			if [[ -z ${PACKAGE_NAME} || -z ${FORKED_REPO_HTML} || -z ${SRC_SUBDIR} ]]
 			then
 				display "One or more critical variables is blank, please edit the scripts."
 				exit 1
@@ -31,7 +31,7 @@
 			selectSourceDir
 
 		# This checks to see if the remote server is accessible.
-			checkForConnection "${PACKAGE_NAME}" "${REPO_HTML_PAGE}"
+			checkForConnection "${PACKAGE_NAME}" "${FORKED_REPO_HTML}"
 		
 		# Display the message explaining what this script does.
 			display "This script will submit your ${PACKAGE_NAME} changes in the forked-src folder to your fork on GITHub or GITLab.  You must have made changes in the forked-src folder for this to work."
@@ -80,6 +80,6 @@
 			fi
 		
 		# Display the final message
-			display "Please go to ${REPO_HTML_PAGE} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
+			display "Please go to ${FORKED_REPO_HTML} and click the submit pull request button if you are ready to make your pull request, or make other changes and other commits first."
 
 	}

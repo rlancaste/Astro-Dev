@@ -16,7 +16,7 @@
 # This section sets the critical options for finding the repo and forked src folder.
 	export PACKAGE_NAME="INDI Web Manager App"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
-	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
 	export SRC="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.

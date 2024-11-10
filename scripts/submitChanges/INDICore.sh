@@ -16,7 +16,7 @@
 # This section sets the critical options for finding the repo and forked src folder.
 	export PACKAGE_NAME="INDI Core Drivers"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
-	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/indi.git"
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
 	export SRC="${FORKED_SRC_FOLDER}/indi"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.

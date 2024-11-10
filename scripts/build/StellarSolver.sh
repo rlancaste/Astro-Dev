@@ -21,7 +21,7 @@
 	export PACKAGE_NAME="StellarSolver"
 	export REPO="https://github.com/rlancaste/stellarsolver.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
-	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/stellarsolver.git"
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/stellarsolver.git"
 	export SRC_SUBDIR="stellarsolver"
 	export BUILD_SUBDIR="stellar-build"
 	export XCODE_PROJECT_NAME="StellarSolver"

@@ -21,7 +21,7 @@
 	export PACKAGE_NAME="Craft BluePrints"
 	export REPO="https://invent.kde.org/packaging/craft-blueprints-kde.git"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/craft-blueprints-kde.git"
-	export REPO_HTML_PAGE="https://invent.kde.org/${GITLAB_USERNAME}/craft-blueprints-kde.git"
+	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/craft-blueprints-kde.git"
 	export SRC_SUBDIR="craft-blueprints-kde"
 
 # Display the Welcome message explaining what this script does.
