@@ -75,7 +75,7 @@
 		then
 			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 			
-		elif [[ "$OSTYPE" == "win32" ]]
+		elif [[ "$OSTYPE" == "msys" ]]
 		then
 			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && /bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 		else
