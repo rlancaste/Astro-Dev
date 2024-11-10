@@ -17,22 +17,22 @@
 	{
 		if [ -n "${BUILD_OFFLINE}" ]
 		then
-			if [ ! -d "${SRC}" ]
+			if [ ! -d "${SRC_DIR}" ]
 			then
 				display "The source code for ${PACKAGE_NAME} is not downloaded, it cannot be built offline without that, exiting now."
 				exit
 			fi
 		else
 			checkForConnection "${PACKAGE_NAME}" "${REPO}"
-			mkdir -p "${SRC_FOLDER}"
-			if [ ! -d "${SRC}" ]
+			mkdir -p "${TOP_SRC_DIR}"
+			if [ ! -d "${SRC_DIR}" ]
 			then
 				display "Downloading ${PACKAGE_NAME} GIT repository"
-				cd "${SRC_FOLDER}"
+				cd "${TOP_SRC_DIR}"
 				git clone "${REPO}"
 			else
 				display "Updating ${PACKAGE_NAME} GIT repository"
-				cd "${SRC}"
+				cd "${SRC_DIR}"
 				git pull
 			fi
 		fi
@@ -45,7 +45,7 @@
 	{
 		if [ -n "${BUILD_OFFLINE}" ]
 		then
-			if [ ! -d "${SRC}" ]
+			if [ ! -d "${SRC_DIR}" ]
 			then
 				display "The forked source code for ${PACKAGE_NAME} is not downloaded, it cannot be built offline without that, exiting now."
 				exit
@@ -53,8 +53,8 @@
 		else
 			checkForConnection "${PACKAGE_NAME}" "${REPO_HTML_PAGE}"
 			# This will download the fork if needed, or update it to the latest version if necessary
-			mkdir -p "${FORKED_SRC_FOLDER}"
-			if [ ! -d "${SRC}" ]
+			mkdir -p "${TOP_SRC_DIR}"
+			if [ ! -d "${SRC_DIR}" ]
 			then
 				display "The Forked Repo is not downloaded, checking if a ${PACKAGE_NAME} Fork is needed."
 				# This will check to see if the repo already exists
@@ -68,13 +68,13 @@
 				fi
 			
 				display "Downloading ${PACKAGE_NAME} GIT repository"
-				cd "${FORKED_SRC_FOLDER}"
+				cd "${TOP_SRC_DIR}"
 				git clone "${FORKED_REPO}"
 			fi
 		
 			# This will attempt to update the fork to match the upstream master
 			display "Updating ${PACKAGE_NAME} GIT repository"
-			cd "${SRC}"
+			cd "${SRC_DIR}"
 			git remote add upstream "${REPO}"
 			git fetch upstream
 			git pull upstream master
@@ -86,7 +86,18 @@
 
 	function prepareSourceDirectory
 	{
-		if [[ "${USE_FORKED_REPO}" == "Yes" ]]
+		selectSourceDir
+		
+		# This checks if the Source Directories were set in the method above.
+			if [[ -z ${SRC_DIR} || -z ${TOP_SRC_DIR} ]]
+			then
+				display "The Source Directories did not get set right, please edit settings.sh."
+				exit 1
+			fi
+		
+		display "Setting the source directory of ${PACKAGE_NAME} to: ${SRC_DIR} and updating it."
+		
+		if [ -n "${USE_FORKED_REPO}" ]
 		then
 			createOrUpdateFork 
 		else
@@ -98,17 +109,26 @@
 # $1 is the path to the build directory, $2 is the name of the package to be built
 	function setupAndEnterBuildDir
 	{
-		display "Setting up and entering ${PACKAGE_NAME} build directory: ${BUILD}"
-		if [ -d "${BUILD}" ]
+		selectBuildDir
+		
+		# This checks to make sure the BUILD_DIR variable has been set before continuing.
+			if [ -z ${BUILD_DIR} ]
+			then
+				display "There is an error, the BUILD_DIR variable has not been set."
+				exit 1
+			fi
+		
+		display "Setting up and entering ${PACKAGE_NAME} build directory: ${BUILD_DIR}"
+		if [ -d "${BUILD_DIR}" ]
 		then
 			if [ -n "${CLEAN_BUILD}" ]
 			then
-				rm -r "${BUILD}"/*
+				rm -r "${BUILD_DIR}"/*
 			fi
 		else
-			mkdir -p "${BUILD}"
+			mkdir -p "${BUILD_DIR}"
 		fi
-		cd "${BUILD}"
+		cd "${BUILD_DIR}"
 	}
 	
 # This function will build the package in the build directory
@@ -117,14 +137,28 @@
 	{
 		setupAndEnterBuildDir
 		
+		# This checks if the SourceDirectory was properly set before building.
+			if [ -z ${SRC_DIR} ]
+			then
+				display "The Source Directory did not get set right, please edit settings.sh."
+				exit 1
+			fi
+		
+		# This checks if the root install directory exists.  If it doesn't, it terminates the script with a message.
+			if [ ! -d "${DEV_ROOT}" ]
+			then
+				display "The Development Root Direcotry Does Not Exist at the directory specified, please run setup.sh."
+				exit 1
+			fi
+		
 		if [ -n "${BUILD_XCODE}" ]
 		then
 			display "Building ${PACKAGE_NAME} using XCode"
-			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC}"
+			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC_DIR}"
 			xcodebuild -project "${XCODE_PROJECT_NAME}".xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
 		else
 			display "Building ${PACKAGE_NAME} with the following options: ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS}"
-			cmake ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC}"
+			cmake ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC_DIR}"
 			make -j $(expr $(sysctl -n hw.ncpu) + 2)
 			if [[ "${BUILD_FOUNDATION}" == "SYSTEM" ]]
 			then
@@ -142,9 +176,12 @@
 # Prepare to run the script by setting all of the environment variables	
 # If you want to customize any of those variables, you can edit this file
 	source ${DIR}/../settings.sh
+	
+# This resets the package specific build options before getting and updated setting from the build script.
+	export USE_FORKED_REPO=""
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} || -z ${BUILD_FOLDER} || -z ${DEV_ROOT} ]]
+	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${DEV_ROOT} ]]
 	then
   		display "One or more critical directory variables is blank, please edit settings.sh."
   		exit 1
@@ -161,8 +198,6 @@
 			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Be sure to edit settings.sh to include both XCode options."
 			exit 1
 		fi
-		export BUILD_FOLDER="${XCODE_BUILD_FOLDER}"
-		export FORKED_BUILD_FOLDER="${FORKED_XCODE_BUILD_FOLDER}"
 	fi
 
 # If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
@@ -173,22 +208,5 @@
 			display "Craft Does Not Exist at the directory specified, but you have indicated you want to use it as a foundation for buildign. Please install Craft and/or edit settings.sh."
 			exit 1
 		fi
-	fi
-	
-# This checks if the root install directory exists.  If it doesn't, it terminates the script with a message.
-	if [ ! -d "${DEV_ROOT}" ]
-	then
-		display "The Development Root Direcotry Does Not Exist at the directory specified, please run setup.sh."
-		exit 1
-	fi
-	
-# This sets the top build and source folders based on the options for this particular package
-	if [[ "${USE_FORKED_REPO}" == "Yes" ]]
-	then
-		export TOP_SRC_FOLDER="${FORKED_SRC_FOLDER}"
-		export TOP_BUILD_FOLDER="${FORKED_BUILD_FOLDER}"
-	else
-		export TOP_SRC_FOLDER="${SRC_FOLDER}"
-		export TOP_BUILD_FOLDER="${BUILD_FOLDER}"
 	fi
 

@@ -10,20 +10,20 @@
 # This gets the directory from which this script is running so it can access files or other scripts in the repo
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# This option must come before build-engine. It determines whether to use your own Forked Repository or the official one for building.
-# If you want to use the Forked Repo, enter Yes, otherwise No.
-	export USE_FORKED_REPO="No"
-
 # This sets up and provides access to all of the methods required to run the script.
 	source ${DIR}/build-engine.sh
+
+# If you want to use the Forked Repo for this package, uncomment the following option by removing the #.
+# If you have not forked this package yet, or would prefer to use the original repo, comment it out with a #.
+	#export USE_FORKED_REPO="Yep"
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="StellarSolver"
 	export REPO="https://github.com/rlancaste/stellarsolver.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
 	export REPO_HTML_PAGE="https://github.com/${GIT_USERNAME}/stellarsolver.git"
-	export SRC="${TOP_SRC_FOLDER}/stellarsolver"
-	export BUILD="${TOP_BUILD_FOLDER}/stellar-build"
+	export SRC_SUBDIR="stellarsolver"
+	export BUILD_SUBDIR="stellar-build"
 	export XCODE_PROJECT_NAME="StellarSolver"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF -DUSE_QT5=OFF"
 

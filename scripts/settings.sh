@@ -15,6 +15,8 @@
 		#export BUILD_OFFLINE="Yep" 
 	# This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.		
 		#export CLEAN_BUILD="Yep"	
+		
+	# Note: there are options for building with the original source repositories or your own forks.  These options are specific to the packages and not global.  Please see each package's build script for these options.
 
 # This sets the foundation for building everything.  
 # On Linux, it can use the system directories or it can use Craft.
@@ -64,47 +66,66 @@
 		fi
 	}
 	
+# This script sets it up so that you can build from the original repo source folder or from your own fork.
+# It separates the two so that you can switch back and forth if desired.  You can do parallel builds.
+	function selectSourceDir
+	{
+		if [ -n "${USE_FORKED_REPO}" ]
+		then
+			export TOP_SRC_DIR="${TOP_FOLDER}/src-forked"
+		else
+			export TOP_SRC_DIR="${TOP_FOLDER}/src"
+		fi
+		
+		export SRC_DIR="${TOP_SRC_DIR}/${SRC_SUBDIR}"
+	}
+	
+# This script supports building with different build systems.  While the source folders should work for all systems, the build folders will not.
+# This function will set the build folder based on selected options. This way you can build in parallel with different systems to compare.
+	function selectBuildDir
+	{
+		export BUILD_DIR="${TOP_FOLDER}/build/${BUILD_SUBDIR}"
+		
+		if [ -n "${BUILD_XCODE}" ]
+		then
+			export BUILD_DIR="${BUILD_DIR}-xcode"
+		fi
+		
+		if [ -n "${USE_FORKED_REPO}" ]
+		then
+			export BUILD_DIR="${BUILD_DIR}-forked"
+		fi
+	
+	} 
+	
 # This sets important system paths that the script will need to execute.  Please verify these paths.
+# Note that it is not wise to have spaces in the file paths.
 
 	# This is the AstroRoot Root Folder that will be used as a basis for building
 		export ASTRO_ROOT="${HOME}/AstroRoot"
 	# This is the Craft Root Folder that will be used as a basis for building
 		export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
+	# This is the base path for development.  Note, you could set this to your own project folder or the top folder of this repo instead.
+		export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder, which I personally prefer.
 	# This is the Homebrew Root Folder that will be used as a basis for building
 		export HOMEBREW_ROOT="/usr/local"
-	#This is the location of the craft shortcuts directory
-		export SHORTCUTS_DIR="${ASTRO_ROOT}"/craft-shortcuts
-
-# This sets the directory paths.  Note that these are customizable, but they do get set here automatically.
-# Beware that none of them should have spaces in the file path.
-
-	# This is the base path.  Note, you could set this to your own project folder or the top folder of this repo instead.
-		export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder, which I personally prefer.
-	# This is the enclosing folder for the source code of INDI, KStars, and INDI Web Manager
-		export SRC_FOLDER="${TOP_FOLDER}/src"
-	# This is the enclosing folder for the forked source code of INDI, KStars, and INDI Web Manager
-		export FORKED_SRC_FOLDER="${TOP_FOLDER}/src-forked"
-	# This is the enclosing folder for the build folders of INDI, KStars, and INDI Web Manager
-		export BUILD_FOLDER="${TOP_FOLDER}/build"
-	# This is the enclosing folder for the forked build folders of INDI, KStars, and INDI Web Manager
-		export FORKED_BUILD_FOLDER="${TOP_FOLDER}/build-forked"
-	# This is the enclosing folder for the xcode build folders of INDI, KStars, and INDI Web Manager
-		export XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build"
-	# This is the enclosing folder for the forked xcode build folders of INDI, KStars, and INDI Web Manager
-		export FORKED_XCODE_BUILD_FOLDER="${TOP_FOLDER}/xcode-build-forked"
 	# This is the Development Root folder where we will be "installing" built software
 		export DEV_ROOT="${TOP_FOLDER}/DEV_ROOT"
-	
+	#This is the location of the craft shortcuts directory
+		export SHORTCUTS_DIR="${ASTRO_ROOT}/craft-shortcuts"
 	
 # These commands add paths to the PATH and Prefixes for building.
 # These settings are crucial for finding programs, libraries, and other items for building.
+	
+	export PREFIX_PATHS=""
+	export RPATHS=""
 	
 	# This adds the path to GETTEXT to the path variables which is needed for building some packages on MacOS.  This assumes it is in homebrew, but if not, change it.
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
 			export GETTEXT_PATH=$(brew --prefix gettext)
 			export PATH="${GETTEXT_PATH}/bin:${PATH}"
-			export PREFIX_PATHS="${GETTEXT_PATH}/bin;${PREFIX_PATHS}"
+			export PREFIX_PATHS="${GETTEXT_PATH}/bin"
 		fi
 		
 	# The folders you are using for your build foundation need to be added to the path variables.
@@ -154,9 +175,6 @@ echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 
 echo "TOP_FOLDER               is [${TOP_FOLDER}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
-echo "SRC_FOLDER               is [${SRC_FOLDER}]"
-echo "FORKED_SRC_FOLDER        is [${FORKED_SRC_FOLDER}]"
-echo "BUILD_FOLDER             is [${BUILD_FOLDER}]"
 echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
 
 echo "PREFIX_PATHS             are [${PREFIX_PATHS}]"

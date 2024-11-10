@@ -83,7 +83,8 @@
 
 # This following command will run the setup and build scripts for each of the packages.  You do not have do do this now, but it is good to get it all set up.
 # You can always select certain ones to leave out if you edit the file listed below.
-	source ${DIR}/../build/build-selectedPackages.sh
+# Uncomment the command below to install them, but comment it out to not do it.
+	#source ${DIR}/../build/build-selectedPackages.sh
 
 
 display "Script Execution Complete"

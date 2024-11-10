@@ -18,13 +18,18 @@
 # Then sending the changes to the server
 	function commitAndPushToServer
 	{
+	
 		# This checks to make sure all variables used in this method have values, since it might be bad if they do not.
-			if [[ -z ${PACKAGE_NAME} || -z ${REPO_HTML_PAGE} || -z ${SRC} ]]
+			if [[ -z ${PACKAGE_NAME} || -z ${REPO_HTML_PAGE} || -z ${SRC_SUBDIR} ]]
 			then
 				display "One or more critical variables is blank, please edit the scripts."
 				exit 1
 			fi
 			
+		# This sets the source directory that will be used for the submission.
+			export USE_FORKED_REPO="Yep"
+			selectSourceDir
+
 		# This checks to see if the remote server is accessible.
 			checkForConnection "${PACKAGE_NAME}" "${REPO_HTML_PAGE}"
 		
@@ -32,14 +37,14 @@
 			display "This script will submit your ${PACKAGE_NAME} changes in the forked-src folder to your fork on GITHub or GITLab.  You must have made changes in the forked-src folder for this to work."
 			
 		# Check to see that the user has actually already make a forked source folder for this package.
-			if [ ! -d "${SRC}" ]
+			if [ ! -d "${SRC_DIR}" ]
 			then
-				echo "No forked repo detected at ${SRC}.  Please make sure to fork the repo, edit the code, and make changes to submit.  Make sure the settings are right for the location of the SRC folder."
+				echo "No forked repo detected at ${SRC_DIR}.  Please make sure to fork the repo, edit the code, and make changes to submit.  Make sure the settings are right for the location of the SRC subdirectory folder."
 				exit
 			fi
 			
 		# This enters the source directory.
-			cd "${SRC}"
+			cd "${SRC_DIR}"
 			
 		# This checks the current branch to make sure you are committing to a branch instead of master (a mistake I often made myself).
 		# You can specify a name for a branch to switch to and it will switch to that branch.
