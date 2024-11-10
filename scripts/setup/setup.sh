@@ -37,11 +37,14 @@
   		exit 1
 	fi
 	
-# This checks the most important variables to see if the paths exist.  If they don't, it terminates the script with a message.
-	if [ ! -d "${CRAFT_ROOT}" ]
+# If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
+	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
-		display "Craft Does Not Exist at the directory specified, please install Craft or edit settings.sh."
-		exit 1
+		if [ ! -d "${CRAFT_ROOT}" ]
+		then
+			display "Craft Does Not Exist at the directory specified, please install Craft or edit settings.sh."
+			exit 1
+		fi
 	fi
 	
 # This sets up the development root directory for "installation"
