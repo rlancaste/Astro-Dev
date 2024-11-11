@@ -84,7 +84,18 @@
 # This function will set the build folder based on selected options. This way you can build in parallel with different systems to compare.
 	function selectBuildDir
 	{
-		export BUILD_DIR="${TOP_FOLDER}/build/${BUILD_SUBDIR}"
+		export BUILD_DIR="${TOP_FOLDER}/build"
+		
+		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
+		then
+			export BUILD_DIR="${BUILD_DIR}-craft"
+			
+		elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
+		then
+			export BUILD_DIR="${BUILD_DIR}-brew"
+		fi
+		
+		export BUILD_DIR="${BUILD_DIR}/${BUILD_SUBDIR}"
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
@@ -113,6 +124,18 @@
 		export DEV_ROOT="${TOP_FOLDER}/DEV_ROOT"
 	#This is the location of the craft shortcuts directory
 		export SHORTCUTS_DIR="${ASTRO_ROOT}/craft-shortcuts"
+		
+
+# This will modify the DEV_ROOT based on whether Craft or Homebrew was used as a foundation for the build, since the "installed" files have different linkings.
+
+	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
+	then
+		export DEV_ROOT="${DEV_ROOT}-craft"
+		
+	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
+	then
+		export DEV_ROOT="${DEV_ROOT}-brew"
+	fi
 	
 # These commands add paths to the PATH and Prefixes for building.
 # These settings are crucial for finding programs, libraries, and other items for building.

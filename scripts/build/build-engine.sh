@@ -9,7 +9,20 @@
 
 # This gets the directory from which this script is running so it can access files or other scripts in the repo.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+
+# This function links a file or folder in the dev directory to one in the craft-root directory
+	function craftLink
+	{
+		ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
+	}
 	
+# This function links a file or folder in the dev directory to one in the Homebrew-root directory
+	function homebrewLink
+	{
+		ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
+	}
+
 # This function will download a git repo if needed, and will update it if not.
 # Note that this function should only be used on the primary repo, not the forked one.  For that see the next function.
 
@@ -147,7 +160,7 @@
 		# This checks if the root install directory exists.  If it doesn't, it terminates the script with a message.
 			if [ ! -d "${DEV_ROOT}" ]
 			then
-				display "The Development Root Direcotry Does Not Exist at the directory specified, please run setup.sh."
+				display "The Development Root Directory Does Not Exist at the directory specified, please run setup.sh."
 				exit 1
 			fi
 		
@@ -199,14 +212,47 @@
 			exit 1
 		fi
 	fi
-
+	
+# This sets up the development root directory for "installation"
+	mkdir -p "${DEV_ROOT}"
+	
 # If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
 		if [ ! -d "${CRAFT_ROOT}" ]
 		then
-			display "Craft Does Not Exist at the directory specified, but you have indicated you want to use it as a foundation for buildign. Please install Craft and/or edit settings.sh."
+			display "Craft Does Not Exist at the directory specified, please install Craft, run craftSetup.sh, or edit settings.sh."
+			exit 1
+		fi
+		
+		# These links are needed on MacOS to successfully build outside of the main craft directories.
+		# We should look into why they are needed.
+			if [[ "${OSTYPE}" == "darwin"* ]]
+			then
+		
+				mkdir -p "${DEV_ROOT}/include"
+				mkdir -p "${DEV_ROOT}/lib"
+			
+				# This one is for several packages that can't seem to find GSL
+				craftLink include/gsl
+				# These are several libraries that were actually found by KStars, but then did not link properly without being in DEV Root.
+				craftLink lib/libcfitsio.dylib
+				craftLink lib/libgsl.dylib
+				craftLink lib/libgslcblas.dylib
+				craftLink lib/libwcslib.a
+				
+				# This provides a link for kdoctools to be found on MacOS.
+				ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
+			
+			fi
+			
+	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
+	then
+		if [ ! -d "${HOMEBREW_ROOT}" ]
+		then
+			display "Homebrew Does Not Exist at the directory specified, please install Homebrew or edit settings.sh."
 			exit 1
 		fi
 	fi
+
 
