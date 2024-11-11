@@ -17,7 +17,7 @@
 	export PACKAGE_NAME="INDI Web Manager App"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
-	export SRC="${FORKED_SRC_FOLDER}/INDIWebManagerApp"
+	export SRC_SUBDIR="INDIWebManagerApp"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch

@@ -17,7 +17,7 @@
 	export PACKAGE_NAME="KStars"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
 	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
-	export SRC="${FORKED_SRC_FOLDER}/kstars"
+	export SRC_SUBDIR="kstars"
 
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch

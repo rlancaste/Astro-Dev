@@ -17,7 +17,7 @@
 	export PACKAGE_NAME="INDI 3rd Party Libraries"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"	
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
-	export SRC="${FORKED_SRC_FOLDER}/indi-3rdparty"
+	export SRC_SUBDIR="indi-3rdparty"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch

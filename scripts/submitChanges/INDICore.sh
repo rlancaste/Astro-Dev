@@ -17,7 +17,7 @@
 	export PACKAGE_NAME="INDI Core Drivers"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
-	export SRC="${FORKED_SRC_FOLDER}/indi"
+	export SRC_SUBDIR="indi"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch
