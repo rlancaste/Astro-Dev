@@ -206,11 +206,6 @@
 	fi
 	
 	# Craft Shortcuts
-	ln -sf ${CRAFT_ROOT}/bin ${SHORTCUTS_DIR}
-	ln -sf ${CRAFT_ROOT}/build ${SHORTCUTS_DIR}
-	ln -sf ${CRAFT_ROOT}/lib ${SHORTCUTS_DIR}
-	ln -sf ${CRAFT_ROOT}/include ${SHORTCUTS_DIR}
-	ln -sf ${CRAFT_ROOT}/share ${SHORTCUTS_DIR}
 	ln -sf ${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde ${SHORTCUTS_DIR}
 	
 	

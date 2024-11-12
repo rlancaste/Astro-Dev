@@ -9,6 +9,9 @@
 
 # These are the primary global script options.  You may turn these on by removing the # from the front, or turn them off by putting a # in front.
 
+	# This is an option to use a Development root folder for "installing" software so that you can see all the files you are working on and where they install to.
+	# If you turn this option off, it will install the software it builds back in the Build Foundation Root Folder. 
+		export USE_DEV_ROOT="Yep"
 	# This option uses XCode and xcode projects for building on MacOS.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
 		#export BUILD_XCODE="Yep"			
 	# This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
@@ -72,9 +75,9 @@
 	{
 		if [ -n "${USE_FORKED_REPO}" ]
 		then
-			export TOP_SRC_DIR="${TOP_FOLDER}/src-forked"
+			export TOP_SRC_DIR="${ASTRO_ROOT}/src-forked"
 		else
-			export TOP_SRC_DIR="${TOP_FOLDER}/src"
+			export TOP_SRC_DIR="${ASTRO_ROOT}/src"
 		fi
 		
 		export SRC_DIR="${TOP_SRC_DIR}/${SRC_SUBDIR}"
@@ -84,15 +87,15 @@
 # This function will set the build folder based on selected options. This way you can build in parallel with different systems to compare.
 	function selectBuildDir
 	{
-		export BUILD_DIR="${TOP_FOLDER}/build"
+		export BUILD_DIR="${ASTRO_ROOT}/build"
 		
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
-			export BUILD_DIR="${BUILD_DIR}-craft"
+			export BUILD_DIR="${BUILD_DIR}/craft-base"
 			
 		elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 		then
-			export BUILD_DIR="${BUILD_DIR}-brew"
+			export BUILD_DIR="${BUILD_DIR}/brew-base"
 		fi
 		
 		export BUILD_DIR="${BUILD_DIR}/${BUILD_SUBDIR}"
@@ -112,29 +115,41 @@
 # This sets important system paths that the script will need to execute.  Please verify these paths.
 # Note that it is not wise to have spaces in the file paths.
 
-	# This is the AstroRoot Root Folder that will be used as a basis for building
+	# This is the Root Folder that will be used as the base folder for everything
 		export ASTRO_ROOT="${HOME}/AstroRoot"
-	# This is the Craft Root Folder that will be used as a basis for building
+	# This is the Craft Root Folder that will be used if the build foundation is Craft.  It could be in the AstroRoot Folder or somewhere else.
 		export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
-	# This is the base path for development.  Note, you could set this to your own project folder or the top folder of this repo instead.
-		export TOP_FOLDER="${ASTRO_ROOT}/Development" # This puts it in the astro root folder, which I personally prefer.
 	# This is the Homebrew Root Folder that will be used as a basis for building
 		export HOMEBREW_ROOT="/usr/local"
-	# This is the Development Root folder where we will be "installing" built software
-		export DEV_ROOT="${TOP_FOLDER}/DEV_ROOT"
-	#This is the location of the craft shortcuts directory
+	# This is the location of the craft shortcuts directory
 		export SHORTCUTS_DIR="${ASTRO_ROOT}/craft-shortcuts"
-		
 
-# This will modify the DEV_ROOT based on whether Craft or Homebrew was used as a foundation for the build, since the "installed" files have different linkings.
+# Based on whether you choose to use the DEV_ROOT folder option, this will set up the DEV_ROOT based on the foundation for the build, since the "installed" files have different linkings.
 
+	
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
-		export DEV_ROOT="${DEV_ROOT}-craft"
-		
+		if [ -n "${USE_DEV_ROOT}" ]
+		then
+			export DEV_ROOT="${ASTRO_ROOT}/DEV_CRAFT"
+		else
+			export DEV_ROOT="${CRAFT_ROOT}"
+		fi
 	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 	then
-		export DEV_ROOT="${DEV_ROOT}-brew"
+		if [ -n "${USE_DEV_ROOT}" ]
+		then
+			export DEV_ROOT="${ASTRO_ROOT}/DEV_BREW"
+		else
+			export DEV_ROOT="${HOMEBREW_ROOT}"
+		fi
+	else
+		if [ -n "${USE_DEV_ROOT}" ]
+		then
+			export DEV_ROOT="${ASTRO_ROOT}/DEV_ROOT"
+		else
+			export DEV_ROOT="/usr/local"
+		fi
 	fi
 	
 # These commands add paths to the PATH and Prefixes for building.
@@ -169,9 +184,12 @@
 		#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
 	
 	# The DEV_ROOT is the most important item to add to the path variables, the folder we will be using to "install" the programs.  Make sure it is added last so it appears first in the PATH.
-		export PATH="${DEV_ROOT}/bin:${PATH}"
-		export PREFIX_PATHS="${DEV_ROOT};${PREFIX_PATHS}"
-		export RPATHS="${DEV_ROOT}/lib;${RPATHS}"
+		if [ -n "${USE_DEV_ROOT}" ]
+		then
+			export PATH="${DEV_ROOT}/bin:${PATH}"
+			export PREFIX_PATHS="${DEV_ROOT};${PREFIX_PATHS}"
+			export RPATHS="${DEV_ROOT}/lib;${RPATHS}"
+		fi
 
 # This is a setting for MacOS.  This makes it possible to build for previous versions of the operating system.
 # I would set these variables to whatever they are set to currently in Craft.
@@ -202,7 +220,7 @@ echo "BUILD_XCODE              ? [${BUILD_XCODE:-Nope}]"
 echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
 echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 
-echo "TOP_FOLDER               is [${TOP_FOLDER}]"
+echo "ASTRO_ROOT               is [${ASTRO_ROOT}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
 echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
 

@@ -39,5 +39,5 @@
 # This makes a nice link for launching the Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		ln -sf "${DEV_ROOT}/KStars.app" "${TOP_FOLDER}/KStars.app"
+		ln -sf "${DEV_ROOT}/KStars.app" "${ASTRO_ROOT}/KStars.app"
 	fi

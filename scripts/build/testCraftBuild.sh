@@ -89,7 +89,7 @@ EOF
 	processOptions $@
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} ]]
+	if [[ -z ${DIR} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} ]]
 	then
   		display "One or more critical directory variables is blank, please edit build-env.sh."
   		exit 1

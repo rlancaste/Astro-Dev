@@ -39,5 +39,5 @@
 # This makes a nice link for launching the Tester Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then	
-		ln -sf "${DEV_ROOT}/StellarSolverTester.app" "${TOP_FOLDER}/StellarSolverTester.app"
+		ln -sf "${DEV_ROOT}/StellarSolverTester.app" "${ASTRO_ROOT}/StellarSolverTester.app"
 	fi

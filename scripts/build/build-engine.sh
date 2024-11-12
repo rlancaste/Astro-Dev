@@ -194,7 +194,7 @@
 	export USE_FORKED_REPO=""
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${TOP_FOLDER} || -z ${DEV_ROOT} ]]
+	if [[ -z ${DIR} || -z ${DEV_ROOT} ]]
 	then
   		display "One or more critical directory variables is blank, please edit settings.sh."
   		exit 1
@@ -214,7 +214,10 @@
 	fi
 	
 # This sets up the development root directory for "installation"
-	mkdir -p "${DEV_ROOT}"
+	if [ -n "${USE_DEV_ROOT}" ]
+	then
+		mkdir -p "${DEV_ROOT}"
+	fi
 	
 # If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
@@ -229,17 +232,19 @@
 		# We should look into why they are needed.
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
-		
-				mkdir -p "${DEV_ROOT}/include"
-				mkdir -p "${DEV_ROOT}/lib"
-			
-				# This one is for several packages that can't seem to find GSL
-				craftLink include/gsl
-				# These are several libraries that were actually found by KStars, but then did not link properly without being in DEV Root.
-				craftLink lib/libcfitsio.dylib
-				craftLink lib/libgsl.dylib
-				craftLink lib/libgslcblas.dylib
-				craftLink lib/libwcslib.a
+				if [ -n "${USE_DEV_ROOT}" ]
+				then
+					mkdir -p "${DEV_ROOT}/include"
+					mkdir -p "${DEV_ROOT}/lib"
+				
+					# This one is for several packages that can't seem to find GSL
+					craftLink include/gsl
+					# These are several libraries that were actually found by KStars, but then did not link properly without being in DEV Root.
+					craftLink lib/libcfitsio.dylib
+					craftLink lib/libgsl.dylib
+					craftLink lib/libgslcblas.dylib
+					craftLink lib/libwcslib.a
+				fi
 				
 				# This provides a link for kdoctools to be found on MacOS.
 				ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"

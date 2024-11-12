@@ -39,5 +39,5 @@
 # This makes a nice link for launching the Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${TOP_FOLDER}/INDIWebManagerApp.app"
+		ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp.app"
 	fi
