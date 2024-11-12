@@ -12,10 +12,10 @@
 
 # Prepare to run the script by setting all of the environment variables	
 # If you want to customize any of those variables, you can edit this file
-	source ${DIR}/../settings.sh
+	source ${DIR}/settings.sh
 
 # Display the Welcome message.
-	display "This will setup a Development Environment for Astronomical Software related to KStars and INDI on your Computer.  It is based on Craft, which must already be setup using the setupCraft script. It will place the development directory at the location specified.  Edit settings.sh before running any scripts to configure your settings."
+	display "This will setup a Development Environment for Astronomical Software related to KStars and INDI on your Computer.  On MacOS, it is based on Craft or Homebrew, which must already be setup using the setupCraft script.  On Linux, this is not necessary. It will place the development directory at the location specified.  Edit settings.sh before running any scripts to configure your settings."
 
 	read -p "Do you wish to continue? If so, type y. " runscript
 	if [ "$runscript" != "y" ]
@@ -27,7 +27,7 @@
 # This following command will run the setup and build scripts for each of the packages.  You do not have do do this now, but it is good to get it all set up.
 # You can always select certain ones to leave out if you edit the file listed below.
 # Uncomment the command below to install them, but comment it out to not do it.
-	source ${DIR}/../build/build-selectedPackages.sh
+	source ${DIR}/build/build-selectedPackages.sh
 
 
 display "Script Execution Complete"

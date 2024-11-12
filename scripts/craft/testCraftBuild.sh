@@ -10,69 +10,24 @@
 # This gets the directory from which this script is running so it can access files or other scripts in the repo
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
+
+# These are the major script options.  Set these to the options you prefer by commenting them or uncommenting them with a #.
 	
-VERBOSE=""
-VERSION=""
-
-# This will print out how to use the script
-function usage
-{
-
-cat <<EOF
-	options:
-	    -h Display the options for the script
-	    -r Remove everything and do a fresh install
-	    -v Print out verbose output while building
-	    -s Builds everything with the latest stable releases
-	    -m Builds everything with the latest master releases
-	    -q Craft is in quiet mode while building
-EOF
-}
-
-# This function prints the usage information if the user enters an invalid option or no option at all and quits the program 
-	function dieUsage
-	{
-		echo ""
-		echo $*
-		echo ""
-		usage
-		exit 9
-	}
-
-# This function processes the user's options for running the script
-	function processOptions
-	{
-		while getopts "hvmsq" option
-		do
-			case $option in
-				h)
-					usage
-					exit
-					;;
-				v)
-					VERBOSE="v"
-					;;
-				q)
-					VERBOSE="q"
-					;;
-				m)
-					VERSION="master"
-					;;
-				s)
-					VERSION="None"
-					;;
-				*)
-					dieUsage "Unsupported option $option"
-					;;
-			esac
-		done
-		shift $((${OPTIND} - 1))
-
-		echo ""
-		echo "VERBOSE            = ${VERBOSE:-Nope}"
-		echo "VERSION            = ${VERSION:-Nope}"
-	}
-	
+	# This determines the level of verbosity in Craft output.  v means verbose, q means quiet, and leaving it blank is normal.
+		#VERBOSE=""
+		VERBOSE="v"
+		#VERBOSE="q"
+		
+	# This is the version to use for craft building.  master sets all packages to master, None sets them to their default stable versions, and leaving it blank uses the existing craft options.
+		#VERSION=""
+		VERSION="master"
+		#VERSION="None"
+		
+	# These are the options for which packages you want craft to build.  Comment out any you don't want with a #.
+		BUILD_INDI_DRIVERS="Yep"
+		BUILD_STELLARSOLVER="Yep"
+		BUILD_STELLARSOLVERTESTER="Yep"
+		BUILD_KSTARS="Yep"
 	
 ########################################################################################
 # This is where the main part of the script starts!
@@ -83,15 +38,12 @@ EOF
 	source ${DIR}/../settings.sh
 
 # Display the Welcome message.
-	display "This script will test KStars and INDI Builds in Craft.  You can test the latest master or the latest stable releases of packages important to KStars/INDI development.  You can also test your own recipes in the blueprints folder and packaging with craft."
-
-# Process the command line options to determine what to do.
-	processOptions $@
+	display "This script will test KStars, INDI, and StellarSolver Builds in Craft.  You can test the latest master or the latest stable releases of packages important to KStars/INDI development.  You can also test your own recipes in the blueprints folder and packaging with craft."
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${SRC_FOLDER} || -z ${FORKED_SRC_FOLDER} ]]
+	if [[ -z ${DIR} || -z ${CRAFT_ROOT} ]]
 	then
-  		display "One or more critical directory variables is blank, please edit build-env.sh."
+  		display "One or more critical directory variables is blank, please edit settings.sh."
   		exit 1
 	fi
 	
@@ -101,6 +53,9 @@ EOF
 		display "Craft Does Not Exist at the directory specified, please install Craft or edit this script."
 		exit 1
 	fi
+	
+# This sets the craft environment based on the settings.
+	source "${CRAFT_ROOT}/craft/craftenv.sh"
 
 # This sets the version of all the packages as desired if using the -s or -m option.  If these are not specified, it just uses the current settings in craft
 	if [ -n "${VERSION}" ]
@@ -114,13 +69,9 @@ EOF
 		craft --set version="$VERSION" kstars 
 	fi
 	
-	if [ -n "${BUILD_INDI}" ]
+	if [ -n "${BUILD_INDI_DRIVERS}" ]
 	then
 		craft -i"$VERBOSE" indi
-	fi
-	
-	if [ -n "${BUILD_THIRDPARTY}" ]
-	then
 		craft -i"$VERBOSE" indi-3rdparty-libs
 		craft -i"$VERBOSE" indi-3rdparty
 	fi
