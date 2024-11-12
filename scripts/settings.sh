@@ -169,15 +169,18 @@
 	# The folders you are using for your build foundation need to be added to the path variables.
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
-				export PATH="${CRAFT_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
-				export PREFIX_PATHS="${CRAFT_ROOT};${PREFIX_PATHS}"
-				export RPATHS="${CRAFT_ROOT}/lib;${RPATHS}"
+			export PATH="${CRAFT_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
+			export PREFIX_PATHS="${CRAFT_ROOT};${PREFIX_PATHS}"
+			export RPATHS="${CRAFT_ROOT}/lib;${RPATHS}"
 				
 		elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 		then
-				export PATH="${HOMEBREW_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
-				export PREFIX_PATHS="${HOMEBREW_ROOT};${PREFIX_PATHS}"
-				export RPATHS="${HOMEBREW_ROOT}/lib;${RPATHS}"
+			export PATH="${HOMEBREW_ROOT}/bin:${CRAFT_ROOT}/dev-utils/bin:${PATH}"
+			export PREFIX_PATHS="${HOMEBREW_ROOT};${PREFIX_PATHS}"
+			export RPATHS="${HOMEBREW_ROOT}/lib;${RPATHS}"
+		else
+			export PREFIX_PATHS="/usr;/usr/local"
+			export RPATHS="/usr/lib;/usr/local/lib"
 		fi
 	
 	# pkgconfig is not needed on MacOS, but can be found by adding it to the path.
