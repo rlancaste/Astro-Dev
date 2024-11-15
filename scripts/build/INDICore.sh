@@ -36,8 +36,9 @@
 	then
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
-			brewInstallIfNeeded cmake gettext cfitsio libusb theora libcurl libnova
-			brewInstallIfNeeded gsl libjpeg-turbo fftw libev libxisf libiconv
+			display "Installing Dependencies"
+			brewInstallIfNeeded cmake gettext cfitsio libusb theora curl libnova
+			brewInstallIfNeeded gsl libjpeg-turbo fftw libev libiconv
         fi
 	fi
 	

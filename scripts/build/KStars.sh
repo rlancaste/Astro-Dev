@@ -36,8 +36,9 @@
 	then
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
-			brewInstallIfNeeded extra-cmake-modules eigen3 cfitsio libxisf wcslib libraw gsl zlib
-		    brewInstallIfNeeded qt6 qtdeclarative qtsvg qtdatavis3d qtwebsockets qtkeychain
+			display "Installing Dependencies"
+			brewInstallIfNeeded extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib
+		    brewInstallIfNeeded qt6 qtkeychain
 		    
 		    echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for KStars in QT6 on macos"
 		    exit 1

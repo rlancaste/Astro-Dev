@@ -36,7 +36,8 @@
 	then
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
-		    brewInstallIfNeeded qt6 gsl mman cfitsio zlib wcslib
+			display "Installing Dependencies"
+		    brewInstallIfNeeded qt6 gsl cfitsio zlib wcslib
         fi
 	fi
 	

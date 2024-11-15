@@ -37,8 +37,9 @@
 	then
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
- 			brewInstallIfNeeded grep libdc1394 libgphoto2 libnova cfitsio libcurl libgphoto2 libftdi
- 			brewInstallIfNeeded libdc1394 libzmq libraw tiff fftw ffmpeg librtlsdr limesuite opencv
+			display "Installing Dependencies"
+ 			brewInstallIfNeeded grep libdc1394 libgphoto2 libnova cfitsio curl libgphoto2 libftdi
+ 			brewInstallIfNeeded libdc1394 zeromq libraw libtiff fftw ffmpeg librtlsdr limesuite opencv
         fi
 	fi
 
