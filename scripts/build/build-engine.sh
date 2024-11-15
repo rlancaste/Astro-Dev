@@ -23,6 +23,22 @@
 		ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
 	}
 
+#This function installs a program with homebrew if it is not installed, otherwise it moves on.
+	function brewInstallIfNeeded
+	{
+		for package in "$@"
+		do
+			brew ls --versions $package > /dev/null 2>&1
+			if [ $? -ne 0 ]
+			then
+				echo "Installing : $package"
+				brew install $package
+			else
+				echo "brew : $package is already installed"
+			fi
+		done
+	}
+
 # This function will download a git repo if needed, and will update it if not.
 # Note that this function should only be used on the primary repo, not the forked one.  For that see the next function.
 

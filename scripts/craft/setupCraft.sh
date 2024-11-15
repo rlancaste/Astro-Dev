@@ -15,21 +15,6 @@
 	#VERBOSE="v"	   # This option will print more craft output than usual for increased debugging purposes.
 	#VERBOSE="q"	   # This option will print less craft output than usual for "quiet" building.
 
-# This function checks to see if a connection to a website exists.
-#
-	function checkForConnection
-	{
-		testCommand=$(curl -Is $2 | head -n 1)
-		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 200"* ]]
-  		then 
-  			echo "$1 connection was found."
-  		else
-  			echo "$1, ($2), a required connection, was not found, aborting script."
-  			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the script."
-  			exit
-		fi
-	}
-
 # This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 	function setupHomebrew
 	{
@@ -58,7 +43,7 @@
 #This function installs a program with homebrew if it is not installed, otherwise it moves on.
 	function brewInstallIfNeeded
 	{
-		brew ls $1 > /dev/null 2>&1
+		brew ls --versions $1 > /dev/null 2>&1
 		if [ $? -ne 0 ]
 		then
 			echo "Installing : $*"

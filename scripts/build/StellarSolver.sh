@@ -9,7 +9,7 @@
 
 # This gets the directory from which this script is running so it can access files or other scripts in the repo
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
+	
 # This sets up and provides access to all of the methods required to run the script.
 	source ${DIR}/build-engine.sh
 
@@ -29,6 +29,16 @@
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building StellarSolver."
+	
+# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
+	then
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+		    brewInstallIfNeeded qt6 gsl mman cfitsio zlib wcslib
+        fi
+	fi
 	
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory

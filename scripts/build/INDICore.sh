@@ -30,6 +30,17 @@
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building the INDI Core Drivers."
 	
+# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
+	then
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+			brewInstallIfNeeded cmake gettext cfitsio libusb theora libcurl libnova
+			brewInstallIfNeeded gsl libjpeg-turbo fftw libev libxisf libiconv
+        fi
+	fi
+	
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory
 	

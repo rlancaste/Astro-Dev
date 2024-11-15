@@ -31,6 +31,17 @@
 # Display the Welcome message explaining what this script does.
 	display "This will build the INDI 3rd Party Libraries and Drivers."
 
+# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
+	then
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+ 			brewInstallIfNeeded grep libdc1394 libgphoto2 libnova cfitsio libcurl libgphoto2 libftdi
+ 			brewInstallIfNeeded libdc1394 libzmq libraw tiff fftw ffmpeg librtlsdr limesuite opencv
+        fi
+	fi
+
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory
 	

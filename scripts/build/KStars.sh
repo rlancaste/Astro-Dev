@@ -29,7 +29,21 @@
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building KStars."
-	
+
+# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
+	then
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+			brewInstallIfNeeded extra-cmake-modules eigen3 cfitsio libxisf wcslib libraw gsl zlib
+		    brewInstallIfNeeded qt6 qtdeclarative qtsvg qtdatavis3d qtwebsockets qtkeychain
+		    
+		    echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for KStars in QT6 on macos"
+		    exit 1
+		fi
+	fi
+
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory
 	
