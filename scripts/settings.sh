@@ -18,14 +18,15 @@
 		#export BUILD_OFFLINE="Yep" 
 	# This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.		
 		#export CLEAN_BUILD="Yep"
-	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start fresh.  Be careful with this one.
+	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 		#export REMOVE_ALL="Yep"
 	# The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
 		#export USE_QT5="Yep"	
 		
 	# Note: there are options for building with the original source repositories or your own forks.  These options are specific to the packages and not global.  Please see each package's build script for these options.
 
-# This sets the foundation for building everything.  
+# This sets the foundation for building everything.
+# It automatically switches here based on the operating system, but you have multiple choices on each one.
 # On Linux, it can use the system directories or it can use Craft.
 # On MacOS it can use Craft or Homebrew.
 # On Windows, it can use Windows Subsystem for Linux or Craft.
@@ -216,8 +217,8 @@
 # I would set these variables to whatever they are set to currently in Craft.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		export QMAKE_MACOSX_DEPLOYMENT_TARGET=10.15
-		export MACOSX_DEPLOYMENT_TARGET=10.15
+		export QMAKE_MACOSX_DEPLOYMENT_TARGET=12
+		export MACOSX_DEPLOYMENT_TARGET=12
 	fi
 	
 # These are the Program Build options that are common to all the builds. The variables above are heavily used to set this up.
@@ -237,9 +238,13 @@ display "Setting Environment Variables."
 
 echo "OSTYPE                   is [${OSTYPE}]"
 echo "BUILD_FOUNDATION         is [${BUILD_FOUNDATION}]"
+
+echo "USE_DEV_ROOT             ? [${USE_DEV_ROOT:-Nope}]"
 echo "BUILD_XCODE              ? [${BUILD_XCODE:-Nope}]"
 echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
 echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
+echo "REMOVE_ALL               ? [${REMOVE_ALL:-Nope}]"
+echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
 
 echo "ASTRO_ROOT               is [${ASTRO_ROOT}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
