@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Setup Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>

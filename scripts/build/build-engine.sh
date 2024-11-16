@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -23,7 +23,9 @@
 		ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
 	}
 
-#This function installs a program with homebrew if it is not installed, otherwise it moves on.
+# This function installs a program with homebrew if it is not installed, otherwise it moves on.
+# It accepts a list of packages or single packages separated by spaces.
+# Note that we could also just say brew packagename, but that takes longer than this method.
 	function brewInstallIfNeeded
 	{
 		for package in "$@"
@@ -37,6 +39,22 @@
 				echo "brew : $package is already installed"
 			fi
 		done
+	}
+
+# This function will install dependencies required for the build.
+	function installDependencies
+	{
+		display "Installing Dependencies"
+		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
+		then
+			source "${CRAFT_ROOT}/craft/craftenv.sh"
+			craft --install-deps "${PACKAGE_SHORT_NAME}"
+		else
+			if [[ "${OSTYPE}" == "darwin"* ]]
+			then
+				brewInstallIfNeeded ${HOMEBREW_DEPENDENCIES} # Don't put quotes here so that it does each package separately.
+			fi
+		fi
 	}
 
 # This function will download a git repo if needed, and will update it if not.

@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -19,6 +19,7 @@
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="KStars"
+	export PACKAGE_SHORT_NAME="kstars"
 	export REPO="https://github.com/KDE/kstars.git"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
 	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
@@ -26,23 +27,18 @@
 	export BUILD_SUBDIR="kstars-build"
 	export XCODE_PROJECT_NAME="kstars"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=OFF -DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
+	export HOMEBREW_DEPENDENCIES="extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib qt6 qtkeychain"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building KStars."
-
-# The following lines will install dependencies if craft is not being used as the foundation for the build.
+	
+# This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
-	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
-	then
-		if [[ "${OSTYPE}" == "darwin"* ]]
-		then
-			display "Installing Dependencies"
-			brewInstallIfNeeded extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib
-		    brewInstallIfNeeded qt6 qtkeychain
-		    
-		    echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for KStars in QT6 on macos"
-		    exit 1
-		fi
+	installDependencies
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" && "${OSTYPE}" == "darwin"* ]]
+	then	    
+		echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for KStars in QT6 on macos"
+		exit 1
 	fi
 
 # This method call will prepare the Source Directory to build the package

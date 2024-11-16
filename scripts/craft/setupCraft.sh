@@ -40,7 +40,8 @@
 		fi
 	}
 
-#This function installs a program with homebrew if it is not installed, otherwise it moves on.
+# This function installs a program with homebrew if it is not installed, otherwise it moves on printing a message.
+# It can take one package or a bunch of packages on one line separated with spaces.
 	function brewInstallIfNeeded
 	{
 		brew ls --versions $1 > /dev/null 2>&1
@@ -177,12 +178,12 @@
 		
 	display "CRAFT COMPLETE"
 	
-# This will create some symlinks that make it easier to edit INDI and KStars
+# This will create some symlinks that make it easier to find needed folders in craft to work on Astronomical Software
 	display "Creating symlinks"
 	
-	if [ ! -d ${SHORTCUTS_DIR} ]
+	if [ ! -d "${SHORTCUTS_DIR}" ]
 	then
-		mkdir -p ${SHORTCUTS_DIR}
+		mkdir -p "${SHORTCUTS_DIR}"
 	else
 		if [ "$(ls -A ${SHORTCUTS_DIR})" ] # shortcuts directory is not empty
 		then

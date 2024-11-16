@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -19,6 +19,7 @@
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="StellarSolver"
+	export PACKAGE_SHORT_NAME="stellarsolver"
 	export REPO="https://github.com/rlancaste/stellarsolver.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/stellarsolver.git"
@@ -26,20 +27,14 @@
 	export BUILD_SUBDIR="stellar-build"
 	export XCODE_PROJECT_NAME="StellarSolver"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF -DUSE_QT5=OFF"
+	export HOMEBREW_DEPENDENCIES="qt6 gsl cfitsio zlib wcslib"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building StellarSolver."
 	
-# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
-	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
-	then
-		if [[ "${OSTYPE}" == "darwin"* ]]
-		then
-			display "Installing Dependencies"
-		    brewInstallIfNeeded qt6 gsl cfitsio zlib wcslib
-        fi
-	fi
+	installDependencies
 	
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory

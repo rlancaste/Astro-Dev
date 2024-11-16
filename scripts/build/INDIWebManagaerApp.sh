@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -19,6 +19,7 @@
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Web Manager App"
+	export PACKAGE_SHORT_NAME="indiwebmanagerapp"
 	export REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
@@ -26,21 +27,18 @@
 	export BUILD_SUBDIR="webmanager-build"
 	export XCODE_PROJECT_NAME="INDIWebManagerApp"
 	export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF"
+	export HOMEBREW_DEPENDENCIES="qt6 extra-cmake-modules"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building INDI Web Manager App."
 
-# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
-	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
-	then
-		if [[ "${OSTYPE}" == "darwin"* ]]
-		then
-			display "Installing Dependencies"
-		    brewInstallIfNeeded qt6 extra-cmake-modules
-		    echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for KStars in QT6 on macos"
-		    exit 1
-        fi
+	installDependencies
+	if [[ "${BUILD_FOUNDATION}" != "CRAFT" && "${OSTYPE}" == "darwin"* ]]
+	then	    
+		echo "A list of kf6 packages are needed, but are not currently available to my knowledge in homebrew.  Please use Craft for INDIWebManagerApp in QT6 on macos"
+		exit 1
 	fi
 	
 # This method call will prepare the Source Directory to build the package

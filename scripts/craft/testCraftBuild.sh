@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KDE Craft Testing Script for KStars and INDI Development
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>

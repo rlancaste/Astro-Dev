@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -19,6 +19,7 @@
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI 3rd Party Libraries"
+	export PACKAGE_SHORT_NAME="indi-3rdparty"
 	export REPO="https://github.com/indilib/indi-3rdparty.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi-3rdparty.git"	
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi-3rdparty.git"
@@ -27,21 +28,14 @@
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_LIBS=ON"
 	#export PACKAGE_BUILD_OPTIONS="${PACKAGE_BUILD_OPTIONS} -DFIX_MACOS_LIBS=ON" # Uncomment this line to fix 3rd Party drivers with linking issues.
 	export XCODE_PROJECT_NAME="libindi-3rdparty"
+	export HOMEBREW_DEPENDENCIES="grep libdc1394 libgphoto2 libnova cfitsio curl libgphoto2 libftdi libdc1394 zeromq libraw libtiff fftw ffmpeg librtlsdr limesuite opencv"
 	
 # Display the Welcome message explaining what this script does.
 	display "This will build the INDI 3rd Party Libraries and Drivers."
 
-# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
-	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
-	then
-		if [[ "${OSTYPE}" == "darwin"* ]]
-		then
-			display "Installing Dependencies"
- 			brewInstallIfNeeded grep libdc1394 libgphoto2 libnova cfitsio curl libgphoto2 libftdi
- 			brewInstallIfNeeded libdc1394 zeromq libraw libtiff fftw ffmpeg librtlsdr limesuite opencv
-        fi
-	fi
+	installDependencies
 
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory

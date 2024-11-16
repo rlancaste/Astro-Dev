@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 #	KStars and INDI Related Astronomy Software Development Build Scripts
 #﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
@@ -19,6 +19,7 @@
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Core Drivers"
+	export PACKAGE_SHORT_NAME="indi"
 	export REPO="https://github.com/indilib/indi.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
@@ -26,21 +27,14 @@
 	export BUILD_SUBDIR="indi-build/indi-core"
 	export PACKAGE_BUILD_OPTIONS=""
 	export XCODE_PROJECT_NAME="libindi"
+	export HOMEBREW_DEPENDENCIES="cmake gettext cfitsio libusb theora curl libnova gsl libjpeg-turbo fftw libev libiconv"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building the INDI Core Drivers."
 	
-# The following lines will install dependencies if craft is not being used as the foundation for the build.
+# This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
-	if [[ "${BUILD_FOUNDATION}" != "CRAFT" ]]
-	then
-		if [[ "${OSTYPE}" == "darwin"* ]]
-		then
-			display "Installing Dependencies"
-			brewInstallIfNeeded cmake gettext cfitsio libusb theora curl libnova
-			brewInstallIfNeeded gsl libjpeg-turbo fftw libev libiconv
-        fi
-	fi
+	installDependencies
 	
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory
