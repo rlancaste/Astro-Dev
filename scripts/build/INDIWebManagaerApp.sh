@@ -20,17 +20,18 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Web Manager App"
 	export PACKAGE_SHORT_NAME="indiwebmanagerapp"
-	export REPO="https://github.com/rlancaste/INDIWebManagerApp.git"
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/INDIWebManagerApp.git"
-	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/INDIWebManagerApp.git"
-	export SRC_SUBDIR="INDIWebManagerApp"
 	export BUILD_SUBDIR="webmanager-build"
-	export XCODE_PROJECT_NAME="INDIWebManagerApp"
 	export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF"
 	export HOMEBREW_DEPENDENCIES="qt6 extra-cmake-modules"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building INDI Web Manager App."
+
+# This automatically sets the repositories based on the package information above and your Username variables from settings.sh
+# If any of these are wrong or the variables are wrong you should change this.
+	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 
 # This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.

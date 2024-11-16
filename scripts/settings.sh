@@ -80,7 +80,7 @@
 			export TOP_SRC_DIR="${ASTRO_ROOT}/src"
 		fi
 		
-		export SRC_DIR="${TOP_SRC_DIR}/${SRC_SUBDIR}"
+		export SRC_DIR="${TOP_SRC_DIR}/${PACKAGE_SHORT_NAME}"
 	}
 	
 # This script supports building with different build systems.  While the source folders should work for all systems, the build folders will not.

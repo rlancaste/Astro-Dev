@@ -20,17 +20,18 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="StellarSolver"
 	export PACKAGE_SHORT_NAME="stellarsolver"
-	export REPO="https://github.com/rlancaste/stellarsolver.git"
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/stellarsolver.git"
-	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/stellarsolver.git"
-	export SRC_SUBDIR="stellarsolver"
 	export BUILD_SUBDIR="stellar-build"
-	export XCODE_PROJECT_NAME="StellarSolver"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF -DUSE_QT5=OFF"
 	export HOMEBREW_DEPENDENCIES="qt6 gsl cfitsio zlib wcslib"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building StellarSolver."
+
+# This automatically sets the repositories based on the package information above and your Username variables from settings.sh
+# If any of these are wrong or the variables are wrong you should change this.
+	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
 # This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.

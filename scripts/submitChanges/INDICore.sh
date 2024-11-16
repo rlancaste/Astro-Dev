@@ -15,9 +15,12 @@
 
 # This section sets the critical options for finding the repo and forked src folder.
 	export PACKAGE_NAME="INDI Core Drivers"
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
-	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
-	export SRC_SUBDIR="indi"
+	export PACKAGE_SHORT_NAME="indi"
+
+# This automatically sets the repositories based on the package information above and your Username variables from settings.sh
+# If any of these are wrong or the variables are wrong you should change this.
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch

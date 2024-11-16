@@ -20,7 +20,7 @@
 	{
 	
 		# This checks to make sure all variables used in this method have values, since it might be bad if they do not.
-			if [[ -z ${PACKAGE_NAME} || -z ${FORKED_REPO_HTML} || -z ${SRC_SUBDIR} ]]
+			if [[ -z ${PACKAGE_NAME} || -z ${FORKED_REPO_HTML} || -z ${PACKAGE_SHORT_NAME} ]]
 			then
 				display "One or more critical variables is blank, please edit the scripts."
 				exit 1

@@ -20,17 +20,18 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="KStars"
 	export PACKAGE_SHORT_NAME="kstars"
-	export REPO="https://github.com/KDE/kstars.git"
-	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/kstars.git"
-	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/kstars.git"
-	export SRC_SUBDIR="kstars"
 	export BUILD_SUBDIR="kstars-build"
-	export XCODE_PROJECT_NAME="kstars"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=OFF -DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
 	export HOMEBREW_DEPENDENCIES="extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib qt6 qtkeychain"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building KStars."
+
+# This automatically sets the repositories based on the package information above and your Username variables from settings.sh
+# If any of these are wrong or the variables are wrong you should change this.
+	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
 # This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.

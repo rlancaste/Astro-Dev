@@ -20,17 +20,18 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Core Drivers"
 	export PACKAGE_SHORT_NAME="indi"
-	export REPO="https://github.com/indilib/indi.git"
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/indi.git"	
-	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/indi.git"
-	export SRC_SUBDIR="indi"
 	export BUILD_SUBDIR="indi-build/indi-core"
 	export PACKAGE_BUILD_OPTIONS=""
-	export XCODE_PROJECT_NAME="libindi"
 	export HOMEBREW_DEPENDENCIES="cmake gettext cfitsio libusb theora curl libnova gsl libjpeg-turbo fftw libev libiconv"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building the INDI Core Drivers."
+
+# This automatically sets the repositories based on the package information above and your Username variables from settings.sh
+# If any of these are wrong or the variables are wrong you should change this.
+	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
+	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
 # This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.

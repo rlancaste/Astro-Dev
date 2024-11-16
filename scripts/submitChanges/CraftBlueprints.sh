@@ -15,9 +15,10 @@
 
 # This section sets the critical options for finding the repo and forked src folder.
 	export PACKAGE_NAME="Craft BluePrints"
+	export PACKAGE_SHORT_NAME="craft-blueprints-kde"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/craft-blueprints-kde.git"
 	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/craft-blueprints-kde.git"
-	export SRC_SUBDIR="craft-blueprints-kde"
+
 	
 # Check to make sure that you are not in the master branch, and make a branch if needed.
 # Then committing changes in the new branch or the current branch
