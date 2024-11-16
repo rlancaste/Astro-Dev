@@ -22,6 +22,31 @@
 	{
 		ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
 	}
+	
+# This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
+	function setupHomebrew
+	{
+		checkForConnection Homebrew "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+		
+		if [[ $(command -v brew) == "" ]]
+		then
+			display "Installing Homebrew."
+			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+		else
+			#This will remove all the homebrew packages if desired.
+			if [ -n "${REMOVE_ALL}" ]
+			then
+				display "You have selected the REMOVE_ALL option.  Warning, this will clear all currently installed homebrew packages."
+				read -p "Do you really wish to proceed? (type y/n) " runscript
+				if [ "$runscript" != "y" ]
+				then
+					echo "Quitting the script as you requested."
+					exit
+				fi
+				brew remove --force $(brew list) --ignore-dependencies
+			fi  
+		fi
+	}
 
 # This function installs a program with homebrew if it is not installed, otherwise it moves on.
 # It accepts a list of packages or single packages separated by spaces.
@@ -39,6 +64,90 @@
 				echo "brew : $package is already installed"
 			fi
 		done
+	}
+
+# This function installs Craft on various operating systems
+	function installCraft
+	{
+		if [[ "${OSTYPE}" == "darwin"* ]]
+		then
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			
+		elif [[ "$OSTYPE" == "msys" ]]
+		then
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && /bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+		else
+			python3 -c "$(wget https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -O -)" --prefix "${CRAFT_ROOT}"
+		fi
+	}
+
+# This function will setup Craft with the requested options.
+	function setupCraft
+	{
+		# Before starting, check to see if craft's remote servers are accessible
+			checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
+			
+		# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
+			if [[ -z ${ASTRO_ROOT} || -z ${CRAFT_ROOT} ]]
+			then
+				display "One or more critical directory variables is blank, please edit settings.sh."
+				exit 1
+			fi
+		
+		# This will set up items required for MacOS
+		
+			if [[ "${OSTYPE}" == "darwin"* ]]
+			then
+			
+				# This installs the xcode command line tools if not installed yet.
+				# Yes these tools will be automatically installed if the user has never used git before
+				# But sometimes they need to be installed again.
+					
+					if ! command -v xcode-select &> /dev/null
+					then
+						display "Installing xcode command line tools"
+						xcode-select --install
+					fi
+					
+				# This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
+					setupHomebrew
+				
+				# This will make sure Homebrew is up to date and display the message.
+					display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
+					brew upgrade
+					
+				# python is the only one required for craft, but the others are needed by the other scripts in this Repo or QT Creator
+					brewInstallIfNeeded cmake python ninja gettext
+			fi
+		
+		# This will install craft if it is not installed yet.  It will clear the old one if the REMOVE_ALL option was selected.
+			cd /tmp # Set the working directory to /tmp because otherwise setup.py for craft will be placed in the user directory and that is messy.
+			if [ -d "${CRAFT_ROOT}" ]
+			then
+				# This will remove the current craft if desired.
+				if [ -n "$REMOVE_ALL" ]
+				then
+					display "You have selected the REMOVE_ALL option.  Warning, this will clear the entire craft directory."
+					read -p "?Do you really wish to proceed? (type y/n) " runscript2
+					
+					if [ "$runscript2" != "y" ]
+					then
+						echo "Quitting the script as you requested."
+						exit
+					fi
+					if [ -d "${CRAFT_ROOT}" ]
+					then
+						rm -rf "${CRAFT_ROOT}"
+					fi
+					
+					mkdir -p "${CRAFT_ROOT}"
+					installCraft
+				fi
+			else
+				display "Installing craft"
+				mkdir -p "${CRAFT_ROOT}"
+				installCraft
+			fi 
 	}
 
 # This function will install dependencies required for the build.
@@ -247,6 +356,9 @@
 		fi
 	fi
 	
+# This will create the Astro Root Directory if it doesn't exist
+	mkdir -p "${ASTRO_ROOT}"
+	
 # This sets up the development root directory for "installation"
 	if [ -n "${USE_DEV_ROOT}" ]
 	then
@@ -256,10 +368,9 @@
 # If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
-		if [ ! -d "${CRAFT_ROOT}" ]
+		if [[ ! -d "${CRAFT_ROOT}" ||  -n "${REMOVE_ALL}" ]]
 		then
-			display "Craft Does Not Exist at the directory specified, please install Craft, run craftSetup.sh, or edit settings.sh."
-			exit 1
+			setupCraft
 		fi
 		
 		# These links are needed on MacOS to successfully build outside of the main craft directories.
@@ -282,7 +393,6 @@
 				
 				# This provides a link for kdoctools to be found on MacOS.
 				ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
-			
 			fi
 			
 	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]

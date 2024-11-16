@@ -21,11 +21,19 @@
 	export PACKAGE_NAME="KStars"
 	export PACKAGE_SHORT_NAME="kstars"
 	export BUILD_SUBDIR="kstars-build"
-	export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=OFF -DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
+	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
 	export HOMEBREW_DEPENDENCIES="extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib qt6 qtkeychain"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building KStars."
+
+# This will dynamically set the QT5 or QT6 build option using the USE_QT5 variable in settings.sh
+	if [ -n "${USE_QT5}" ]
+	then
+		export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+	else
+		export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+	fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.

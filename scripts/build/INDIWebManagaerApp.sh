@@ -21,11 +21,19 @@
 	export PACKAGE_NAME="INDI Web Manager App"
 	export PACKAGE_SHORT_NAME="indiwebmanagerapp"
 	export BUILD_SUBDIR="webmanager-build"
-	export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF"
+	export PACKAGE_BUILD_OPTIONS=""
 	export HOMEBREW_DEPENDENCIES="qt6 extra-cmake-modules"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building INDI Web Manager App."
+
+# This will dynamically set the QT5 or QT6 build option using the USE_QT5 variable in settings.sh
+	if [ -n "${USE_QT5}" ]
+	then
+		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+	else
+		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+	fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.

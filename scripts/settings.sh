@@ -17,7 +17,11 @@
 	# This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
 		#export BUILD_OFFLINE="Yep" 
 	# This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.		
-		#export CLEAN_BUILD="Yep"	
+		#export CLEAN_BUILD="Yep"
+	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start fresh.  Be careful with this one.
+		#export REMOVE_ALL="Yep"
+	# The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
+		#export USE_QT5="Yep"	
 		
 	# Note: there are options for building with the original source repositories or your own forks.  These options are specific to the packages and not global.  Please see each package's build script for these options.
 
@@ -105,6 +109,11 @@
 			export BUILD_DIR="${BUILD_DIR}-xcode"
 		fi
 		
+		if [ -n "${USE_QT5}" ]
+		then
+			export BUILD_DIR="${BUILD_DIR}-QT5"
+		fi
+		
 		if [ -n "${USE_FORKED_REPO}" ]
 		then
 			export BUILD_DIR="${BUILD_DIR}-forked"
@@ -121,8 +130,12 @@
 		export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
 	# This is the Homebrew Root Folder that will be used as a basis for building
 		export HOMEBREW_ROOT="/usr/local"
-	# This is the location of the craft shortcuts directory
-		export SHORTCUTS_DIR="${ASTRO_ROOT}/craft-shortcuts"
+
+# This is set up so that you can build in QT5 separate from QT6
+	if [ -n "${USE_QT5}" ]
+	then
+		export CRAFT_ROOT="${CRAFT_ROOT}-QT5"
+	fi
 
 # Based on whether you choose to use the DEV_ROOT folder option, this will set up the DEV_ROOT based on the foundation for the build, since the "installed" files have different linkings.
 
@@ -150,6 +163,11 @@
 		else
 			export DEV_ROOT="/usr/local"
 		fi
+	fi
+	
+	if [[ -n "${USE_QT5}" && -n "${USE_DEV_ROOT}" ]]
+	then
+		export DEV_ROOT="${DEV_ROOT}-QT5"
 	fi
 	
 # These commands add paths to the PATH and Prefixes for building.
