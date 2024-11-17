@@ -23,6 +23,7 @@
 	export BUILD_SUBDIR="indi-build/indi-core"
 	export PACKAGE_BUILD_OPTIONS=""
 	export HOMEBREW_DEPENDENCIES="cmake gettext cfitsio libusb theora curl libnova gsl libjpeg-turbo fftw libev libiconv"
+	export UBUNTU_DEPENDENCIES="cmake git build-essential libcfitsio-dev libusb-1.0-0-dev libtheora-dev libcurl4-gnutls-dev libgsl-dev libjpeg-dev libfftw3-dev libev-dev"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building the INDI Core Drivers."

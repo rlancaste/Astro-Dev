@@ -23,6 +23,7 @@
 	export BUILD_SUBDIR="kstars-build"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
 	export HOMEBREW_DEPENDENCIES="extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib qt6 qtkeychain"
+	export UBUNTU_DEPENDENCIES="build-essential cmake git extra-cmake-modules libeigen3-dev libcfitsio-dev zlib1g-dev extra-cmake-modules kinit-dev gettext libnova-dev libgsl-dev libraw-dev wcslib-dev xplanet xplanet-images libsecret-1-dev breeze-icon-theme qml-module-qtquick-controls qml-module-qtquick-layouts"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building KStars."
@@ -31,8 +32,10 @@
 	if [ -n "${USE_QT5}" ]
 	then
 		export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev libkf5plotting-dev libqt5svg5-dev libkf5xmlgui-dev libkf5kio-dev libkf5newstuff-dev libkf5doctools-dev libkf5notifications-dev qtdeclarative5-dev libkf5crash-dev libkf5notifyconfig-dev libqt5websockets5-dev qt5keychain-dev libqt5datavisualization5-dev"
 	else
 		export PACKAGE_BUILD_OPTIONS="-DBUILD_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qt6-base-dev libkf6plotting-dev libqt6svg6-dev libkf6xmlgui-dev libkf6kio-dev libkf6newstuff-dev libkf6doctools-dev libkf6notifications-dev qt6-declarative-dev libkf6crash-dev libkf6notifyconfig-dev libqt6websockets6-dev qtkeychain-qt6-dev qt6-datavis3d-dev"
 	fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh

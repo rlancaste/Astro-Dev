@@ -23,6 +23,7 @@
 	export BUILD_SUBDIR="stellar-build"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF"
 	export HOMEBREW_DEPENDENCIES="qt6 gsl cfitsio zlib wcslib"
+	export UBUNTU_DEPENDENCIES="git cmake libgl1-mesa-dev libcfitsio-dev libgsl-dev wcslib-dev"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building StellarSolver."
@@ -31,8 +32,10 @@
 	if [ -n "${USE_QT5}" ]
 	then
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev"
 	else
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qt6-base-dev"
 	fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh

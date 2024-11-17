@@ -23,6 +23,7 @@
 	export BUILD_SUBDIR="webmanager-build"
 	export PACKAGE_BUILD_OPTIONS=""
 	export HOMEBREW_DEPENDENCIES="qt6 extra-cmake-modules"
+	export UBUNTU_DEPENDENCIES="cmake git extra-cmake-modules gettext"
 
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building INDI Web Manager App."
@@ -31,8 +32,10 @@
 	if [ -n "${USE_QT5}" ]
 	then
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev libkf5kio-dev libkf5doctools-dev libkf5config-dev libqt5websockets5-dev "
 	else
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qt6-base-dev libkf6kio-dev libkf6doctools-dev libkf6config-dev libqt6websockets6-dev"
 	fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh

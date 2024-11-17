@@ -334,6 +334,9 @@
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
 				brewInstallIfNeeded ${HOMEBREW_DEPENDENCIES} # Don't put quotes here so that it does each package separately.
+			elif [[ "${OSTYPE}" == "linux-gnu" ]]
+			then
+				sudo apt -y install ${UBUNTU_DEPENDENCIES} # Don't put quotes here so that it does each package separately.
 			fi
 		fi
 	}

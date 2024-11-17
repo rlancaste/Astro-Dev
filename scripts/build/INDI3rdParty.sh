@@ -24,6 +24,8 @@
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_LIBS=ON"
 	#export PACKAGE_BUILD_OPTIONS="${PACKAGE_BUILD_OPTIONS} -DFIX_MACOS_LIBS=ON" # Uncomment this line to fix 3rd Party drivers with linking issues.
 	export HOMEBREW_DEPENDENCIES="grep libdc1394 libgphoto2 libnova cfitsio curl libgphoto2 libftdi libdc1394 zeromq libraw libtiff fftw ffmpeg librtlsdr limesuite opencv"
+	export UBUNTU_DEPENDENCIES="cmake git build-essential cdbs dkms fxload libdc1394-dev libgphoto2-dev libnova-dev libcfitsio-dev libcurl4-gnutls-dev libftdi-dev libzmq3-dev libraw-dev libtiff-dev" 
+	export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} libfftw3-dev ffmpeg libavcodec-dev libavdevice-dev libgps-dev libboost-regex-dev librtlsdr-dev liblimesuite-dev zlib1g-dev"
 	
 # Display the Welcome message explaining what this script does.
 	display "This will build the INDI 3rd Party Libraries and Drivers."
