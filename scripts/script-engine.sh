@@ -435,7 +435,7 @@
 			# This will attempt to update the fork to match the upstream master
 			display "Updating ${PACKAGE_NAME} GIT repository"
 			cd "${SRC_DIR}"
-			git remote show upstream -q >/dev/null 2>&1
+			git remote show upstream >/dev/null 2>&1
 			if [ $? -eq 0 ]
 			then
 				echo "The Local Forked Repo already has an upstream set."

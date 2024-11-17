@@ -142,8 +142,18 @@
 				fi
 				
 				# This provides a link for kdoctools to be found on MacOS.
-				ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
-			fi
+					if [ -n "${USE_QT5}" ]
+					then
+						if [ ! -e "${HOME}/Library/Application Support/kf5" ]
+						then
+							ln -s "${CRAFT_ROOT}/share/kf5" "${HOME}/Library/Application Support/kf5"
+						fi
+					else
+						if [ ! -e "${HOME}/Library/Application Support/kf6" ]
+						then
+							ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
+						fi
+					fi
 			
 	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 	then
