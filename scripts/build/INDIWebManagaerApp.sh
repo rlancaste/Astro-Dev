@@ -37,7 +37,7 @@
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.
-	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
+	export REPO="https://github.com/rlancaste/${PACKAGE_SHORT_NAME}.git"
 	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
 	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 

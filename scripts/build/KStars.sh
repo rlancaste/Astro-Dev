@@ -37,9 +37,9 @@
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.
-	export REPO="https://github.com/indilib/${PACKAGE_SHORT_NAME}.git"
-	export FORKED_REPO="git@github.com:${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"	
-	export FORKED_REPO_HTML="https://github.com/${GIT_USERNAME}/${PACKAGE_SHORT_NAME}.git"
+	export REPO="https://github.com/KDE/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/${PACKAGE_SHORT_NAME}.git"
+	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
 # This command will install dependencies for the package.
 # If you know the dependencies are already installed, you can skip this step by commenting it out with a #.
