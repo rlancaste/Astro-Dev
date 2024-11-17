@@ -202,7 +202,10 @@
 # This function links a file or folder in the dev directory to one in the Homebrew-root directory
 	function homebrewLink
 	{
-		ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
+		if [ ! -e "${DEV_ROOT}/$1" ]
+		then
+			ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
+		fi
 	}
 	
 # This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
@@ -275,7 +278,10 @@
 # This function links a file or folder in the dev directory to one in the craft-root directory
 	function craftLink
 	{
-		ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
+		if [ ! -e "${DEV_ROOT}/$1" ]
+		then
+			ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
+		fi
 	}
 
 # This function installs Craft on various operating systems
@@ -429,10 +435,18 @@
 			# This will attempt to update the fork to match the upstream master
 			display "Updating ${PACKAGE_NAME} GIT repository"
 			cd "${SRC_DIR}"
-			git remote add upstream "${REPO}"
+			git remote show upstream -q >/dev/null 2>&1
+			if [ $? -eq 0 ]
+			then
+				echo "The Local Forked Repo already has an upstream set."
+			else
+				 "Setting the remote upstream of the local fork to ${REPO}"
+				git remote add upstream "${REPO}"
+			fi
 			git fetch upstream
 			git pull upstream master
 			git push
+			echo "Your fork should be updated."
 		fi
 	}
 
