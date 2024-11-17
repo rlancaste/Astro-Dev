@@ -458,7 +458,7 @@
 	function downloadOrUpdateRepository
 	{
 		# This checks if any critical variables for this function are not set.
-			if [[ -z "${SRC_DIR}" || -z "${TOP_SRC_DIR}" || -z "${REPO}" || -z "${PACKAGE_NAME}" ]]
+			if [[ -z "${SRC_DIR}" || -z "${TOP_SRC_DIR}" || -z "${PACKAGE_NAME}" ]]
 			then
 				display "Error.  One of the variables required by downloadOrUpdateRepository did not get set correctly."
 				exit 1
@@ -472,17 +472,30 @@
 				exit
 			fi
 		else
-			checkForConnection "${PACKAGE_NAME}" "${REPO}"
-			mkdir -p "${TOP_SRC_DIR}"
-			if [ ! -d "${SRC_DIR}" ]
+			if [ -n "${PACKAGE_ARCHIVE}" ]
 			then
-				display "Downloading ${PACKAGE_NAME} GIT repository"
+				mkdir -p "${TOP_SRC_DIR}"
 				cd "${TOP_SRC_DIR}"
-				git clone "${REPO}"
+				curl -L "${PACKAGE_ARCHIVE}" | tar zxv -C "${TOP_SRC_DIR}"
 			else
-				display "Updating ${PACKAGE_NAME} GIT repository"
-				cd "${SRC_DIR}"
-				git pull
+				# This checks if any critical variables for this function are not set.
+				if [ -z "${REPO}" ]
+				then
+					display "Error.  One of the variables required by downloadOrUpdateRepository did not get set correctly."
+					exit 1
+				fi
+				checkForConnection "${PACKAGE_NAME}" "${REPO}"
+				mkdir -p "${TOP_SRC_DIR}"
+				if [ ! -d "${SRC_DIR}" ]
+				then
+					display "Downloading ${PACKAGE_NAME} GIT repository"
+					cd "${TOP_SRC_DIR}"
+					git clone "${REPO}"
+				else
+					display "Updating ${PACKAGE_NAME} GIT repository"
+					cd "${SRC_DIR}"
+					git pull
+				fi
 			fi
 		fi
 	}
