@@ -32,7 +32,7 @@
 	source ${DIR}/build/StellarSolver.sh
 	source ${DIR}/build/KStars.sh
 	source ${DIR}/build/INDIWebManagaerApp.sh
-	source ${DIR}/build/setup-craftBlueprints.sh
+	source ${DIR}/craft/setup-craftBlueprints.sh
 
 display "Script Execution Complete"
 read -p "Ending Script. Hit enter to exit." var 
