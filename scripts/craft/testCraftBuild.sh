@@ -29,7 +29,7 @@
 		BUILD_STELLARSOLVERTESTER="Yep"
 		BUILD_KSTARS="Yep"
 	
-########################################################################################
+###################################################
 # This is where the main part of the script starts!
 #
 

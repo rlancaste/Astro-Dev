@@ -71,7 +71,7 @@
 		export HOMEBREW_ROOT="/usr/local"
 
 # This is a setting for MacOS.  This makes it possible to build for previous versions of the operating system.
-# I would set these variables to whatever they are set to currently in Craft.
+# I would set these variables to whatever they are set to currently in Craft.  See this page: https://doc.qt.io/qt-6/macos.html
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
 		export QMAKE_MACOSX_DEPLOYMENT_TARGET=12
@@ -79,13 +79,26 @@
 	fi
 
 # This function will set the other script settings needed to begin the build scripts.  Please look at script-engine.sh if you want to customize this.
+# In this function you will find settings like the general build options, as well as settings for PATH, PREFIX PATHS, and RPATHS
 	automaticallySetScriptSettings
-		
+
+
+######################################################################
+# Printing out essential information for the user running the scripts.
+
 display "Setting Environment Variables."
 
+# This is not a setting but is very important since the OS determines lots of other settings automatically.
 echo "OSTYPE                   is [${OSTYPE}]"
+
+# These settings are vital if you want to fork a repo and do any editing.
+echo "GIT_USERNAME             is [${GIT_USERNAME}]"
+echo "GITLAB_USERNAME          is [${GITLAB_USERNAME}]"
+
+# The Foundation for the build, An Extremely important and partially automatic selection.  Set above in the options.  
 echo "BUILD_FOUNDATION         is [${BUILD_FOUNDATION}]"
 
+# Primary Global Script Options set above in the options
 echo "USE_DEV_ROOT             ? [${USE_DEV_ROOT:-Nope}]"
 echo "BUILD_XCODE              ? [${BUILD_XCODE:-Nope}]"
 echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
@@ -93,10 +106,12 @@ echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 echo "REMOVE_ALL               ? [${REMOVE_ALL:-Nope}]"
 echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
 
+# Key Directory paths determined above in the options
 echo "ASTRO_ROOT               is [${ASTRO_ROOT}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
 echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
 
+# Settings automatically set in automaticallySetScriptSettings in script-engine.sh
 echo "PREFIX_PATHS             are [${PREFIX_PATHS}]"
 echo "RPATHS                   are [${RPATHS}]"
 echo "PATH                     is [${PATH}]"

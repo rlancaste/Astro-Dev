@@ -15,7 +15,7 @@
 	export USE_FORKED_REPO="Yes"
 
 # This sets up and provides access to all of the methods required to run the script.
-	source ${DIR}/../build/build-engine.sh
+	source ${DIR}/../settings.sh
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="Craft BluePrints"

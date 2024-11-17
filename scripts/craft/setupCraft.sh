@@ -11,7 +11,7 @@
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	
 # Prepare to run the script by setting all of the environment variables	and loading the functions
-	source ${DIR}/../build/buildengine.sh
+	source ${DIR}/../settings.sh
 
 # This method sets up craft with desired options.
 	setupCraft
