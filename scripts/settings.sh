@@ -91,6 +91,9 @@ display "Setting Environment Variables."
 # This is not a setting but is very important since the OS determines lots of other settings automatically.
 echo "OSTYPE                   is [${OSTYPE}]"
 
+# This is how many processors will be used when building.  It is automatically set in automaticallySetScriptSettings in script-engine.sh
+echo "NUM_PROCESSORS           are [${NUM_PROCESSORS}]"
+
 # These settings are vital if you want to fork a repo and do any editing.
 echo "GIT_USERNAME             is [${GIT_USERNAME}]"
 echo "GITLAB_USERNAME          is [${GITLAB_USERNAME}]"

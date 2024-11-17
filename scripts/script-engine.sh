@@ -93,6 +93,14 @@
 # This automatically Sets the other options from what was requested in settings.sh
 	function automaticallySetScriptSettings
 	{
+		# This sets the number of processors to use when building
+			if [[ "${OSTYPE}" == "darwin"* ]]
+			then
+				export NUM_PROCESSORS=$(expr $(sysctl -n hw.ncpu) + 2)
+			else
+				export NUM_PROCESSORS=$(expr $(nproc) + 2)
+			fi
+			
 		# This is set up so that you can build in QT5 separate from QT6
 			if [ -n "${USE_QT5}" ]
 			then

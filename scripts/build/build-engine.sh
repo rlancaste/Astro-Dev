@@ -66,7 +66,7 @@
 		else
 			display "Building ${PACKAGE_NAME} with the following options: ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS}"
 			cmake ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC_DIR}"
-			make -j $(expr $(sysctl -n hw.ncpu) + 2)
+			make -j ${NUM_PROCESSORS}
 			if [[ "${BUILD_FOUNDATION}" == "SYSTEM" ]]
 			then
 				sudo make install
