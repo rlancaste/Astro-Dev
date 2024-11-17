@@ -27,6 +27,13 @@
 # $1 is the name of the connection, $2 is web address to check
 	function checkForConnection
 	{
+		# This checks if the function was actually sent the right number of parameters.
+			if [[ -z $1 || -z $2 ]]
+			then
+				display "Error.  The CheckForConnection function requires two parameters."
+				exit 1
+			fi
+		
 		testCommand=$(curl -Is $2 | head -n 1)
 		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 302"* || "${testCommand}" == *"HTTP/2 200"* ]]
   		then 
@@ -44,8 +51,16 @@
 	
 # This script sets it up so that you can build from the original repo source folder or from your own fork.
 # It separates the two so that you can switch back and forth if desired.  You can do parallel builds.
+# This sets up the structure of the source folders in the ASTRO_ROOT folder.  You could customize this here.
 	function selectSourceDir
 	{
+		# This checks if any critical variables for this function are not set.
+			if [ -z "${ASTRO_ROOT}" ]
+			then
+				display "Error.  The ASTRO_ROOT variable is not set before selectSourceDir."
+				exit 1
+			fi
+
 		if [ -n "${USE_FORKED_REPO}" ]
 		then
 			export TOP_SRC_DIR="${ASTRO_ROOT}/src-forked"
@@ -58,8 +73,16 @@
 	
 # This script supports building with different build systems.  While the source folders should work for all systems, the build folders will not.
 # This function will set the build folder based on selected options. This way you can build in parallel with different systems to compare.
+# This sets up the structure of the build folders in the ASTRO_ROOT folder.  You could customize this here.
 	function selectBuildDir
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${ASTRO_ROOT}" || -z "${BUILD_FOUNDATION}" ]]
+			then
+				display "Error.  Either the ASTRO_ROOT or BUILD_FOUNDATION variable is not set before selectBuildDir."
+				exit 1
+			fi
+			
 		export BUILD_DIR="${ASTRO_ROOT}/build"
 		
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
@@ -93,6 +116,13 @@
 # This automatically Sets the other options from what was requested in settings.sh
 	function automaticallySetScriptSettings
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${ASTRO_ROOT}" || -z "${BUILD_FOUNDATION}" || -z "${CRAFT_ROOT}" ]]
+			then
+				display "Error.  One of the ASTRO_ROOT, BUILD_FOUNDATION, or CRAFT_ROOT variables is not set before automaticallySetScriptSettings."
+				exit 1
+			fi
+			
 		# This sets the number of processors to use when building
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
@@ -108,6 +138,7 @@
 			fi
 		
 		# Based on whether you choose to use the DEV_ROOT folder option, this will set up the DEV_ROOT based on the foundation for the build, since the "installed" files have different linkings.
+		# This does set up the structure of the DEV ROOT folders in the ASTRO_ROOT directory.  You can customize this here.
 			
 			if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 			then
@@ -202,6 +233,20 @@
 # This function links a file or folder in the dev directory to one in the Homebrew-root directory
 	function homebrewLink
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${HOMEBREW_ROOT}" || -z "${DEV_ROOT}" ]]
+			then
+				display "Error.  Either the HOMEBREW_ROOT or DEV_ROOT variable is not set before homebrewLink."
+				exit 1
+			fi
+			
+		# This checks if the function was actually sent a parameter.
+			if [ -z $1 ]
+			then
+				display "Error.  The homebrew link function requires a folder or file to link."
+				exit 1
+			fi
+			
 		if [ ! -e "${DEV_ROOT}/$1" ]
 		then
 			ln -s ${HOMEBREW_ROOT}/$1 ${DEV_ROOT}/$1
@@ -212,6 +257,15 @@
 	function setupHomebrew
 	{
 		checkForConnection Homebrew "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+		
+		# This installs the xcode command line tools if not installed yet.
+		# Yes these tools will be automatically installed if the user has never used git before
+		# But sometimes they need to be installed again.
+			if ! command -v xcode-select &> /dev/null
+			then
+				display "Installing xcode command line tools"
+				xcode-select --install
+			fi
 		
 		if [[ $(command -v brew) == "" ]]
 		then
@@ -242,6 +296,12 @@
 # Note that we could also just say brew packagename, but that takes longer than this method.
 	function brewInstallIfNeeded
 	{
+		# This verifies HomeBrew is installed prior to installing a package.
+			if [[ $(command -v brew) == "" ]]
+			then
+				display "Error.  Homebrew is not installed.  Please install homebrew before calling homebrew link."
+			fi
+		
 		for package in "$@"
 		do
 			brew ls --versions $package > /dev/null 2>&1
@@ -258,6 +318,13 @@
 # This function will install dependencies required for the build.
 	function installDependencies
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${PACKAGE_SHORT_NAME}" || -z "${BUILD_FOUNDATION}" || -z "${CRAFT_ROOT}" ]]
+			then
+				display "Error.  One of the required variables for installDependencies is not set."
+				exit 1
+			fi
+			
 		display "Installing Dependencies"
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
@@ -278,6 +345,20 @@
 # This function links a file or folder in the dev directory to one in the craft-root directory
 	function craftLink
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${CRAFT_ROOT}" || -z "${DEV_ROOT}" ]]
+			then
+				display "Error.  Either the CRAFT_ROOT or DEV_ROOT variable is not set before calling craftLink."
+				exit 1
+			fi
+			
+		# This checks if the function was actually sent a parameter.
+			if [ -z $1 ]
+			then
+				display "Error.  The craft link function requires a folder or file to link."
+				exit 1
+			fi
+			
 		if [ ! -e "${DEV_ROOT}/$1" ]
 		then
 			ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
@@ -287,6 +368,13 @@
 # This function installs Craft on various operating systems
 	function installCraft
 	{
+		# This checks if any critical variables for this function are not set.
+			if [ -z ${CRAFT_ROOT} ]
+			then
+				display "Error. The CRAFT_ROOT directory variable is blank when calling installCraft."
+				exit 1
+			fi
+
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
 			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
@@ -302,30 +390,20 @@
 # This function will setup Craft with the requested options.
 	function setupCraft
 	{
-		# Before starting, check to see if craft's remote servers are accessible
-			checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
-			
-		# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-			if [[ -z ${ASTRO_ROOT} || -z ${CRAFT_ROOT} ]]
+		# This checks if any critical variables for this function are not set.
+			if [ -z ${CRAFT_ROOT} ]
 			then
-				display "One or more critical directory variables is blank, please edit settings.sh."
+				display "Error. The CRAFT_ROOT directory variable is blank when calling setupCraft."
 				exit 1
 			fi
+			
+		# Before starting, check to see if craft's remote servers are accessible
+			checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 		
 		# This will set up items required for MacOS
 		
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
-			
-				# This installs the xcode command line tools if not installed yet.
-				# Yes these tools will be automatically installed if the user has never used git before
-				# But sometimes they need to be installed again.
-					
-					if ! command -v xcode-select &> /dev/null
-					then
-						display "Installing xcode command line tools"
-						xcode-select --install
-					fi
 					
 				# This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 					setupHomebrew
@@ -376,6 +454,13 @@
 # Note that this function should only be used on the primary repo, not the forked one.  For that see the next function.
 	function downloadOrUpdateRepository
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${SRC_DIR}" || -z "${TOP_SRC_DIR}" || -z "${REPO}" || -z "${PACKAGE_NAME}" ]]
+			then
+				display "Error.  One of the variables required by downloadOrUpdateRepository did not get set correctly."
+				exit 1
+			fi
+			
 		if [ -n "${BUILD_OFFLINE}" ]
 		then
 			if [ ! -d "${SRC_DIR}" ]
@@ -403,6 +488,13 @@
 # It will also do all the functions of the function above for a Forked Repo.
 	function createOrUpdateFork
 	{
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${SRC_DIR}" || -z "${TOP_SRC_DIR}" || -z "${REPO}" || -z "${FORKED_REPO}" || -z "${FORKED_REPO_HTML}" || -z "${PACKAGE_NAME}" ]]
+			then
+				display "Error.  One of the variables required by createOrUpdateFork did not get set correctly."
+				exit 1
+			fi
+			
 		if [ -n "${BUILD_OFFLINE}" ]
 		then
 			if [ ! -d "${SRC_DIR}" ]
@@ -440,7 +532,7 @@
 			then
 				echo "The Local Forked Repo already has an upstream set."
 			else
-				 "Setting the remote upstream of the local fork to ${REPO}"
+				echo "Setting the remote upstream of the local fork to ${REPO}"
 				git remote add upstream "${REPO}"
 			fi
 			git fetch upstream
@@ -454,13 +546,6 @@
 	function prepareSourceDirectory
 	{
 		selectSourceDir
-		
-		# This checks if the Source Directories were set in the method above.
-			if [[ -z ${SRC_DIR} || -z ${TOP_SRC_DIR} ]]
-			then
-				display "The Source Directories did not get set right, please edit settings.sh."
-				exit 1
-			fi
 		
 		display "Setting the source directory of ${PACKAGE_NAME} to: ${SRC_DIR} and updating it."
 		

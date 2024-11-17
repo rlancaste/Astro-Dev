@@ -22,7 +22,7 @@
 		# This checks to make sure all variables used in this method have values, since it might be bad if they do not.
 			if [[ -z ${PACKAGE_NAME} || -z ${FORKED_REPO_HTML} || -z ${PACKAGE_SHORT_NAME} ]]
 			then
-				display "One or more critical variables is blank, please edit the scripts."
+				display "Error. One or more critical variables is blank before running commitAndPushToServer."
 				exit 1
 			fi
 			
@@ -35,6 +35,13 @@
 		
 		# Display the message explaining what this script does.
 			display "This script will submit your ${PACKAGE_NAME} changes in the forked-src folder to your fork on GITHub or GITLab.  You must have made changes in the forked-src folder for this to work."
+		
+		# This checks to make sure all variables used in this method have values, since it might be bad if they do not.
+			if [ -z ${SRC_DIR} ]
+			then
+				display "The source directory is not set before using it in commitAndPushToServer."
+				exit 1
+			fi
 			
 		# Check to see that the user has actually already make a forked source folder for this package.
 			if [ ! -d "${SRC_DIR}" ]

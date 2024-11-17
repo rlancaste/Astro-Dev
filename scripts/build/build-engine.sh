@@ -22,7 +22,7 @@
 		# This checks to make sure the BUILD_DIR variable has been set before continuing.
 			if [ -z ${BUILD_DIR} ]
 			then
-				display "There is an error, the BUILD_DIR variable has not been set."
+				display "There is an error, the BUILD_DIR variable has not been set when running setupAndEnterBuildDir."
 				exit 1
 			fi
 		
@@ -44,6 +44,13 @@
 	{
 		setupAndEnterBuildDir
 		
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${SRC_DIR}" || -z "${BUILD_DIR}" || -z "${BUILD_FOUNDATION}" || -z "${NUM_PROCESSORS}" || -z "${PACKAGE_NAME}" || -z "${DEV_ROOT}" ]]
+			then
+				display "Error.  One of the required variables for buildPackage is not set."
+				exit 1
+			fi
+		
 		# This checks if the SourceDirectory was properly set before building.
 			if [ -z ${SRC_DIR} ]
 			then
@@ -60,6 +67,12 @@
 		
 		if [ -n "${BUILD_XCODE}" ]
 		then
+			# This checks if any critical variables for Xcode are missing.
+				if [[ -z "${PACKAGE_SHORT_NAME}" || -z "${CODE_SIGN_IDENTITY}" ]]
+				then
+					display "Error.  One of the required variables for buildPackage with XCode is not set."
+					exit 1
+				fi
 			display "Building ${PACKAGE_NAME} using XCode"
 			cmake -G Xcode ${GENERAL_BUILD_OPTIONS} ${PACKAGE_BUILD_OPTIONS} "${SRC_DIR}"
 			xcodebuild -project "${PACKAGE_SHORT_NAME}".xcodeproj -alltargets -configuration Debug CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY}" OTHER_CODE_SIGN_FLAGS="--deep"
@@ -86,13 +99,6 @@
 # This resets the package specific build options before getting and updated setting from the build script.
 	export USE_FORKED_REPO=""
 
-# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${DEV_ROOT} ]]
-	then
-  		display "One or more critical directory variables is blank, please edit settings.sh."
-  		exit 1
-	fi
-
 # This sets up the build for an XCode Build. It makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly.
 # Then it updates the build folders to reflect that the xcode build is the one being used.
 	if [ -n "${BUILD_XCODE}" ]
@@ -104,6 +110,13 @@
 			display "You have not specified a CODE_SIGN_IDENTITY, but you requested an XCode Build.  A Certificate is required for an XCode Build.  Make sure to get a certificate either from the Apple Developer program or from KeyChain Access on your Mac (A Self Signed Certificate is fine as long as you don't want to distribute KStars).  Be sure to edit settings.sh to include both XCode options."
 			exit 1
 		fi
+	fi
+	
+# This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
+	if [[ -z "${ASTRO_ROOT}" || -z "${DEV_ROOT}" || -z "${BUILD_FOUNDATION}" ]]
+	then
+  		display "One or more critical directory variables is blank, please edit settings.sh."
+  		exit 1
 	fi
 	
 # This will create the Astro Root Directory if it doesn't exist
@@ -118,10 +131,18 @@
 # If using Craft as a building foundation, this checks if craft exists.  If it doesn't, it terminates the script with a message.
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
-		if [[ ! -d "${CRAFT_ROOT}" ||  -n "${REMOVE_ALL}" ]]
-		then
-			setupCraft
-		fi
+		# This checks if any of the variables required for this script in craft are blank.
+			if [ -z "${CRAFT_ROOT}" ]
+			then
+				display "The CRAFT_ROOT variable is blank but you are building with craft, please edit settings.sh."
+				exit 1
+			fi
+		
+		# This sets up craft if it doesn't exist or if the user wants to remove all and replace it.
+			if [[ ! -d "${CRAFT_ROOT}" || -n "${REMOVE_ALL}" ]]
+			then
+				setupCraft
+			fi
 		
 		# These links are needed on MacOS to successfully build outside of the main craft directories.
 		# We should look into why they are needed.
@@ -154,14 +175,28 @@
 							ln -s "${CRAFT_ROOT}/share/kf6" "${HOME}/Library/Application Support/kf6"
 						fi
 					fi
-			
+			fi
 	elif [[ "${BUILD_FOUNDATION}" == "HOMEBREW" ]]
 	then
-		if [ ! -d "${HOMEBREW_ROOT}" ]
-		then
-			display "Homebrew Does Not Exist at the directory specified, please install Homebrew or edit settings.sh."
-			exit 1
-		fi
+		# This checks if someone on an OS other than MacOS accidentally requested a HOMEBREW build.
+			if [[ "${OSTYPE}" != "darwin"* ]]
+			then
+				display "Homebrew only exists on MacOS (darwin) but you are buildin on ${OSTYPE}.  Please edit settings.sh to select another build foundation."
+				exit 1
+			fi
+		
+		# This checks if any of the variables required for this script in HOMEBREW are blank.
+			if [ -z "${HOMEBREW_ROOT}" ]
+			then
+				display "The HOMEBREW_ROOT variable is blank but you are building with homebrew, please edit settings.sh."
+				exit 1
+			fi
+			
+		# This will install homebrew if it hasn't been installed yet, or reset HOMEBREW if desired.
+			if [ ! -d "${HOMEBREW_ROOT}" || -n "${REMOVE_ALL}" ]
+			then
+				setupHomebrew
+			fi
 	fi
 
 
