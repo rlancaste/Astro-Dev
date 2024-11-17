@@ -12,7 +12,7 @@
 
 # This option must come before build-engine. It determines whether to use your own Forked Repository or the official one for building.
 # If you want to use the Forked Repo, enter Yes, otherwise No.
-	export USE_FORKED_REPO="Yes"
+	#export USE_FORKED_REPO="Yes"
 
 # This sets up and provides access to all of the methods required to run the script.
 	source ${DIR}/../settings.sh

@@ -17,7 +17,7 @@
 	source ${DIR}/INDI3rdParty.sh
 	source ${DIR}/StellarSolver.sh
 	source ${DIR}/KStars.sh
-	source ${DIR}/INDIWebManagaerApp.sh
+	source ${DIR}/INDIWebManagerApp.sh
 
 
 

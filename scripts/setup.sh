@@ -26,12 +26,11 @@
 
 # This following command will run the setup and build scripts for each of the packages.  You do not have do all of them, but it is good to get it all set up.
 # Just comment out any that you don't need with a #
-	source ${DIR}/build/build-selectedPackages.sh
 	source ${DIR}/build/INDICore.sh
 	source ${DIR}/build/INDI3rdParty.sh
 	source ${DIR}/build/StellarSolver.sh
 	source ${DIR}/build/KStars.sh
-	source ${DIR}/build/INDIWebManagaerApp.sh
+	source ${DIR}/build/INDIWebManagerApp.sh
 	source ${DIR}/craft/setup-craftBlueprints.sh
 
 display "Script Execution Complete"

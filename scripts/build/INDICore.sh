@@ -15,7 +15,7 @@
 	
 # If you want to use the Forked Repo for this package, uncomment the following option by removing the #.
 # If you have not forked this package yet, or would prefer to use the original repo, comment it out with a #.
-	export USE_FORKED_REPO="Yep"
+	#export USE_FORKED_REPO="Yep"
 
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Core Drivers"
