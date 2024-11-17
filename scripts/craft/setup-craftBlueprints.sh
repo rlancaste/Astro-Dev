@@ -26,7 +26,7 @@
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.
-	export REPO="https://github.com/KDE/packaging/${PACKAGE_SHORT_NAME}.git"
+	export REPO="https://invent.kde.org/packaging/${PACKAGE_SHORT_NAME}.git"
 	export FORKED_REPO="git@invent.kde.org:${GITLAB_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	export FORKED_REPO_HTML="https://invent.kde.org/${GITLAB_USERNAME}/${PACKAGE_SHORT_NAME}.git"
 	
