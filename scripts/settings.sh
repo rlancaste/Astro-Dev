@@ -42,6 +42,9 @@
 	then
 		export BUILD_FOUNDATION="CRAFT"
 		#export BUILD_FOUNDATION="HOMEBREW"
+	elif [[ "${OSTYPE}" == "msys" ]]
+	then
+		export BUILD_FOUNDATION="CRAFT"
 	else
 		export BUILD_FOUNDATION="SYSTEM"
 	fi
