@@ -18,6 +18,7 @@
 	source ${DIR}/StellarSolver.sh
 	source ${DIR}/KStars.sh
 	source ${DIR}/INDIWebManagerApp.sh
+	source ${DIR}/GSC.sh
 
 
 

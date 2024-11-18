@@ -96,8 +96,20 @@
 # If you want to customize any of those variables, you can edit this file
 	source ${DIR}/../settings.sh
 	
-# This resets the package specific build options before getting and updated setting from the build script.
+# This resets the package specific build options before getting and updated setting from each build script.
 	export USE_FORKED_REPO=""
+	export PACKAGE_NAME=""
+	export PACKAGE_SHORT_NAME=""
+	export BUILD_SUBDIR=""
+	export PACKAGE_BUILD_OPTIONS=""
+	export PACKAGE_ARCHIVE=""
+	export HOMEBREW_DEPENDENCIES=""
+	export UBUNTU_DEPENDENCIES=""
+	export REPO=""
+	export FORKED_REPO=""	
+	export FORKED_REPO_HTML=""
+	
+
 
 # This sets up the build for an XCode Build. It makes sure that if the build XCODE option is selected, the user has specified a CODE_SIGN_IDENTITY because if not, it won't work properly.
 # Then it updates the build folders to reflect that the xcode build is the one being used.

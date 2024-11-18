@@ -31,6 +31,7 @@
 	source ${DIR}/build/StellarSolver.sh
 	source ${DIR}/build/KStars.sh
 	source ${DIR}/build/INDIWebManagerApp.sh
+	source ${DIR}/build/GSC.sh
 	source ${DIR}/craft/setup-craftBlueprints.sh
 
 display "Script Execution Complete"
