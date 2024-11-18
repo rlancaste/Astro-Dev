@@ -39,7 +39,7 @@
 	display "This script will test KStars, INDI, and StellarSolver Builds in Craft.  You can test the latest master or the latest stable releases of packages important to KStars/INDI development.  You can also test your own recipes in the blueprints folder and packaging with craft."
 
 # This checks if any of the path variables are blank, since if they are blank, it could start trying to do things in the / folder, which is not good
-	if [[ -z ${DIR} || -z ${CRAFT_ROOT} ]]
+	if [ -z ${CRAFT_ROOT} ]
 	then
   		display "One or more critical directory variables is blank, please edit settings.sh."
   		exit 1

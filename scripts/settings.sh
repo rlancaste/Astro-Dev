@@ -8,10 +8,10 @@
 #	version 2 of the License, or (at your option) any later version.
 
 # This gets the directory from which this script is running so it can access files or other scripts in the repo.
-	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+	SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # This sets the script with the Build environment variables.
-	source ${DIR}/script-engine.sh
+	source ${SCRIPTS_DIR}/script-engine.sh
 
 # These are the primary global script options.  You may turn these on by removing the # from the front, or turn them off by putting a # in front.
 
@@ -110,6 +110,7 @@ echo "REMOVE_ALL               ? [${REMOVE_ALL:-Nope}]"
 echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
 
 # Key Directory paths determined above in the options
+echo "SCRIPTS_DIR              is [${SCRIPTS_DIR}]"
 echo "ASTRO_ROOT               is [${ASTRO_ROOT}]"
 echo "DEV_ROOT                 is [${DEV_ROOT}]"
 echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"

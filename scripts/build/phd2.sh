@@ -40,11 +40,11 @@
 		display "Copying Craft Blueprints for Dependencies if needed."
 		if [ -n "${USE_QT5}" ]
 		then
-		 	copyCraftBlueprint ${DIR}/craft/extra-blueprints/QT5/libwxwidgets libs/libwxwidgets
-		 	copyCraftBlueprint ${DIR}/craft/extra-blueprints/QT5/phd2 libs/phd2
+		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/libwxwidgets libs/libwxwidgets
+		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/phd2 libs/phd2
 		else
-		 	copyCraftBlueprint ${DIR}/craft/extra-blueprints/QT6/libwxwidgets libs/libwxwidgets
-		 	copyCraftBlueprint ${DIR}/craft/extra-blueprints/QT6/phd2 libs/phd2
+		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/libwxwidgets libs/libwxwidgets
+		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/phd2 libs/phd2
 		fi
 	fi
 	

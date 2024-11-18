@@ -10,6 +10,9 @@
 # This gets the directory from which this script is running so it can access files or other scripts in the repo.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+# Prepare to run the script by setting all of the environment variables	
+# If you want to customize any of those variables, you can edit this file
+	source ${DIR}/../settings.sh
 
 ########################################
 # FUNCTIONS RELATED TO BUILDING PACKAGES
@@ -91,10 +94,6 @@
 	
 ###################################################
 # This is where the main part of the script starts!
-
-# Prepare to run the script by setting all of the environment variables	
-# If you want to customize any of those variables, you can edit this file
-	source ${DIR}/../settings.sh
 	
 # This resets the package specific build options before getting and updated setting from each build script.
 	export USE_FORKED_REPO=""
