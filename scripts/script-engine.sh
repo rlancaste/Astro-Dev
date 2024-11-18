@@ -368,6 +368,35 @@
 		fi
 	}
 
+# This copies a craft blueprint from the repository to the CRAFT blueprints folder.
+# $1 is the source folder of the blueprint, $2 is the subfolder in the CraftRoot Blueprint Directory.
+	function copyCraftBlueprint
+	{
+		# This checks if any critical variables for this function are not set.
+			if [ -z "${CRAFT_ROOT}" ]
+			then
+				display "Error.  The CRAFT_ROOT variable was not set before calling copyCraftBlueprint."
+				exit 1
+			fi
+			
+		# This checks if the function was actually sent a parameter.
+			if [[ -z $1 || -z $2 ]]
+			then
+				display "Error.  The copyCraftBlueprint function requires both a folder to copy and a destination in the blueprints directory."
+				exit 1
+			fi
+		
+		CRAFT_BLUEPRINT_FOLDER="${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde"
+			
+		if [ ! -d "${CRAFT_BLUEPRINT_FOLDER}/$2" ]
+		then
+			cp -r $1 ${CRAFT_BLUEPRINT_FOLDER}/$2
+			echo "$2 Blueprint Copied to Craft Blueprints folder."
+		else
+			echo "$2 Blueprint already present in Craft Blueprints folder."
+		fi
+	}
+
 # This function installs Craft on various operating systems
 	function installCraft
 	{
