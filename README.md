@@ -1,4 +1,4 @@
-# KStars-INDI-Mac-Dev
+# Astro-Dev
 A Script to easily setup and build Astronomical Software including INDI, 3rd Party Drivers, INDI Web Manager, StellarSolver, GSC, and KStars for Mac and Linux (And possibly Windows) using the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
 
 ![Screenshot of KStars on OS X](images/ScreenShotKStarsOnOSX.png "Screenshot of KStars on OS X")
@@ -21,14 +21,14 @@ If you would like to just set up whichever programs you need, see the next secti
 ```
 mkdir ~/Projects
 cd  ~/Projects
-git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
+git clone https://github.com/rlancaste/Astro-Dev.git
 ```
 2. Edit the script [settings.sh](scripts/settings.sh) to make sure all the variables are correct for your system.
 3. Enable the options you want for building in that script as well.
 4. If you desire to use your own forks for development rather than the original repo for any of the astro packages, please see the section below that discusses the USE_FORKED_REPO option.
 5. Drag [setup.sh](scripts/setup.sh) to your favorite Terminal or just copy and paste the following into Terminal and run the script.
 ```
-~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
+~/Projects/Astro-Dev/scripts/setup.sh
 ```
 6. Now either use the programs, or get set up to edit the software.  See the sections below for more details on this.
 
@@ -38,7 +38,7 @@ These build scripts all use the same common functions, so any of them can do any
 Just drag the desired script to the Terminal and it will get started.
 Example:
 ```
-~/Projects/KStars-INDI-Mac-Dev/scripts/build/INDICore.sh.sh
+~/Projects/Astro-Dev/scripts/build/INDICore.sh.sh
 ```
 Alternatively, the [build-selectedPackages.sh](scripts/build/build-selectedPackages.sh) or [setup.sh](scripts/setup.sh) script will set up and build a whole list of packages.
 
@@ -113,11 +113,11 @@ and make any changes that you want to make in the src-forked folder for that pro
 MAKE SURE that you run the build script or the setup script before opening the project. 
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
 Your folder path will probably resemble one of the ones below.
-- ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi/CMakeLists.txt
-- ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi-3rdparty/CMakeLists.txt
-- ~/Projects/KStars-INDI-Mac-Dev/src-forked/stellarsolver/CMakeLists.txt
-- ~/Projects/KStars-INDI-Mac-Dev/src-forked/kstars/CMakeLists.txt
-- ~/Projects/KStars-INDI-Mac-Dev/src-forked/INDIWebManagerApp/CMakeLists.txt
+- ~/Projects/Astro-Dev/src-forked/indi/CMakeLists.txt
+- ~/Projects/Astro-Dev/src-forked/indi-3rdparty/CMakeLists.txt
+- ~/Projects/Astro-Dev/src-forked/stellarsolver/CMakeLists.txt
+- ~/Projects/Astro-Dev/src-forked/kstars/CMakeLists.txt
+- ~/Projects/Astro-Dev/src-forked/INDIWebManagerApp/CMakeLists.txt
 
 ![OpenProject](images/OpenProject.png "Open Project")
 ![Select the CMakeLists.txt](images/SelectCMakeLists.png "[Select the CMakeLists.txt")
@@ -126,12 +126,12 @@ Your folder path will probably resemble one of the ones below.
 MAKE SURE that you run the build script or the setup script before importing the build.  Select the "Choose" button
 and navigate to the path of the forked build (or optionally the regular build) folder for your package. 
 Your folder path will probably resemble one of the ones below.
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/indi-core-forked
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/ThirdParty-Drivers-forked
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/ThirdParty-Libraries-forked
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/stellar-build-forked
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/kstars-build-forked
-- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/webmanager-build-forked
+- ~/Projects/Astro-Dev/build/craft-base/indi-build/indi-core-forked
+- ~/Projects/Astro-Dev/build/craft-base/indi-build/ThirdParty-Drivers-forked
+- ~/Projects/Astro-Dev/build/craft-base/indi-build/ThirdParty-Libraries-forked
+- ~/Projects/Astro-Dev/build/craft-base/stellar-build-forked
+- ~/Projects/Astro-Dev/build/craft-base/kstars-build-forked
+- ~/Projects/Astro-Dev/build/craft-base/webmanager-build-forked
 
 # Submitting changes to the software
 For INDI, INDI Web Manager, KStars, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit & push your changes and then go to GitHub and make a pull request.
@@ -200,5 +200,5 @@ will work just fine.  Once you have the certificate, all you need to do is to ru
 
 ```
 export CODE_SIGN_IDENTITY="YOUR IDENTITY"
-~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh -x
+~/Projects/Astro-Dev/scripts/setup.sh -x
 ```
