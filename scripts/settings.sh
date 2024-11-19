@@ -27,7 +27,7 @@
 	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 		#export REMOVE_ALL="Yep"
 	# The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
-		#export USE_QT5="Yep"	
+		export USE_QT5="Yep"	
 		
 	# Note: there are options for building with the original source repositories or your own forks.  These options are specific to the packages and not global.  Please see each package's build script for these options.
 

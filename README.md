@@ -50,10 +50,12 @@ In the [craft](scripts/craft) folder, there are several scripts which are helpfu
 4. [startCraft.sh](scripts/craft/startCraft.sh). This script lets you enter a craft environment to use craft.  Make sure to type "source" before dragging the script to terminal to start it.
 
 # Running the Craft Packaging Scripts
-To Package and Distribute KStars, StellarSolverTester, or INDIWebManagerApp, the craft packaging scripts can be used to generate a dmg.  There are options in each script for versions, verbosity, and which programs to rebuild before packaging.
+To Package and Distribute KStars, StellarSolverTester, StellarBatchSolver or INDIWebManagerApp, the craft packaging scripts can be used to generate a dmg.  There are options in each script for versions, verbosity, and which programs to rebuild before packaging.
 Note that this makes use of the USE_QT5 option to determine which craft scripts to run and which package to make.  Craft must be set up before running these scripts.
-1. [package-KStars.sh](scripts/craft/package-KStars.sh).  This script packages KStars.
-2. [package-StellarSolverTester.sh](scripts/craft/package-StellarSolverTester.sh).  This script packages StellarSolverTester.
+1. [package-KStars.sh](scripts/craft/package-KStars.sh)
+2. [package-StellarSolverTester.sh](scripts/craft/package-StellarSolverTester.sh)
+3. [package-StellarBatchSolver.sh](scripts/craft/package-StellarBatchSolver.sh)
+4. [package-StellarBatchSolver.sh](scripts/craft/package-StellarBatchSolver.sh)
 
 # [settings.sh](scripts/settings.sh) Variables
 There are a number of variables that you can customize in settings.sh.
