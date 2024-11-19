@@ -17,7 +17,7 @@ In the past, this repo used command line options for some settings and options i
 # Getting Everything Set Up at Once
 While it is no longer necessary to run setup.sh or the other repository before using the other scripts in this repo, it might still be nice to get all set up at once with a development environment for working on astronomical software.
 If you would like to just set up whichever programs you need, see the next section below, otherwise please follow these instructions.
-1. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
+1. Open your favorite Terminal program and type the following commands, if it asks you to install Developer Tools (on MacOS), click ok.
 ```
 mkdir ~/Projects
 cd  ~/Projects
@@ -30,7 +30,7 @@ git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
 ```
-6. Now either use the programs, or get set up to edit the software.
+6. Now either use the programs, or get set up to edit the software.  See the sections below for more details on this.
 
 # Running the Individual Build Scripts
 It used to be required that you run setup.sh before doing anything else.  This is no longer required.  You can run any of the scripts in the [build](scripts/build) folder. 
@@ -45,7 +45,7 @@ Alternatively, the [build-selectedPackages.sh](scripts/build/build-selectedPacka
 # Running the Craft Setup and Build Scripts
 In the [craft](scripts/craft) folder, there are several scripts which are helpful for setting up, testing, and using Craft to build software.
 1. [setupCraft.sh](scripts/craft/setupCraft.sh). This script allows you to setup craft. It then builds key programs in craft to get needed packages and dependencies installed for development.
-2. [setup-craftBlueprints.sh](scripts/craft/setup-craftBlueprints.sh). This script downloads and sets up the craft blueprints repo just like the build scripts do, except without continuing to build.
+2. [setup-craftBlueprints.sh](scripts/craft/setup-craftBlueprints.sh). This script downloads and sets up the craft blueprints repo in the src folders just like the build scripts set up their packages, except without continuing to build anything.
 3. [testCraftBuild.sh](scripts/craft/testCraftBuild.sh). This script lets you test Craft builds of various Astro programs.  It has several options inside for versions, verbosity, and which programs to test.
 4. [startCraft.sh](scripts/craft/startCraft.sh). This script lets you enter a craft environment to use craft.  Make sure to type "source" before dragging the script to terminal to start it.
 
@@ -92,7 +92,7 @@ If you want a truly portable app bundle for KStars, StellarSolver, or INDIWebMan
 
 One of the primary goals of this repository is to make it easy to make changes to the code.  You can use either XCode or QT Creator for this
 purpose.  It is recommended that you use QT Creator because it has the ability to edit the UI files and it is designed for QT development,
-but XCode has some very nice features, especially its code analysis algorithms.  You can get [QT creator](https://www.qt.io/) from QT, from Craft, or Homebrew, it is probably best to use the Craft installed QT.
+but XCode has some very nice features, especially its code analysis algorithms.  You can get [QT creator](https://www.qt.io/) from QT, from Craft, or Homebrew, but it is probably best to use it with the Craft installed QT.
 
 ## Forking the Repo and The source folder
 For INDI, INDI 3rd Party, StellarSolver, KStars, and INDI Web Manager, you should use the forked repo option USE_FORKED_REPO
@@ -185,7 +185,7 @@ stars for testing purposes.  Please follow these steps to get it set up. Note th
 3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
 ```
 GSCDAT: $(HOME)/Library/Application Support/kstars/gsc
-PATH: $(HOME)/Projects/KStars-INDI-Mac-Dev/ASTRO-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PATH: $(HOME)/ASTRO-ROOT/DEV-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
 ```
 Please see the screenshot below:
 ![EnvironmentVariables](images/gscRunEnv.png "Environment Variables for GSC")
