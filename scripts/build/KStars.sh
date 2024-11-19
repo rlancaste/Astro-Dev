@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Build Scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Build Scripts
+# 	KStars.sh - A Script meant to build KStars with the requested options.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
@@ -62,5 +63,10 @@
 # This makes a nice link for launching the Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		ln -sf "${DEV_ROOT}/KStars.app" "${ASTRO_ROOT}/KStars.app"
+		if [ -n "${USE_QT5}" ]
+		then
+			ln -sf "${DEV_ROOT}/KStars.app" "${ASTRO_ROOT}/KStars-QT5.app"
+		else
+			ln -sf "${DEV_ROOT}/KStars.app" "${ASTRO_ROOT}/KStars.app"
+		fi
 	fi

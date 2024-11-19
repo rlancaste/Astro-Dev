@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#	KDE Craft Testing Script for KStars and INDI Development
+#	Astro-Dev Astronomy Software Development Craft Testing Script
+# 	testCraftBuild.sh - A Script to to test the current craft recipes for various astro software.
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public

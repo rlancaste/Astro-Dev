@@ -1,11 +1,14 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Submit Changes scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Submit Changes Script Engine
+#   submit-engine.sh - A script of functions used by the other submit changes scripts.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
+
+# This script is a script of functions that are used by the other scripts.  If you run this script by itself, nothing should happen.
 
 # This gets the directory from which this script is running so it can access files or other scripts in the repo.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )

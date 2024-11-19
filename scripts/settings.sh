@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Script Settings
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Scripts
+#	settings.sh - A Script that configures the global settings used by the other scripts
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either

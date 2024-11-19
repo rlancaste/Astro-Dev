@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Build Scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Build Scripts
+# 	StellarSolver.sh - A Script meant to build StellarSolver with the requested options.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
@@ -26,7 +27,7 @@
 	export UBUNTU_DEPENDENCIES="git cmake libgl1-mesa-dev libcfitsio-dev libgsl-dev wcslib-dev"
 
 # Display the Welcome message explaining what this script does.
-	display "Setting up and Building StellarSolver."
+	display "Setting up and Building StellarSolver with the Tester Application.  If you want to build the Batch Solver or Demos, please enable those options in StellarSolver.sh"
 
 # This will dynamically set the QT5 or QT6 build option using the USE_QT5 variable in settings.sh
 	if [ -n "${USE_QT5}" ]
@@ -56,6 +57,11 @@
 	
 # This makes a nice link for launching the Tester Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
-	then	
-		ln -sf "${DEV_ROOT}/StellarSolverTester.app" "${ASTRO_ROOT}/StellarSolverTester.app"
+	then
+		if [ -n "${USE_QT5}" ]
+		then
+			ln -sf "${DEV_ROOT}/StellarSolverTester.app" "${ASTRO_ROOT}/StellarSolverTester-QT5.app"
+		else
+			ln -sf "${DEV_ROOT}/StellarSolverTester.app" "${ASTRO_ROOT}/StellarSolverTester.app"
+		fi
 	fi

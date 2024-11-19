@@ -60,19 +60,19 @@ Note that this makes use of the USE_QT5 option to determine which craft scripts 
 # [settings.sh](scripts/settings.sh) Variables
 There are a number of variables that you can customize in settings.sh.
 1. BUILD_FOUNDATION.  On MacOS, you can use Homebrew or Craft as a build foundation, but Craft is preferred.  On Linux, you can use the System environment or Craft.
-2. GIT_USERNAME and GITLAB_USERNAME. If you want to fork the various Repositories and make contributions, you must add your own usernames.
-3. CODE_SIGN_IDENTITY. This is only required if you want to build with XCode on MacOS.
-4. ASTRO_ROOT. This is the base folder for all of the astro development.
-5. CRAFT_ROOT. This is where Craft will be installed if desired.  Note that if you want QT5, it will append that to the end of the path so that it makes a separate craft-root folder so you can build with both QT5 and QT6.
-6. MACOSX_DEPLOYMENT_TARGET. This is the version of MacOS that is the minimum you want to build for.
+2. GIT_USERNAME and GITLAB_USERNAME.  If you want to fork the various Repositories and make contributions, you must add your own usernames.
+3. CODE_SIGN_IDENTITY.  This is only required if you want to build with XCode on MacOS.
+4. ASTRO_ROOT.  This is the base folder for all of the astro development.
+5. CRAFT_ROOT.  This is where Craft will be installed if desired.  Note that if you want QT5, it will append that to the end of the path so that it makes a separate craft-root folder so you can build with both QT5 and QT6.
+6. MACOSX_DEPLOYMENT_TARGET.  This is the version of MacOS that is the minimum you want to build for.
 
 # [settings.sh](scripts/settings.sh) Global Options
 There are a number of options that you can turn on or off in settings.sh. To enable them, just remove the # comment mark from the front.
-1. USE_DEV_ROOT. If you turn this option off, it will install the software it builds back in the Build Foundation Root Folder. Otherwise it installs to a dev folder.
-2. BUILD_XCODE. This option uses XCode and xcode projects for building on MacOS.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
-3. BUILD_OFFLINE="Yep"  This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
-4. CLEAN_BUILD. This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.	
-5. REMOVE_ALL. This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
+1. USE_DEV_ROOT.  If you turn this option off, it will install the software it builds back in the Build Foundation Root Folder. Otherwise it installs to a dev folder.
+2. BUILD_XCODE.  This option uses XCode and xcode projects for building on MacOS.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
+3. BUILD_OFFLINE.  This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
+4. CLEAN_BUILD.  This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.	
+5. REMOVE_ALL.  This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 6. USE_QT5.  The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6.
 
 # Individual Build Scripts Local Options

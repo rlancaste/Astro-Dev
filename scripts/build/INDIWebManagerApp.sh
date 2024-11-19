@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Build Scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Build Scripts
+# 	INDIWebManagerApp.sh - A Script meant to build INDI Web Manager App with the requested options.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
@@ -62,5 +63,10 @@
 # This makes a nice link for launching the Application from the top folder on MacOS.
 	if [[ "${OSTYPE}" == "darwin"* ]]
 	then
-		ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp.app"
+		if [ -n "${USE_QT5}" ]
+		then
+			ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp-QT5.app"
+		else
+			ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp.app"
+		fi
 	fi

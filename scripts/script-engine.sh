@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Build Scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Scripts
+#   script-engine.sh - A script of functions used by the other scripts.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
@@ -41,6 +42,7 @@
   		else
   			echo "$1, ($2), a required connection, was not found, aborting script."
   			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the appropriate script."
+  			echo "If you are running with no internet connection but already have everything downloaded, please use the BUILD_OFFLINE option."
   			exit
 		fi
 	}
@@ -49,8 +51,8 @@
 #########################################################################
 # FUNCTIONS RELATED TO CONFIGURING THE STRUCTURE OF THE ASTRO_ROOT FOLDER
 	
-# This script sets it up so that you can build from the original repo source folder or from your own fork.
-# It separates the two so that you can switch back and forth if desired.  You can do parallel builds.
+# This function sets it up so that you can build from the original repo source folder or from your own fork.
+# It separates the two so that you can switch back and forth if desired.  You can work in each repo and do parallel builds.
 # This sets up the structure of the source folders in the ASTRO_ROOT folder.  You could customize this here.
 	function selectSourceDir
 	{
@@ -71,8 +73,8 @@
 		export SRC_DIR="${TOP_SRC_DIR}/${PACKAGE_SHORT_NAME}"
 	}
 	
-# This script supports building with different build systems.  While the source folders should work for all systems, the build folders will not.
-# This function will set the build folder based on selected options. This way you can build in parallel with different systems to compare.
+# This function supports parallel building with different build systems.  While the source folders should work for all systems, the build folders will not.
+# This function will set the build folder based on selected options. This way each build folder will be set up to work with its own options.
 # This sets up the structure of the build folders in the ASTRO_ROOT folder.  You could customize this here.
 	function selectBuildDir
 	{
@@ -113,7 +115,8 @@
 	
 	}
 	
-# This automatically Sets the other options from what was requested in settings.sh
+# This function automatically Sets a bunch of the other options from what was requested in settings.sh
+# If any of these options are incorrect, you could update it here.
 	function automaticallySetScriptSettings
 	{
 		# This checks if any critical variables for this function are not set.
@@ -131,7 +134,7 @@
 				export NUM_PROCESSORS=$(expr $(nproc) + 2)
 			fi
 			
-		# This is set up so that you can build in QT5 separate from QT6
+		# This establishes a separate CRAFT-ROOT folder so that you can build in QT5 separate from QT6
 			if [ -n "${USE_QT5}" ]
 			then
 				export CRAFT_ROOT="${CRAFT_ROOT}-QT5"
@@ -272,7 +275,7 @@
 			display "Installing Homebrew."
 			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 		else
-			#This will remove all the homebrew packages if desired.
+			# This will remove all the homebrew packages if desired.
 			if [ -n "${REMOVE_ALL}" ]
 			then
 				display "You have selected the REMOVE_ALL option.  Warning, this will clear all currently installed homebrew packages."
@@ -482,8 +485,8 @@
 #####################################################
 # FUNCTIONS RELATED TO THE SOURCE DIRECTORY AND FORKS
 
-# This function will download a git repo if needed, and will update it if not.
-# Note that this function should only be used on the primary repo, not the forked one.  For that see the next function.
+# This function will download a git repo to the src folder on this computer if needed, and will update it if not.
+# Note that this function should only be used on the original repo, not the forked one.  For that see the next function.
 	function downloadOrUpdateRepository
 	{
 		# This checks if any critical variables for this function are not set.
@@ -529,7 +532,7 @@
 		fi
 	}
 	
-# This function will create a Fork on Github or update an existing fork.
+# This function will download or update an forked repo on your computer in the src-forked folder based on a Forked Repo on GitHub or GitLab.
 # It will also do all the functions of the function above for a Forked Repo.
 	function createOrUpdateFork
 	{

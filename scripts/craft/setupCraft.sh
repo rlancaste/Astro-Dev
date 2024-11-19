@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Setup Scripts
+#	Astro-Dev Astronomy Software Development Craft Setup Scripts
+#	setupCraft.sh - A script meant to get Craft all set up with the current options.
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public

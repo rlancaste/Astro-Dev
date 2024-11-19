@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#	KDE Craft Packaging Script for KStars and INDI Development
+#	Astro-Dev Astronomy Software Development Craft Packaging Scripts
+# 	package-INDIWebManagerApp.sh - This script uses craft to rebuild and package INDI Web Manager App
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public

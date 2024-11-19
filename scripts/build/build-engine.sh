@@ -1,11 +1,15 @@
 #!/bin/bash
 
-#	KStars and INDI Related Astronomy Software Development Build Scripts
-#﻿   Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
+#	Astro-Dev Astronomy Software Development Scripts
+#   build-engine.sh - A script of functions used by the other build scripts.
+#﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
 #	License as published by the Free Software Foundation; either
 #	version 2 of the License, or (at your option) any later version.
+
+# This script is mostly a script of functions that are used by the other scripts.  
+# It is not meant to be run by itself, since it is meant to be called by those other scripts.
 
 # This gets the directory from which this script is running so it can access files or other scripts in the repo.
 	DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )

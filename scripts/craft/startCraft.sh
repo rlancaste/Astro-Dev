@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#	Craft Startup Script
+#	Astro-Dev Astronomy Software Development Craft Setup Scripts
+# 	startCraft.sh - A Script to launch the craft environment in a terminal.
 #﻿  Copyright (C) 2024 Robert Lancaster <rlancaste@gmail.com>
 #	This script is free software; you can redistribute it and/or
 #	modify it under the terms of the GNU General Public
