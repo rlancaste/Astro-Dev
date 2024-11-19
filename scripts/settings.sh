@@ -67,7 +67,7 @@
 		export ASTRO_ROOT="${HOME}/AstroRoot"
 	# This is the Craft Root Folder that will be used if the build foundation is Craft.  It could be in the AstroRoot Folder or somewhere else.
 		export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
-	# This is the Homebrew Root Folder that will be used as a basis for building
+	# This is the Homebrew Root Folder that will be used as a basis for building. I don't think this should be changed.
 		export HOMEBREW_ROOT="/usr/local"
 
 # This is a setting for MacOS.  This makes it possible to build for previous versions of the operating system.
