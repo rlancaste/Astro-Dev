@@ -1,82 +1,121 @@
 # KStars-INDI-Mac-Dev
-A Script to easily build INDI, INDI Web Manager, and KStars for Mac using existing app folder(s) and the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
+A Script to easily setup and build Astronomical Software including INDI, 3rd Party Drivers, INDI Web Manager, StellarSolver, GSC, and KStars for Mac and Linux (And possibly Windows) using the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
 
 ![Screenshot of KStars on OS X](images/ScreenShotKStarsOnOSX.png "Screenshot of KStars on OS X")
 
 # About the repository
-This repository was written by myself, Rob Lancaster, for the purpose of making it easier to get set up to easily build the latest versions of INDI, 3rd Party Drivers, KStars, and INDI Web Manager App on a Mac computer
-as well as to be able to edit the source code to test out ideas or to diagnose problems.  This script is not meant for distribution of any of these items.  For building the latest versions and distributing them as a DMG,
-please see my other repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).  This script is built on top of the Craft build from the other REPO, so please be sure to use the other REPO first and
- run build-kstars.sh to get any needed dependencies built first!  Also  you might want to install QT Creator first, but please use the QT installed by Craft not a different version.
+This repository is intended to make it easier to get set up to easily build the latest versions of INDI, INDI Web Manager App, 3rd Party Drivers, StellarSolver, GSC, and KStars 
+as well as to be able to edit the source code to test out ideas, to diagnose problems, and to make contributions to the development of any or all of these programs. 
+Recently, I have expanded the script so that it can build in Ubuntu Linux and may expand to other distros and to Windows in the future.  This script can build using the system, craft, or homebrew as a foundation. 
+It can build QT5 and QT6 builds in parallel for testing purposes.  It can build using the original repositories or forked repositories.  It can optionally build with XCode on MacOS.  
 
-# Getting set up
+# The History
+This script evolved out of my previous repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).
+Originally, this script depended on the other repository, but it now fully replaces its functionality and goes beyond that.  
+In the past, this repo used command line options for some settings and options in text files for others.  Now, the options are mostly streamlined into several files which are explained below.
 
-1. Clone my other Repo and run build-kstars.sh [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft) (if not done already)
-2. Open the Mac Os Terminal and type the following commands, if it asks you to install Developer Tools, click ok.
+# Getting Everything Set Up at Once
+While it is no longer necessary to run setup.sh or the other repository before using the other scripts in this repo, it might still be nice to get all set up at once with a development environment for working on astronomical software.
+If you would like to just set up whichever programs you need, see the next section below, otherwise please follow these instructions.
+1. Open your favorite Terminal program and type the following commands, if it asks you to install Developer Tools (on MacOS), click ok.
 ```
 mkdir ~/Projects
 cd  ~/Projects
 git clone https://github.com/rlancaste/KStars-INDI-Mac-Dev.git
 ```
-3. Edit the script [build-env.sh](scripts/build-env.sh) to make sure all the variables are correct for your system.
-4. Enable the options you want for building in that script as well
-5. Drag [setup.sh](scripts/setup.sh) to the OS X Terminal or just copy and paste the following into Terminal and run the script.
+2. Edit the script [settings.sh](scripts/settings.sh) to make sure all the variables are correct for your system.
+3. Enable the options you want for building in that script as well.
+4. If you desire to use your own forks for development rather than the original repo for any of the astro packages, please see the section below that discusses the USE_FORKED_REPO option.
+5. Drag [setup.sh](scripts/setup.sh) to your favorite Terminal or just copy and paste the following into Terminal and run the script.
 ```
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh
 ```
-6. Now either use the programs, or get set up to edit the software.
+6. Now either use the programs, or get set up to edit the software.  See the sections below for more details on this.
 
-# [build-env.sh](scripts/build-env.sh) options
-There are a large number of variables that you can customize in build-env.sh.  They fall in several main categories.
-1. System Path Variables.  These NEED to be modified to reflect the QT and MacOS SDK on your system.
-2. Source App Path Variables.  You will only need to change these if you have KStars or INDI WebManagerApp installed someplace else.  But make sure they are installed!
-3. Script Path Variables.  Most of them should not need to be changed, they are set automatically based on the path the script is installed to.  You can change them but don't need to do so.
-4. REPO Path Variables.  These are the paths to the official repos.  You should not need to change them unless there is a problem.
-5. FORKED REPO Path Variables.  If you plan to edit INDI, INDI 3rd Party, or INDI Web Manager, you need to uncomment whichever one you like, make sure the path gets set right to your fork, and then run the setup script again with the -r option.
-6. Development Targets.  These are the minimum system for which executables will be built.  10.13 should be fine.  That is the minimum version supported by QT right now.
-7. Script Build Options.  These determine which items the script should build.  You can comment out the ones you don't want to do right now.
+# Running the Individual Build Scripts
+It used to be required that you run setup.sh before doing anything else.  This is no longer required.  You can run any of the scripts in the [build](scripts/build) folder. 
+These build scripts all use the same common functions, so any of them can do any of the setup required to establish the folder structure and options for building. 
+Just drag the desired script to the Terminal and it will get started.
+Example:
+```
+~/Projects/KStars-INDI-Mac-Dev/scripts/build/INDICore.sh.sh
+```
+Alternatively, the [build-selectedPackages.sh](scripts/build/build-selectedPackages.sh) or [setup.sh](scripts/setup.sh) script will set up and build a whole list of packages.
 
-# [setup.sh](scripts/setup.sh) options
-The setup.sh script does not have a lot of options right now, but here they are:
-- The -r option removes the dev-root directory and the previous builds and starts fresh.  It can even remove all homebrew packages and reinstall them if desired.
-- The -h option shows information about how to use the script.
-- The -o option allows you to build the software offline without checking Repos or connections.  Make sure it is all installed first
-- The -x option will build with xcodebuild instead of make and will set up an XCode project
-- The -t option will download and build kstars translations for international use
+# Running the Craft Setup and Build Scripts
+In the [craft](scripts/craft) folder, there are several scripts which are helpful for setting up, testing, and using Craft to build software.
+1. [setupCraft.sh](scripts/craft/setupCraft.sh). This script allows you to setup craft. It then builds key programs in craft to get needed packages and dependencies installed for development.
+2. [setup-craftBlueprints.sh](scripts/craft/setup-craftBlueprints.sh). This script downloads and sets up the craft blueprints repo in the src folders just like the build scripts set up their packages, except without continuing to build anything.
+3. [testCraftBuild.sh](scripts/craft/testCraftBuild.sh). This script lets you test Craft builds of various Astro programs.  It has several options inside for versions, verbosity, and which programs to test.
+4. [startCraft.sh](scripts/craft/startCraft.sh). This script lets you enter a craft environment to use craft.  Make sure to type "source" before dragging the script to terminal to start it.
+
+# Running the Craft Packaging Scripts
+To Package and Distribute KStars, StellarSolverTester, StellarBatchSolver or INDIWebManagerApp, the craft packaging scripts can be used to generate a dmg.  There are options in each script for versions, verbosity, and which programs to rebuild before packaging.
+Note that this makes use of the USE_QT5 option to determine which craft scripts to run and which package to make.  Craft must be set up before running these scripts.
+1. [package-KStars.sh](scripts/craft/package-KStars.sh)
+2. [package-StellarSolverTester.sh](scripts/craft/package-StellarSolverTester.sh)
+3. [package-StellarBatchSolver.sh](scripts/craft/package-StellarBatchSolver.sh)
+4. [package-StellarBatchSolver.sh](scripts/craft/package-StellarBatchSolver.sh)
+
+# [settings.sh](scripts/settings.sh) Variables
+There are a number of variables that you can customize in settings.sh.
+1. BUILD_FOUNDATION.  On MacOS, you can use Homebrew or Craft as a build foundation, but Craft is preferred.  On Linux, you can use the System environment or Craft.
+2. GIT_USERNAME and GITLAB_USERNAME. If you want to fork the various Repositories and make contributions, you must add your own usernames.
+3. CODE_SIGN_IDENTITY. This is only required if you want to build with XCode on MacOS.
+4. ASTRO_ROOT. This is the base folder for all of the astro development.
+5. CRAFT_ROOT. This is where Craft will be installed if desired.  Note that if you want QT5, it will append that to the end of the path so that it makes a separate craft-root folder so you can build with both QT5 and QT6.
+6. MACOSX_DEPLOYMENT_TARGET. This is the version of MacOS that is the minimum you want to build for.
+
+# [settings.sh](scripts/settings.sh) Global Options
+There are a number of options that you can turn on or off in settings.sh. To enable them, just remove the # comment mark from the front.
+1. USE_DEV_ROOT. If you turn this option off, it will install the software it builds back in the Build Foundation Root Folder. Otherwise it installs to a dev folder.
+2. BUILD_XCODE. This option uses XCode and xcode projects for building on MacOS.  It provides additional tools for testing, but lacks the QT Designer features in QT Creator.
+3. BUILD_OFFLINE="Yep"  This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
+4. CLEAN_BUILD. This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.	
+5. REMOVE_ALL. This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
+6. USE_QT5.  The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6.
+
+# Individual Build Scripts Local Options
+Each one of the [build](scripts/build) scripts sets up all the details for building those packages.  You should not have to change most of these settings.
+The one local script option that you might want to edit is:
+1. USE_FORKED_REPO. This option lets you use your own forked repo instead of the original repository.  This way you can make contributions.  Each build script separately has this option.
 
 # Using the newly built programs
 
-At this point you have a currently up to date version of INDI, INDI-3rd Party, KStars, and (optionally) INDI Web Manager App.
-You can use these programs if you like, they should be fully functional and bleeding edge, 
-but note that they are not portable, they rely on the files in the folders used to build these programs 
-you linked it to, as well as files in the ASTRO-ROOT directory.  So please don't delete these files, move the Dev folder to another location, or delete/replace QT.
-If you do need to make a change like these, just re-run the setup script with the -r option and it will rebuild everything.  You CAN copy
+Once you run one or more of the build scripts, you should have a fully functional and bleeding edge version of the program or programs.
+You can feel free to use these programs all you like and update them at any time by running the build script again.
+Note that they are not portable, they rely on the files in the folders used to build these programs 
+you linked it to, as well as files in the ASTRO-ROOT directory.  So please don't delete these files, or move the Dev folder to another location.
+If you do need to make a change like these, just re-run the build scripts again and it will rebuild everything.  You CAN copy
 the KStars.app or INDI Web Manager.app bundles to any other location on your computer and they should work just fine as long as the build folders don't get deleted.
-If you want a truly portable app bundle, you will need to use the KStars-on-OSX-Craft repository to do that.
+If you want a truly portable app bundle for KStars, StellarSolver, or INDIWebManagerApp on MacOS, you will need to use craft packaging scripts.
 
-# Editing and Making Changes to the software
+# Editing and Making Changes to the Software
 
 One of the primary goals of this repository is to make it easy to make changes to the code.  You can use either XCode or QT Creator for this
 purpose.  It is recommended that you use QT Creator because it has the ability to edit the UI files and it is designed for QT development,
-but XCode has some very nice features, especially its code analysis algorithms.  You can get [QT creator](https://www.qt.io/) from QT, from Craft, or Homebrew, but be sure to use the Craft installed QT.
+but XCode has some very nice features, especially its code analysis algorithms.  You can get [QT creator](https://www.qt.io/) from QT, from Craft, or Homebrew, but it is probably best to use it with the Craft installed QT.
 
 ## Forking the Repo and The source folder
-For INDI, INDI 3rd Party, KStars, and INDI Web Manager, you should use the forked repo options in build-env.sh outlined below
-to create a forked-src folder for whichever program you would like to edit the code for.  Of course, you COULD edit the one in the src folder if you like, but then when you
-go to submit a pull request for your changes, you would need to fork the repo and put your changes in there anyway.  So my recommendation is that you leave the src folder alone
-and make any changes that you want to make in the forked src folder for that program.
+For INDI, INDI 3rd Party, StellarSolver, KStars, and INDI Web Manager, you should use the forked repo option USE_FORKED_REPO
+to create a src-forked folder for whichever program you would like to edit the code for.  Of course, you COULD edit the one in the src folder if you like, but then when you
+go to submit a pull request for your changes, you would need to fork the repo and put your changes in there anyway.  Also, this repo has scripts that can automatically submit your changes 
+to the projects, but those scripts expect that you are working in a fork.  So my recommendation is that you leave the src folder alone
+and make any changes that you want to make in the src-forked folder for that program.
 
-## Forking the Repo and modifying [build-env.sh](scripts/build-env.sh) for whichever repo you would like to edit
+## Forking the Repo for whichever repo you would like to edit
 1. Make sure you have a GitHub account (or KDE GitLab for KStars).  Go to the REPO on the website and click "Fork"
-2. In [build-env.sh](scripts/build-env.sh), uncomment the forked repo line for the program you would like to edit
-2. Enter your [gibhub.com](https://github.com/) or for KStars, GitLab username.
-3. Run the [setup.sh](scripts/setup.sh) script again.  
+2. In [settings.sh](scripts/settings.sh), enter your [gibhub.com](https://github.com/) username and/or [gitlab.com](https://about.gitlab.com/) username. 
+3. In the build script for the particular package you want to work on, uncomment the USE_FORKED_REPO repo option.
+4. Run the particular package's build script again.  
 
 ## Importing the source folder in QT Creator
+MAKE SURE that you run the build script or the setup script before opening the project. 
 In QT Creator, you can just go to "Open Project" and select the CMakeLists.txt in the folder of the project you want to edit.
-You can use one of the paths shown below.
+Your folder path will probably resemble one of the ones below.
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi/CMakeLists.txt
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/indi-3rdparty/CMakeLists.txt
+- ~/Projects/KStars-INDI-Mac-Dev/src-forked/stellarsolver/CMakeLists.txt
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/kstars/CMakeLists.txt
 - ~/Projects/KStars-INDI-Mac-Dev/src-forked/INDIWebManagerApp/CMakeLists.txt
 
@@ -84,14 +123,24 @@ You can use one of the paths shown below.
 ![Select the CMakeLists.txt](images/SelectCMakeLists.png "[Select the CMakeLists.txt")
 
 ## Selecting the build folder in Qt Creator
-MAKE SURE that you use the already built build folder for KStars or INDI Web Manager App.  DO NOT make a new build folder, because the app bundles require 
-a lot of other files that are ALREADY IN the build folder.  The setup script has already set that all up for you.  Select the "Choose" button
-and navigate to one of the following paths for the forked build (or optionally the regular build) folder as shown below.
-- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/indi-core
-- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/ThirdParty-Drivers
-- ~/Projects/KStars-INDI-Mac-Dev/forked-build/indi-build/ThirdParty-Libraries
-- ~/Projects/KStars-INDI-Mac-Dev/forked-build/kstars-build
-- ~/Projects/KStars-INDI-Mac-Dev/forked-build/webmanager-build
+MAKE SURE that you run the build script or the setup script before importing the build.  Select the "Choose" button
+and navigate to the path of the forked build (or optionally the regular build) folder for your package. 
+Your folder path will probably resemble one of the ones below.
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/indi-core-forked
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/ThirdParty-Drivers-forked
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/indi-build/ThirdParty-Libraries-forked
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/stellar-build-forked
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/kstars-build-forked
+- ~/Projects/KStars-INDI-Mac-Dev/build/craft-base/webmanager-build-forked
+
+# Submitting changes to the software
+For INDI, INDI Web Manager, KStars, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit & push your changes and then go to GitHub and make a pull request.
+- [INDICore.sh](scripts/submitChanges/INDICore.sh)
+- [INDI3rdParty.sh](scripts/submitChanges/INDI3rdParty.sh)
+- [StellarSolver.sh](scripts/StellarSolver.sh) 
+- [KStars.sh](scripts/submitChanges/KStars.sh) 
+- [INDIWebManagerApp.sh](scripts/submitChanges/INDIWebManagerApp.sh)
+- [CraftBlueprints.sh](scripts/submitChanges/CraftBlueprints.sh) 
 
 ![Configure Project Build Options](images/ConfigureProject.png "Configure Project Build Options")
 
@@ -102,7 +151,7 @@ For the build settings, you can really speed things up if you specify the target
 ![The Build Options](images/buildOptions.png "The Build Options")
 
 Under Projects, Build and Run, Run There is a new option in QT creator to "Add Build library search path to DYLD Library Path"  It seems to get checked by default 
-which has been causing some conflicts between the libjpeg provided by OS X and the one used by KStars and INDI.  Please uncheck this box to avoid the errors.
+which has been causing some conflicts between the libjpeg provided by MacOS and the one used by KStars and INDI.  Please uncheck this box to avoid the errors if you encounter any.
 
 ![Build](images/run.png "Run")
 ![The DYLD Box](images/DYLDBox.png "Uncheck the DYLD Box")
@@ -119,7 +168,7 @@ and then type your driver in the command line arguments like this:
 ![indicoreRunConfig](images/indicoreRunConfig.png "INDI Core Run Configuration")
 
 ## Testing changes to INDI 3rd Party Drivers in QT Creator
-Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the other repo, and usually the third party drivers build in subfolders.
+Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the INDI Core repo, not the 3rd Party repo and usually the third party drivers build in subfolders.
 But if you already built INDI Core before you built the 3rd Party drivers, then its not too difficult to use the "custom executable" function.  For example, here is the command line arguments that would be needed for DSI:
 ```
 -vvv ../ThirdParty-Drivers /indi-dsi/indi_dsi_ccd
@@ -133,18 +182,18 @@ In the screenshots below you can see how the custom executable can be selected a
 ## Getting INDI Running in QT Creator to display simulated stars with GSC
 The INDI Simulator CCD can optionally use the Hubble Guide Star Catalog and the GSC executable to generate very realistic simulated 
 stars for testing purposes.  Please follow these steps to get it set up. Note that this is not needed for KStars because it already does this internally.
-1. KStars for Mac has the ability to download the GSC data in in the Startup Wizard.  Do this first.
+1. KStars for MacOS has the ability to download the GSC data in in the Startup Wizard.  Do this first.
 2. Follow all the instructions above to get INDI Setup and ready to run in QT Creator.
 3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
 ```
 GSCDAT: $(HOME)/Library/Application Support/kstars/gsc
-PATH: $(HOME)/Projects/KStars-INDI-Mac-Dev/ASTRO-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PATH: $(HOME)/ASTRO-ROOT/DEV-ROOT/bin:/usr/bin:/bin:/usr/sbin:/sbin
 ```
 Please see the screenshot below:
 ![EnvironmentVariables](images/gscRunEnv.png "Environment Variables for GSC")
 
 # Building with XCode instead of QT Creator
-If you run this script with the -x option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
+If you run this script with the BUILD_XCODE option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
 open it up and use XCode to edit the code.  If you would like to do this, you should have XCode already installed and setup.  You should also already have or you can create a code signing certificate.
 If you just plan to build, test, change, and submit changes to the code and not distribute it to others, then you don't need to pay for the cerfificate.  A self signed certificate you create in KeyChain Access
 will work just fine.  Once you have the certificate, all you need to do is to run these commands to get setup to work in XCode, replacing *YOUR ITENTITY* with your code signing certificate identity.
@@ -153,10 +202,3 @@ will work just fine.  Once you have the certificate, all you need to do is to ru
 export CODE_SIGN_IDENTITY="YOUR IDENTITY"
 ~/Projects/KStars-INDI-Mac-Dev/scripts/setup.sh -x
 ```
-
-# Submitting changes to the software
-- For INDI, INDI Web Manager, KStars, and INDI 3rd Party, as long as you made your edits to the code in the forked repo folder, then you can just use the appropriate script to commit & push your changes and then go to GitHub and make a pull request.
-- [submitINDICoreChanges.sh](scripts/submitINDICoreChanges.sh)
-- [submitINDIThirdPartyChanges.sh](scripts/submitINDIThirdPartyChanges.sh)
-- [submitKStarsChanges](scripts/submitKStarsChanges.sh) 
-- [submitINDIWebManagerAppChanges.sh](scripts/submitINDIWebManagerAppChanges.sh)
