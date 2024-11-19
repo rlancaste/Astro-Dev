@@ -1,12 +1,17 @@
 # KStars-INDI-Mac-Dev
-A Script to easily setup and build INDI, 3rd Party Drivers, INDI Web Manager, StellarSolver, GSC, and KStars for Mac and Linux (And possibly Windows) using the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
+A Script to easily setup and build Astronomical Software including INDI, 3rd Party Drivers, INDI Web Manager, StellarSolver, GSC, and KStars for Mac and Linux (And possibly Windows) using the latest sources.  This will get you the latest bleeding edge versions and will facilitate development.
 
 ![Screenshot of KStars on OS X](images/ScreenShotKStarsOnOSX.png "Screenshot of KStars on OS X")
 
 # About the repository
-This repository is intended to make it easier to get set up to easily build the latest versions of INDI, 3rd Party Drivers, KStars, StellarSolver, GSC, and INDI Web Manager App 
-as well as to be able to edit the source code to test out ideas, to diagnose problems, and to make contributions to the development of any or all of these programs. This script evolved out of my previous repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).
-Recently, I have expanded the script so that it can build in Ubuntu Linux and may expand to other distros and to Windows in the future.  Originally, this script depended on the other repository, but it now fully replaces its functionality.  
+This repository is intended to make it easier to get set up to easily build the latest versions of INDI, INDI Web Manager App, 3rd Party Drivers, StellarSolver, GSC, and KStars 
+as well as to be able to edit the source code to test out ideas, to diagnose problems, and to make contributions to the development of any or all of these programs. 
+Recently, I have expanded the script so that it can build in Ubuntu Linux and may expand to other distros and to Windows in the future.  This script can build using the system, craft, or homebrew as a foundation. 
+It can build QT5 and QT6 builds in parallel for testing purposes.  It can build using the original repositories or forked repositories.  It can optionally build with XCode on MacOS.  
+
+# The History
+This script evolved out of my previous repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).
+Originally, this script depended on the other repository, but it now fully replaces its functionality and goes beyond that.  
 In the past, this repo used command line options for some settings and options in text files for others.  Now, the options are mostly streamlined into several files which are explained below.
 
 # Getting Everything Set Up at Once
@@ -98,7 +103,7 @@ and make any changes that you want to make in the src-forked folder for that pro
 
 ## Forking the Repo for whichever repo you would like to edit
 1. Make sure you have a GitHub account (or KDE GitLab for KStars).  Go to the REPO on the website and click "Fork"
-2. In [settings.sh](scripts/settings.sh), enter your [gibhub.com](https://github.com/) or for KStars, [gitlab.com](https://about.gitlab.com/) username. 
+2. In [settings.sh](scripts/settings.sh), enter your [gibhub.com](https://github.com/) username and/or [gitlab.com](https://about.gitlab.com/) username. 
 3. In the build script for the particular package you want to work on, uncomment the USE_FORKED_REPO repo option.
 4. Run the particular package's build script again.  
 
@@ -144,7 +149,7 @@ For the build settings, you can really speed things up if you specify the target
 ![The Build Options](images/buildOptions.png "The Build Options")
 
 Under Projects, Build and Run, Run There is a new option in QT creator to "Add Build library search path to DYLD Library Path"  It seems to get checked by default 
-which has been causing some conflicts between the libjpeg provided by OS X and the one used by KStars and INDI.  Please uncheck this box to avoid the errors if you encounter any.
+which has been causing some conflicts between the libjpeg provided by MacOS and the one used by KStars and INDI.  Please uncheck this box to avoid the errors if you encounter any.
 
 ![Build](images/run.png "Run")
 ![The DYLD Box](images/DYLDBox.png "Uncheck the DYLD Box")
@@ -161,7 +166,7 @@ and then type your driver in the command line arguments like this:
 ![indicoreRunConfig](images/indicoreRunConfig.png "INDI Core Run Configuration")
 
 ## Testing changes to INDI 3rd Party Drivers in QT Creator
-Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the other repo, and usually the third party drivers build in subfolders.
+Just like INDI Core drivers, 3rd Party drivers should be run from the indiserver.  Unfortunately, indiserver is part of the INDI Core repo, not the 3rd Party repo and usually the third party drivers build in subfolders.
 But if you already built INDI Core before you built the 3rd Party drivers, then its not too difficult to use the "custom executable" function.  For example, here is the command line arguments that would be needed for DSI:
 ```
 -vvv ../ThirdParty-Drivers /indi-dsi/indi_dsi_ccd
@@ -175,7 +180,7 @@ In the screenshots below you can see how the custom executable can be selected a
 ## Getting INDI Running in QT Creator to display simulated stars with GSC
 The INDI Simulator CCD can optionally use the Hubble Guide Star Catalog and the GSC executable to generate very realistic simulated 
 stars for testing purposes.  Please follow these steps to get it set up. Note that this is not needed for KStars because it already does this internally.
-1. KStars for Mac has the ability to download the GSC data in in the Startup Wizard.  Do this first.
+1. KStars for MacOS has the ability to download the GSC data in in the Startup Wizard.  Do this first.
 2. Follow all the instructions above to get INDI Setup and ready to run in QT Creator.
 3. The INDI Server will need the following environment variables to get GSC to work with it, edit them in the Run Configuration:
 ```
@@ -186,7 +191,7 @@ Please see the screenshot below:
 ![EnvironmentVariables](images/gscRunEnv.png "Environment Variables for GSC")
 
 # Building with XCode instead of QT Creator
-If you run this script with the -x option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
+If you run this script with the BUILD_XCODE option, it will build using xcodebuild instead of make commands.  It also will create an XCode project so that you can
 open it up and use XCode to edit the code.  If you would like to do this, you should have XCode already installed and setup.  You should also already have or you can create a code signing certificate.
 If you just plan to build, test, change, and submit changes to the code and not distribute it to others, then you don't need to pay for the cerfificate.  A self signed certificate you create in KeyChain Access
 will work just fine.  Once you have the certificate, all you need to do is to run these commands to get setup to work in XCode, replacing *YOUR ITENTITY* with your code signing certificate identity.
