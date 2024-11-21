@@ -259,8 +259,6 @@
 # This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 	function setupHomebrew
 	{
-		checkForConnection Homebrew "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
-		
 		# This installs the xcode command line tools if not installed yet.
 		# Yes these tools will be automatically installed if the user has never used git before
 		# But sometimes they need to be installed again.
@@ -272,6 +270,12 @@
 		
 		if [[ $(command -v brew) == "" ]]
 		then
+			# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning and attempting to continue.
+				if [ -n "${BUILD_OFFLINE}" ]
+				then
+					display "Note: The BUILD_OFFLINE option is selected, but it appears Homebrew needs to be installed.  Attempting to do so anyway."
+				fi
+			checkForConnection "Homebrew" "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
 			display "Installing Homebrew."
 			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 		else
@@ -302,7 +306,7 @@
 		# This verifies HomeBrew is installed prior to installing a package.
 			if [[ $(command -v brew) == "" ]]
 			then
-				display "Error.  Homebrew is not installed.  Please install homebrew before calling homebrew link."
+				display "Error.  Homebrew is not installed.  Please install homebrew before calling brewInstallIfNeeded."
 			fi
 		
 		for package in "$@"
@@ -332,7 +336,12 @@
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
 			source "${CRAFT_ROOT}/craft/craftenv.sh"
-			craft --install-deps "${PACKAGE_SHORT_NAME}"
+			if [ -n "${BUILD_OFFLINE}" ]
+			then
+				craft --install-deps --offline "${PACKAGE_SHORT_NAME}"
+			else
+				craft --install-deps "${PACKAGE_SHORT_NAME}"
+			fi
 		else
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
@@ -409,6 +418,15 @@
 				display "Error. The CRAFT_ROOT directory variable is blank when calling installCraft."
 				exit 1
 			fi
+			
+		# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning and attempting to continue.
+			if [ -n "${BUILD_OFFLINE}" ]
+			then
+				display "Note: The BUILD_OFFLINE option is selected, but it appears Craft needs to be installed.  Attempting to do so anyway."
+			fi
+		
+		# Before starting, check to see if craft's remote servers are accessible
+			checkForConnection "Craft" "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
@@ -431,9 +449,6 @@
 				display "Error. The CRAFT_ROOT directory variable is blank when calling setupCraft."
 				exit 1
 			fi
-			
-		# Before starting, check to see if craft's remote servers are accessible
-			checkForConnection Craft "https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py"
 		
 		# This will set up items required for MacOS
 		
@@ -455,7 +470,7 @@
 			cd /tmp # Set the working directory to /tmp because otherwise setup.py for craft will be placed in the user directory and that is messy.
 			if [ -d "${CRAFT_ROOT}" ]
 			then
-				# This will remove the current craft if desired.
+				# This will remove all the files and packages in the current craft directory if desired.
 				if [ -n "$REMOVE_ALL" ]
 				then
 					display "You have selected the REMOVE_ALL option.  Warning, this will clear the entire craft directory."
@@ -466,13 +481,10 @@
 						echo "Quitting the script as you requested."
 						exit
 					fi
-					if [ -d "${CRAFT_ROOT}" ]
-					then
-						rm -rf "${CRAFT_ROOT}"
-					fi
 					
-					mkdir -p "${CRAFT_ROOT}"
-					installCraft
+					# This removes everything from craft root except the settings and craft source files/folder
+						source "${CRAFT_ROOT}/craft/craftenv.sh"
+						craft --destroy-craft-root
 				fi
 			else
 				display "Installing craft"

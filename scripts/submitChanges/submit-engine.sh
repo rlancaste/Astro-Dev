@@ -28,6 +28,12 @@
 				display "Error. One or more critical variables is blank before running commitAndPushToServer."
 				exit 1
 			fi
+		
+		# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning.
+			if [ -n "${BUILD_OFFLINE}" ]
+			then
+				display "Note: The BUILD_OFFLINE option is selected.  You can't submit to an online server if you are offline.  Ignoring this option for this script and continuing."
+			fi
 			
 		# This sets the source directory that will be used for the submission.
 			export USE_FORKED_REPO="Yep"
