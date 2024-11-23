@@ -170,6 +170,8 @@
 				
 					# This one is for several packages that can't seem to find GSL
 					craftLink include/gsl
+					# This one is for third party, which can't seem to find libnova headers
+					craftLink include/libnova
 					# These are several libraries that were actually found by KStars, but then did not link properly without being in DEV Root.
 					craftLink lib/libcfitsio.dylib
 					craftLink lib/libgsl.dylib

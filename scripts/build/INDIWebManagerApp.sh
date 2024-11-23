@@ -23,7 +23,7 @@
 	export PACKAGE_SHORT_NAME="indiwebmanagerapp"
 	export BUILD_SUBDIR="webmanager-build"
 	export PACKAGE_BUILD_OPTIONS=""
-	export HOMEBREW_DEPENDENCIES="qt6 extra-cmake-modules"
+	export HOMEBREW_DEPENDENCIES="extra-cmake-modules"
 	export UBUNTU_DEPENDENCIES="cmake git extra-cmake-modules gettext"
 
 # Display the Welcome message explaining what this script does.
@@ -33,9 +33,11 @@
 	if [ -n "${USE_QT5}" ]
 	then
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+		export HOMEBREW_DEPENDENCIES="${HOMEBREW_DEPENDENCIES} qt5"
 		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev libkf5kio-dev libkf5doctools-dev libkf5config-dev libqt5websockets5-dev "
 	else
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
+		export HOMEBREW_DEPENDENCIES="${HOMEBREW_DEPENDENCIES} qt6"
 		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qt6-base-dev libkf6kio-dev libkf6doctools-dev libkf6config-dev libqt6websockets6-dev"
 	fi
 
