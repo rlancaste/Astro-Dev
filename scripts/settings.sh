@@ -27,8 +27,10 @@
 		#export CLEAN_BUILD="Yep"
 	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 		#export REMOVE_ALL="Yep"
-	# The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
-		#export USE_QT5="Yep"	
+	# The default for this Repo is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
+		export USE_QT5="Yep"
+	# The current default for this Repo is to build for x86-64 on MacOS, but ARM (Apple Silicon) support is being tested.
+		#export USE_ARM="Yep"
 		
 	# Note: there are options for building with the original source repositories or your own forks.  These options are specific to the packages and not global.  Please see each package's build script for these options.
 
@@ -68,8 +70,6 @@
 		export ASTRO_ROOT="${HOME}/AstroRoot"
 	# This is the Craft Root Folder that will be used if the build foundation is Craft.  It could be in the AstroRoot Folder or somewhere else.
 		export CRAFT_ROOT="${ASTRO_ROOT}/CraftRoot"
-	# This is the Homebrew Root Folder that will be used as a basis for building. I don't think this should be changed.
-		export HOMEBREW_ROOT="/usr/local"
 
 # This is a setting for MacOS.  This makes it possible to build for previous versions of the operating system.
 # I would set these variables to whatever they are set to currently in Craft.  See this page: https://doc.qt.io/qt-6/macos.html
@@ -95,6 +95,10 @@ echo "OSTYPE                   is [${OSTYPE}]"
 # This is how many processors will be used when building.  It is automatically set in automaticallySetScriptSettings in script-engine.sh
 echo "NUM_PROCESSORS           are [${NUM_PROCESSORS}]"
 
+# This is the architecture used for building.
+echo "System Architecture       is [$(uname -m)]"
+echo "Build Architecture        is [${BUILD_ARCH}]"
+
 # These settings are vital if you want to fork a repo and do any editing.
 echo "GIT_USERNAME             is [${GIT_USERNAME}]"
 echo "GITLAB_USERNAME          is [${GITLAB_USERNAME}]"
@@ -109,6 +113,7 @@ echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
 echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 echo "REMOVE_ALL               ? [${REMOVE_ALL:-Nope}]"
 echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
+echo "USE_ARM                  ? [${USE_ARM:-Nope}]"
 
 # Key Directory paths determined above in the options
 echo "SCRIPTS_DIR              is [${SCRIPTS_DIR}]"

@@ -61,14 +61,3 @@
 	
 # This method call will build the package using either xcode or cmake based on your setting
 	buildPackage
-	
-# This makes a nice link for launching the Application from the top folder on MacOS.
-	if [[ "${OSTYPE}" == "darwin"* ]]
-	then
-		if [ -n "${USE_QT5}" ]
-		then
-			ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp-QT5.app"
-		else
-			ln -sf "${DEV_ROOT}/INDIWebManagerApp.app" "${ASTRO_ROOT}/INDIWebManagerApp.app"
-		fi
-	fi

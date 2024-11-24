@@ -212,6 +212,7 @@
 		# This will install homebrew if it hasn't been installed yet, or reset HOMEBREW if desired.
 			if [ ! -d "${HOMEBREW_ROOT}" || -n "${REMOVE_ALL}" ]
 			then
+				prepareMacOSBuildTools
 				setupHomebrew
 			fi
 	fi

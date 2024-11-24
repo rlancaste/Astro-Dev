@@ -108,6 +108,11 @@
 			export BUILD_DIR="${BUILD_DIR}-QT5"
 		fi
 		
+		if [ -n "${USE_ARM}" ]
+		then
+			export BUILD_DIR="${BUILD_DIR}-ARM"
+		fi
+		
 		if [ -n "${USE_FORKED_REPO}" ]
 		then
 			export BUILD_DIR="${BUILD_DIR}-forked"
@@ -140,6 +145,12 @@
 				export CRAFT_ROOT="${CRAFT_ROOT}-QT5"
 			fi
 		
+		# This establishes a separate CRAFT-ROOT folder so that you can build in x86 separate from ARM
+			if [ -n "${USE_ARM}" ]
+			then
+				export CRAFT_ROOT="${CRAFT_ROOT}-ARM"
+			fi
+			
 		# Based on whether you choose to use the DEV_ROOT folder option, this will set up the DEV_ROOT based on the foundation for the build, since the "installed" files have different linkings.
 		# This does set up the structure of the DEV ROOT folders in the ASTRO_ROOT directory.  You can customize this here.
 			
@@ -173,6 +184,21 @@
 				export DEV_ROOT="${DEV_ROOT}-QT5"
 			fi
 			
+			if [[ -n "${USE_ARM}" && -n "${USE_DEV_ROOT}" ]]
+			then
+				export DEV_ROOT="${DEV_ROOT}-ARM"
+			fi
+		
+		# For MacOS, this sets the Homebrew folder and on all systems changes the build architecture automatically based on whether you want to build for ARM or Intel
+			if [ -n "${USE_ARM}" ]
+			then
+				export HOMEBREW_ROOT="/opt/homebrew"
+				export BUILD_ARCH="arm64"
+			else
+				export HOMEBREW_ROOT="/usr/local"
+				export BUILD_ARCH="x86_64"
+			fi
+			
 		# These commands add paths to the PATH and Prefixes for building.
 		# These settings are crucial for finding programs, libraries, and other items for building.
 			
@@ -182,7 +208,7 @@
 			# This adds the path to GETTEXT to the path variables which is needed for building some packages on MacOS.  This assumes it is in homebrew, but if not, change it.
 				if [[ "${OSTYPE}" == "darwin"* ]]
 				then
-					export GETTEXT_PATH=$(brew --prefix gettext)
+					export GETTEXT_PATH=$(arch -${BUILD_ARCH} brew --prefix gettext)
 					export PATH="${GETTEXT_PATH}/bin:${PATH}"
 					export PREFIX_PATHS="${GETTEXT_PATH}/bin"
 				fi
@@ -200,12 +226,12 @@
 					export PREFIX_PATHS="${HOMEBREW_ROOT};${PREFIX_PATHS}"
 					export RPATHS="${HOMEBREW_ROOT}/lib;${RPATHS}"
 				else
-					export PREFIX_PATHS="/usr;/usr/local"
-					export RPATHS="/usr/lib;/usr/local/lib"
+					export PREFIX_PATHS="/usr/local;/usr"
+					export RPATHS="${LD_LIBRARY_PATH};/usr/local/lib;usr/lib"
 				fi
 			
 			# pkgconfig is not needed on MacOS, but can be found by adding it to the path.
-				#PATH="$(brew --prefix pkgconfig)/bin:$PATH"
+				#PATH="$(arch -${BUILD_ARCH} brew --prefix pkgconfig)/bin:$PATH"
 			
 			# The DEV_ROOT is the most important item to add to the path variables, the folder we will be using to "install" the programs.  Make sure it is added last so it appears first in the PATH.
 				if [ -n "${USE_DEV_ROOT}" ]
@@ -218,7 +244,7 @@
 		# These are the Program Build options that are common to all the builds. The variables above are heavily used to set this up.
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
-				export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATHS} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
+				export GENERAL_BUILD_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_ARCHITECTURES=${BUILD_ARCH} -DCMAKE_MACOSX_RPATH=1 -DCMAKE_BUILD_WITH_INSTALL_RPATH=1 -DCMAKE_INSTALL_RPATH=${RPATHS} -DCMAKE_INSTALL_PREFIX=${DEV_ROOT} -DCMAKE_PREFIX_PATH=${PREFIX_PATHS} -DKDE_INSTALL_BUNDLEDIR=${DEV_ROOT}"
 			else
 				if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 				then
@@ -232,6 +258,25 @@
 
 #########################################
 # FUNCTIONS RELATED TO PREPARING HOMEBREW
+
+# This function prepares MacOS with CommandLineTools and Rosetta if required.
+	function prepareMacOSBuildTools
+	{
+		# This installs Rosetta if it has not been installed yet if you are building on on an ARM machine, but trying to build x86_84 programs
+			if [[ -z "${USE_ARM}" && $(uname -m) == "arm64" && ! -d "/usr/libexec/rosetta" ]]
+			then
+				softwareupdate --install-rosetta --agree-to-license
+			fi
+			
+		# This installs the xcode command line tools if not installed yet.
+		# Yes these tools will be automatically installed if the user has never used git before
+		# But sometimes they need to be installed again.
+			if ! command -v xcode-select &> /dev/null
+			then
+				display "Installing xcode command line tools"
+				xcode-select --install
+			fi
+	}
 
 # This function links a file or folder in the dev directory to one in the Homebrew-root directory
 	function homebrewLink
@@ -259,16 +304,7 @@
 # This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 	function setupHomebrew
 	{
-		# This installs the xcode command line tools if not installed yet.
-		# Yes these tools will be automatically installed if the user has never used git before
-		# But sometimes they need to be installed again.
-			if ! command -v xcode-select &> /dev/null
-			then
-				display "Installing xcode command line tools"
-				xcode-select --install
-			fi
-		
-		if [[ $(command -v brew) == "" ]]
+		if [ ! -e "${HOMEBREW_ROOT}/bin/brew" ]
 		then
 			# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning and attempting to continue.
 				if [ -n "${BUILD_OFFLINE}" ]
@@ -277,7 +313,7 @@
 				fi
 			checkForConnection "Homebrew" "https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
 			display "Installing Homebrew."
-			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+			arch -${BUILD_ARCH} /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 		else
 			# This will remove all the homebrew packages if desired.
 			if [ -n "${REMOVE_ALL}" ]
@@ -289,7 +325,7 @@
 					echo "Quitting the script as you requested."
 					exit
 				fi
-				brew remove --force $(brew list) --ignore-dependencies
+				arch -${BUILD_ARCH} brew remove --force $(brew list) --ignore-dependencies
 			fi  
 		fi
 	}
@@ -304,18 +340,18 @@
 	function brewInstallIfNeeded
 	{
 		# This verifies HomeBrew is installed prior to installing a package.
-			if [[ $(command -v brew) == "" ]]
+			if [ ! -e "${HOMEBREW_ROOT}/bin/brew" ]
 			then
 				display "Error.  Homebrew is not installed.  Please install homebrew before calling brewInstallIfNeeded."
 			fi
 		
 		for package in "$@"
 		do
-			brew ls --versions $package > /dev/null 2>&1
+			arch -${BUILD_ARCH} brew ls --versions $package > /dev/null 2>&1
 			if [ $? -ne 0 ]
 			then
 				echo "Installing : $package"
-				brew install $package
+				arch -${BUILD_ARCH} brew install $package
 			else
 				echo "brew : $package is already installed"
 			fi
@@ -430,7 +466,7 @@
 
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
-			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(arch -${BUILD_ARCH} brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 			
 		elif [[ "$OSTYPE" == "msys" ]]
 		then
@@ -454,13 +490,15 @@
 		
 			if [[ "${OSTYPE}" == "darwin"* ]]
 			then
-					
+				# This will handle rosetta and command line tools
+					prepareMacOSBuildTools
+				
 				# This will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 					setupHomebrew
 				
 				# This will make sure Homebrew is up to date and display the message.
 					display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
-					brew upgrade
+					arch -${BUILD_ARCH} brew upgrade
 					
 				# python is the only one required for craft, but the others are needed by the other scripts in this Repo or QT Creator
 					brewInstallIfNeeded cmake python ninja gettext
@@ -487,7 +525,21 @@
 						craft --destroy-craft-root
 				fi
 			else
-				display "Installing craft"
+				TXT="Version of QT:"
+				if [ -n "${USE_QT5}" ]
+				then
+					TXT="${TXT} Qt5"
+				else
+					TXT="${TXT} Qt6"
+				fi
+				TXT="${TXT}, and Select target architecture:"
+				if [ -n "${USE_ARM}" ]
+				then
+					TXT="${TXT} arm64"
+				else
+					TXT="${TXT} x86_64"
+				fi
+				display "Installing craft. Be sure to answer the questions to the prompts as follows,  ${TXT}"
 				mkdir -p "${CRAFT_ROOT}"
 				installCraft
 			fi 

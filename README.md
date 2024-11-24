@@ -74,6 +74,7 @@ There are a number of options that you can turn on or off in settings.sh. To ena
 4. CLEAN_BUILD.  This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.	
 5. REMOVE_ALL.  This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 6. USE_QT5.  The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6.
+7. USE_ARM.  The default for this REPO is currently to build with x86_64 on MacOS, but ARM support is under development.
 
 # Individual Build Scripts Local Options
 Each one of the [build](scripts/build) scripts sets up all the details for building those packages.  You should not have to change most of these settings.
