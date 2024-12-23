@@ -24,6 +24,8 @@
 # Display the Welcome message explaining what this script does.
 	display "Setting up and Building the INDI Core Drivers."
 	
+# This package has no dependencies.
+	
 # This method call will prepare the Source Directory to build the package
 	prepareSourceDirectory
 	

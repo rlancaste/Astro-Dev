@@ -21,6 +21,7 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI 3rd Party Libraries"
 	export PACKAGE_SHORT_NAME="indi-3rdparty"
+	export CRAFT_PACKAGE="libs/indilib/indi-3rdparty"
 	export BUILD_SUBDIR="indi-build/ThirdParty-Libraries"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_LIBS=ON"
 	#export PACKAGE_BUILD_OPTIONS="${PACKAGE_BUILD_OPTIONS} -DFIX_MACOS_LIBS=ON" # Uncomment this line to fix 3rd Party drivers with linking issues.
@@ -50,6 +51,7 @@
 # This section sets the options for building the package.  Note that for 3rd Party Drivers, there are only a few differences from the Libraries.
 	export BUILD_SUBDIR="indi-build/ThirdParty-Drivers"
 	export PACKAGE_NAME="INDI 3rd Party Drivers"
+	export CRAFT_PACKAGE="libs/indilib/indi-3rdparty-libs"
 	export PACKAGE_BUILD_OPTIONS=""
 	
 # This method call will build the package using either xcode or cmake based on your setting

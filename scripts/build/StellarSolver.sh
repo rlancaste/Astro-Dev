@@ -21,6 +21,7 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="StellarSolver"
 	export PACKAGE_SHORT_NAME="stellarsolver"
+	export CRAFT_PACKAGE="libs/stellarsolver"
 	export BUILD_SUBDIR="stellar-build"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTER=ON -DBUILD_DEMOS=OFF -DBUILD_BATCH_SOLVER=OFF"
 	export HOMEBREW_DEPENDENCIES="gsl cfitsio zlib wcslib"

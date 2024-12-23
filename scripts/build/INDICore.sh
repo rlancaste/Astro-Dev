@@ -21,6 +21,7 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="INDI Core Drivers"
 	export PACKAGE_SHORT_NAME="indi"
+	export CRAFT_PACKAGE="libs/indilib/indi"
 	export BUILD_SUBDIR="indi-build/indi-core"
 	export PACKAGE_BUILD_OPTIONS=""
 	export HOMEBREW_DEPENDENCIES="cmake gettext cfitsio libusb theora curl libnova gsl libjpeg-turbo fftw libev libiconv"

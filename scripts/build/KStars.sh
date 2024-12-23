@@ -21,6 +21,7 @@
 # This section sets the options for building the package.
 	export PACKAGE_NAME="KStars"
 	export PACKAGE_SHORT_NAME="kstars"
+	export CRAFT_PACKAGE="kde/applications/kstars"
 	export BUILD_SUBDIR="kstars-build"
 	export PACKAGE_BUILD_OPTIONS="-DBUILD_TESTING=OFF -DBUILD_DOC=OFF"
 	export HOMEBREW_DEPENDENCIES="extra-cmake-modules eigen cfitsio wcslib libraw gsl zlib qtkeychain"

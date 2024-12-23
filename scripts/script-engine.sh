@@ -55,11 +55,11 @@
 # It separates the two so that you can switch back and forth if desired.  You can work in each repo and do parallel builds.
 # This sets up the structure of the source folders in the ASTRO_ROOT folder.  You could customize this here.
 	function selectSourceDir
-	{
+	{			
 		# This checks if any critical variables for this function are not set.
-			if [ -z "${ASTRO_ROOT}" ]
+			if [[ -z "${ASTRO_ROOT}" || -z "${PACKAGE_SHORT_NAME}" ]]
 			then
-				display "Error.  The ASTRO_ROOT variable is not set before selectSourceDir."
+				display "Error.  One of the critical variables is not set before selectSourceDir."
 				exit 1
 			fi
 
@@ -279,6 +279,7 @@
 	}
 
 # This function links a file or folder in the dev directory to one in the Homebrew-root directory
+# $1 is the file/folder structure to link between homebrew root and dev root
 	function homebrewLink
 	{
 		# This checks if any critical variables for this function are not set.
@@ -394,6 +395,7 @@
 # FUNCTIONS RELATED TO PREPARING CRAFT
 
 # This function links a file or folder in the dev directory to one in the craft-root directory
+# $1 is the file/folder structure to link between craft root and dev root
 	function craftLink
 	{
 		# This checks if any critical variables for this function are not set.
@@ -414,6 +416,173 @@
 		then
 			ln -s ${CRAFT_ROOT}/$1 ${DEV_ROOT}/$1
 		fi
+	}
+
+# This function links a craft download folder to a ASTRO_ROOT source folder so that craft does not download another copy.
+# This makes it easy to test changes to the repo in a craft build.  It also saves space on your hard drive.
+# $1 is the name of the package, $2 is the craft directory structure for that package
+	function craftLinkSrcDir
+	{
+		# This checks if the function was actually sent the right number of parameters.
+			if [[ -z $1 || -z $2 ]]
+			then
+				display "Error.  The craftLinkSrcDir function requires the package name and the Craft directory structure to that package."
+				exit 1
+			fi
+		
+		export PACKAGE_SHORT_NAME=$1
+		export CRAFT_PACKAGE=$2
+		
+		selectSourceDir
+		
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${SRC_DIR}" || -z "${CRAFT_ROOT}" || -z "${CRAFT_PACKAGE}" ]]
+			then
+				display "Error.  One of the variables required by craftLinkSrcDir did not get set correctly."
+				exit 1
+			fi
+		
+		# If the source directory does not exist, we cannot link to it.
+			if [ ! -d "${SRC_DIR}" ]
+			then
+				return
+			fi
+			
+		mkdir -p "${CRAFT_ROOT}/download/git/"
+			
+		DOWNLOAD_FOLDER=${CRAFT_ROOT}/download/git/${CRAFT_PACKAGE}
+		
+		# If craft has already downloaded the repo, we don't want to replace it unless the user really wants to.
+			if [[ -d ${DOWNLOAD_FOLDER} && ! -L ${DOWNLOAD_FOLDER} ]]
+			then
+				display "Craft has already downloaded the repo for ${CRAFT_PACKAGE} at ${DOWNLOAD_FOLDER}. This will replace it with a link to ${SRC_DIR}."
+				read -p "?Do you really wish to proceed? (type y/n) " replace
+					
+				if [ "$replace" == "y" ]
+				then
+					rm -r ${DOWNLOAD_FOLDER}
+				else
+					return
+				fi
+			fi
+		
+		# If there already is a symbolic link present, we want to replace it because we might be linking the forked or regular version.
+			if [[ -d ${DOWNLOAD_FOLDER} && -L ${DOWNLOAD_FOLDER} ]]
+			then
+				rm ${DOWNLOAD_FOLDER}
+			fi
+		
+		echo "Linking ${DOWNLOAD_FOLDER} to ${SRC_DIR}"
+		ln -s ${SRC_DIR} ${DOWNLOAD_FOLDER}
+	}
+
+# This function temporarily links the craft blueprints directory to one in the AstroRoot Folder
+# This makes it easy to test changes to the repo in a craft build.
+# It saves the craft blueprints for this craft folder so that they can be restored later.
+	function linkCraftBlueprints
+	{
+		export PACKAGE_SHORT_NAME="craft-blueprints-kde"
+		selectSourceDir
+		
+		# This checks if any critical variables for this function are not set.
+			if [[ -z "${SRC_DIR}" || -z "${CRAFT_ROOT}" ]]
+			then
+				display "Error.  One of the variables required by linkCraftBlueprints did not get set correctly."
+				exit 1
+			fi
+		
+		# If the source directory does not exist, we cannot link to it.
+			if [ ! -d "${SRC_DIR}" ]
+			then
+				return
+			fi
+		
+		# This checks to see that the craft blueprints branch in the source folder matches the selected Craft Root Folder
+		# If we are using QT5, then the blueprints should probably be on branch qt5-lts.  If it is QT6, we should probably be on master.
+			cd "${SRC_DIR}"
+			branch=$(git rev-parse --abbrev-ref HEAD)
+			echo "Your selected Craft Blueprints Directory Source folder (${SRC_DIR}) is on branch ${branch}."
+			if [[ ! -n "${USE_QT5}" && "$branch" == "master" ]]
+			then
+				echo "This branch is compatible with a QT6 Craft folder."
+			elif [[ -n "${USE_QT5}" && "$branch" == "qt5-lts" ]]
+			then
+				echo "This branch is compatible with a QT5 Craft folder."
+			else
+				echo "This branch might not be compatible with your craft folder."
+				read -p "?Do you really wish to proceed? (type y/n) " proceed
+				if [ "$proceed" != "y" ]
+				then
+					echo "Quitting the script as you requested."
+					exit 1
+				fi
+			fi
+			
+		BLUEPRINTS_FOLDER=${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde
+		BLUEPRINTS_BACKUP_FOLDER=${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde-backup
+			
+		# This causes the script to exit if there is already a craft blueprints backup folder present but we need to back up the current blueprints folder.
+			if [[ -d ${BLUEPRINTS_FOLDER} && ! -L ${BLUEPRINTS_FOLDER} && -d ${BLUEPRINTS_BACKUP_FOLDER} ]]
+			then
+				display "Error. The craft blueprints folder is at ${BLUEPRINTS_FOLDER} and we need to back it up to ${BLUEPRINTS_BACKUP_FOLDER}. But there is already a folder present there."
+				exit 1
+			fi
+		
+		# This backs up the current craft blueprints folder so the link can be established.
+			if [[ -d ${BLUEPRINTS_FOLDER} && ! -L ${BLUEPRINTS_FOLDER} && ! -d ${BLUEPRINTS_BACKUP_FOLDER} ]]
+			then
+				echo "Backing up ${BLUEPRINTS_FOLDER} to ${BLUEPRINTS_BACKUP_FOLDER}"
+				mv ${BLUEPRINTS_FOLDER} ${BLUEPRINTS_BACKUP_FOLDER}
+			fi
+		
+		# If there already is a symbolic link present, we want to replace it because we might be linking to a different set of craft blueprints.
+			if [[ -d ${BLUEPRINTS_FOLDER} && -L ${BLUEPRINTS_FOLDER} ]]
+			then
+				rm ${BLUEPRINTS_FOLDER}
+			fi
+		
+		# This links the blueprints to the selected ASTRO_ROOT source folder for the blueprints
+			echo "Linking ${BLUEPRINTS_FOLDER} to ${SRC_DIR}"
+			ln -s ${SRC_DIR} ${BLUEPRINTS_FOLDER}
+	}
+
+# This function restores the craft blueprints that have been stored so that craft can use its regular blueprints once more.
+	function restoreCraftBlueprints
+	{		
+		# This checks if any critical variables for this function are not set.
+			if [ -z "${CRAFT_ROOT}" ]
+			then
+				display "Error.  One of the variables required by restoreCraftBlueprints did not get set correctly."
+				exit 1
+			fi
+			
+		BLUEPRINTS_FOLDER=${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde
+		BLUEPRINTS_BACKUP_FOLDER=${CRAFT_ROOT}/etc/blueprints/locations/craft-blueprints-kde-backup
+		
+		# This causes the script to exit if there is no blueprints backup folder to restore.
+			if [ ! -d ${BLUEPRINTS_BACKUP_FOLDER} ]
+			then
+				display "Error. There is no back up at ${BLUEPRINTS_BACKUP_FOLDER} to restore."
+				exit 1
+			fi
+			
+		# This causes the script to exit if there is already a craft blueprints backup folder present but we need to back up the current blueprints folder.
+			if [[ -d ${BLUEPRINTS_FOLDER} && ! -L ${BLUEPRINTS_FOLDER} ]]
+			then
+				display "Error. Restoring craft blueprints from ${BLUEPRINTS_BACKUP_FOLDER} to ${BLUEPRINTS_FOLDER} is not possible since there is already a folder there."
+				exit 1
+			fi
+		
+		# If there already is a symbolic link present, we want to remove it so that we an restore the backed up craft blueprints.
+			if [[ -d ${BLUEPRINTS_FOLDER} && -L ${BLUEPRINTS_FOLDER} ]]
+			then
+				rm ${BLUEPRINTS_FOLDER}
+			fi
+		
+		# This restores the craft blueprints
+			echo "Restoring ${BLUEPRINTS_BACKUP_FOLDER} to ${BLUEPRINTS_FOLDER}"
+			mv ${BLUEPRINTS_BACKUP_FOLDER} ${BLUEPRINTS_FOLDER} 
+		
 	}
 
 # This copies a craft blueprint from the repository to the CRAFT blueprints folder.
