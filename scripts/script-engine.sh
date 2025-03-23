@@ -623,6 +623,13 @@
 				display "Error. The CRAFT_ROOT directory variable is blank when calling installCraft."
 				exit 1
 			fi
+		
+		# The ANS variable needs to contain the answers to the Craft installation prompts based on the Script settings.
+			if [ -z ${ANS} ]
+			then
+				display "Error. The ANS variable is blank and this script needs that information to correctly answer the Craft install prompts."
+				exit 1
+			fi
 			
 		# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning and attempting to continue.
 			if [ -n "${BUILD_OFFLINE}" ]
@@ -635,7 +642,8 @@
 
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
-			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py && $(arch -${BUILD_ARCH} brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py
+			echo -e "${ANS}" | $(arch -${BUILD_ARCH} brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 			
 		elif [[ "$OSTYPE" == "msys" ]]
 		then
@@ -695,20 +703,27 @@
 				fi
 			else
 				TXT="Version of QT:"
+				ANS=""
 				if [ -n "${USE_QT5}" ]
 				then
-					TXT="${TXT} Qt5"
+					TXT="${TXT} Qt5 (0)"
+					ANS="${ANS}0\n"
 				else
-					TXT="${TXT} Qt6"
+					TXT="${TXT} Qt6 (1)"
+					ANS="${ANS}1\n"
 				fi
 				TXT="${TXT}, and Select target architecture:"
 				if [ -n "${USE_ARM}" ]
 				then
-					TXT="${TXT} arm64"
+					TXT="${TXT} arm64 (1)"
+					ANS="${ANS}1\n"
 				else
-					TXT="${TXT} x86_64"
+					TXT="${TXT} x86_64 (0)"
+					ANS="${ANS}0\n"
 				fi
-				display "Installing craft. Be sure to answer the questions to the prompts as follows,  ${TXT}"
+				TXT="${TXT}, and Colored Logs: Yes (0)."
+				export ANS="${ANS}0\n"
+				display "Installing craft. Based on the script settings, this script is automatically answering the questions to the craft install prompts as follows,  ${TXT}"
 				mkdir -p "${CRAFT_ROOT}"
 				installCraft
 			fi 
