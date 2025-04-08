@@ -150,6 +150,18 @@
 			then
 				export CRAFT_ROOT="${CRAFT_ROOT}-ARM"
 			fi
+
+		# For MacOS, this sets the Homebrew folder and on all systems changes the build architecture automatically based on whether you want to build for ARM or Intel
+			if [ -n "${USE_ARM}" ]
+			then
+				export HOMEBREW_ROOT="/opt/homebrew"
+				export BUILD_ARCH="arm64"
+				export BREW=""
+			else
+				export HOMEBREW_ROOT="/usr/local"
+				export BUILD_ARCH="x86_64"
+			fi
+			export BREW="${HOMEBREW_ROOT}/bin/brew"
 			
 		# Based on whether you choose to use the DEV_ROOT folder option, this will set up the DEV_ROOT based on the foundation for the build, since the "installed" files have different linkings.
 		# This does set up the structure of the DEV ROOT folders in the ASTRO_ROOT directory.  You can customize this here.
@@ -188,16 +200,6 @@
 			then
 				export DEV_ROOT="${DEV_ROOT}-ARM"
 			fi
-		
-		# For MacOS, this sets the Homebrew folder and on all systems changes the build architecture automatically based on whether you want to build for ARM or Intel
-			if [ -n "${USE_ARM}" ]
-			then
-				export HOMEBREW_ROOT="/opt/homebrew"
-				export BUILD_ARCH="arm64"
-			else
-				export HOMEBREW_ROOT="/usr/local"
-				export BUILD_ARCH="x86_64"
-			fi
 			
 		# These commands add paths to the PATH and Prefixes for building.
 		# These settings are crucial for finding programs, libraries, and other items for building.
@@ -208,8 +210,8 @@
 			# This adds the path to GETTEXT to the path variables which is needed for building some packages on MacOS.  This assumes it is in homebrew, but if not, change it.
 				if [[ "${OSTYPE}" == "darwin"* ]]
 				then
-					export GETTEXT_PATH=$(arch -${BUILD_ARCH} brew --prefix gettext)
-					export PATH="${GETTEXT_PATH}/bin:${PATH}"
+					export GETTEXT_PATH=$(${BREW} --prefix gettext)
+					export PATH="${GETTEXT_PATH}/bin:${HOMEBREW_ROOT}/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin"
 					export PREFIX_PATHS="${GETTEXT_PATH}/bin"
 				fi
 				
@@ -231,7 +233,7 @@
 				fi
 			
 			# pkgconfig is not needed on MacOS, but can be found by adding it to the path.
-				#PATH="$(arch -${BUILD_ARCH} brew --prefix pkgconfig)/bin:$PATH"
+				#PATH="$(${BREW} --prefix pkgconfig)/bin:$PATH"
 			
 			# The DEV_ROOT is the most important item to add to the path variables, the folder we will be using to "install" the programs.  Make sure it is added last so it appears first in the PATH.
 				if [ -n "${USE_DEV_ROOT}" ]
@@ -305,7 +307,7 @@
 # This function will install homebrew if it hasn't been installed yet, or reset homebrew if desired.
 	function setupHomebrew
 	{
-		if [ ! -e "${HOMEBREW_ROOT}/bin/brew" ]
+		if [ ! -e "${BREW}" ]
 		then
 			# This checks for the BUILD_OFFLINE option, which does not make sense in this context.  Printing a warning and attempting to continue.
 				if [ -n "${BUILD_OFFLINE}" ]
@@ -326,7 +328,7 @@
 					echo "Quitting the script as you requested."
 					exit
 				fi
-				arch -${BUILD_ARCH} brew remove --force $(brew list) --ignore-dependencies
+				${BREW} remove --force $(${BREW} list) --ignore-dependencies
 			fi  
 		fi
 	}
@@ -341,18 +343,18 @@
 	function brewInstallIfNeeded
 	{
 		# This verifies HomeBrew is installed prior to installing a package.
-			if [ ! -e "${HOMEBREW_ROOT}/bin/brew" ]
+			if [ ! -e "${BREW}" ]
 			then
 				display "Error.  Homebrew is not installed.  Please install homebrew before calling brewInstallIfNeeded."
 			fi
 		
 		for package in "$@"
 		do
-			arch -${BUILD_ARCH} brew ls --versions $package > /dev/null 2>&1
+			${BREW} ls --versions $package > /dev/null 2>&1
 			if [ $? -ne 0 ]
 			then
 				echo "Installing : $package"
-				arch -${BUILD_ARCH} brew install $package
+				${BREW} install $package
 			else
 				echo "brew : $package is already installed"
 			fi
@@ -643,7 +645,7 @@
 		if [[ "${OSTYPE}" == "darwin"* ]]
 		then
 			curl https://raw.githubusercontent.com/KDE/craft/master/setup/CraftBootstrap.py -o setup.py
-			echo -e "${ANS}" | $(arch -${BUILD_ARCH} brew --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
+			echo -e "${ANS}" | $(${BREW} --prefix)/bin/python3 setup.py --prefix "${CRAFT_ROOT}"
 			
 		elif [[ "$OSTYPE" == "msys" ]]
 		then
@@ -675,7 +677,7 @@
 				
 				# This will make sure Homebrew is up to date and display the message.
 					display "Upgrading Homebrew and Installing Homebrew Dependencies for Craft."
-					arch -${BUILD_ARCH} brew upgrade
+					${BREW} upgrade
 					
 				# python is the only one required for craft, but the others are needed by the other scripts in this Repo or QT Creator
 					brewInstallIfNeeded cmake python ninja gettext

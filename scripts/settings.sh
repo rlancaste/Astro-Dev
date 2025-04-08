@@ -28,7 +28,7 @@
 	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 		#export REMOVE_ALL="Yep"
 	# The default for this Repo is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
-		export USE_QT5="Yep"
+		#export USE_QT5="Yep"
 	# The current default for this Repo is to build for x86-64 on MacOS, but ARM (Apple Silicon) support is being tested.
 		#export USE_ARM="Yep"
 		
@@ -96,8 +96,8 @@ echo "OSTYPE                   is [${OSTYPE}]"
 echo "NUM_PROCESSORS           are [${NUM_PROCESSORS}]"
 
 # This is the architecture used for building.
-echo "System Architecture       is [$(uname -m)]"
-echo "Build Architecture        is [${BUILD_ARCH}]"
+echo "System Architecture      is [$(uname -m)]"
+echo "Build Architecture       is [${BUILD_ARCH}]"
 
 # These settings are vital if you want to fork a repo and do any editing.
 echo "GIT_USERNAME             is [${GIT_USERNAME}]"
@@ -122,6 +122,7 @@ echo "DEV_ROOT                 is [${DEV_ROOT}]"
 echo "CRAFT_ROOT               is [${CRAFT_ROOT}]"
 
 # Settings automatically set in automaticallySetScriptSettings in script-engine.sh
+echo "BREW                     is [${BREW}]"
 echo "PREFIX_PATHS             are [${PREFIX_PATHS}]"
 echo "RPATHS                   are [${RPATHS}]"
 echo "PATH                     is [${PATH}]"
