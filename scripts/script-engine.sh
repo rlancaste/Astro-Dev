@@ -375,6 +375,10 @@
 		if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 		then
 			source "${CRAFT_ROOT}/craft/craftenv.sh"
+
+			# This command attempts to prevent building unit tests for libftdi.  On some systems this causes problems since it needs boost for the unit tests, which are not needed for our use case.
+			craft --set buildTests=False libftdi
+
 			if [ -n "${BUILD_OFFLINE}" ]
 			then
 				craft --install-deps --offline "${PACKAGE_SHORT_NAME}"
