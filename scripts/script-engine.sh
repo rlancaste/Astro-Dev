@@ -36,11 +36,11 @@
 			fi
 		
 		testCommand=$(curl -Is $2 | head -n 1)
-		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/2 302"* || "${testCommand}" == *"HTTP/2 200"* ]]
+		if [[ "${testCommand}" == *"OK"* || "${testCommand}" == *"Moved"* || "${testCommand}" == *"HTTP/2 301"* || "${testCommand}" == *"HTTP/1.1 301"* || "${testCommand}" == *"HTTP/2 302"* || "${testCommand}" == *"HTTP/1.1 302"* || "${testCommand}" == *"HTTP/2 200"* || "${testCommand}" == *"HTTP/1.1 200"* ]]
   		then 
   			echo "$1 connection was found."
   		else
-  			echo "$1, ($2), a required connection, was not found, aborting script."
+  			echo "Aborting Script.  $1, ($2), a required connection, was not found, it reported: ${testCommand}."
   			echo "If you would like the script to run anyway, please comment out the line that tests this connection in the appropriate script."
   			echo "If you are running with no internet connection but already have everything downloaded, please use the BUILD_OFFLINE option."
   			exit
