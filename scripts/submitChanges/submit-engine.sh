@@ -62,6 +62,19 @@
 		# This enters the source directory.
 			cd "${SRC_DIR}"
 			
+		# This details your current changes
+			display "Here are your current changes in the ${PACKAGE_NAME} Source Directory:"
+			git status
+			git diff
+			display "Please confirm that you want to commit your changes and submit them to the ${PACKAGE_NAME} Repo"
+			read -p "Do you want to commit your changes? Type y for yes: " confirm
+			if [[ "$confirm" != "y" ]]
+			then
+				echo "You have chosen not to commit and submit at this time."
+				read -p "Hit [Enter] to end the script now." closing
+				exit
+			fi
+			
 		# This checks the current branch to make sure you are committing to a branch instead of master (a mistake I often made myself).
 		# You can specify a name for a branch to switch to and it will switch to that branch.
 		# Then after you switch branches, it commits your changes to that branch with your desired commit message, and finally pushes it to the server.
