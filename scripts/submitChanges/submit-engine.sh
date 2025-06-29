@@ -37,7 +37,12 @@
 			
 		# This sets the source directory that will be used for the submission.
 			export USE_FORKED_REPO="Yep"
-			selectSourceDir
+			if [[ ${PACKAGE_NAME} == "Astro-Dev" ]]
+			then
+				export SRC_DIR=${DIR}/../..
+			else
+				selectSourceDir
+			fi
 
 		# This checks to see if the remote server is accessible.
 			checkForConnection "${PACKAGE_NAME}" "${FORKED_REPO_HTML}"
