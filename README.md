@@ -7,7 +7,7 @@ A Script to easily setup and build Astronomical Software including INDI, 3rd Par
 This repository is intended to make it easier to get set up to easily build the latest versions of INDI, INDI Web Manager App, 3rd Party Drivers, StellarSolver, GSC, and KStars 
 as well as to be able to edit the source code to test out ideas, to diagnose problems, and to make contributions to the development of any or all of these programs. 
 Recently, I have expanded the script so that it can build in Ubuntu Linux and may expand to other distros and to Windows in the future.  This script can build using the system, craft, or homebrew as a foundation. 
-It can build QT5 and QT6 builds in parallel for testing purposes.  It can build using the original repositories or forked repositories.  It can optionally build with XCode on MacOS.  
+It can build with different architectures in parallel for testing purposes.  It can build using the original repositories or forked repositories.  It can optionally build with XCode on MacOS.  
 
 # The History
 This script evolved out of my previous repository [KStars-on-OSX-Craft](https://github.com/rlancaste/kstars-on-osx-craft).
@@ -63,7 +63,7 @@ There are a number of variables that you can customize in settings.sh.
 2. GIT_USERNAME and GITLAB_USERNAME.  If you want to fork the various Repositories and make contributions, you must add your own usernames.
 3. CODE_SIGN_IDENTITY.  This is only required if you want to build with XCode on MacOS.
 4. ASTRO_ROOT.  This is the base folder for all of the astro development.
-5. CRAFT_ROOT.  This is where Craft will be installed if desired.  Note that if you want QT5, it will append that to the end of the path so that it makes a separate craft-root folder so you can build with both QT5 and QT6.
+5. CRAFT_ROOT.  This is where Craft will be installed if desired.  Note that if you want to build with a different architecture, it will build with a different craft root to allow building in parallel.
 6. MACOSX_DEPLOYMENT_TARGET.  This is the version of MacOS that is the minimum you want to build for.
 
 # [settings.sh](scripts/settings.sh) Global Options

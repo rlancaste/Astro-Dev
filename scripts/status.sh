@@ -69,14 +69,14 @@
 	# This checks Craft Core Repo in the Craft Directories
 		srcStatus "CRAFT x86 QT6 Craft Directory" "${ASTRO_ROOT}/CraftRoot/Craft"
 		srcStatus "CRAFT ARM QT6 Craft Directory" "${ASTRO_ROOT}/CraftRoot-ARM/Craft"
-		srcStatus "CRAFT x86 QT5 Craft Directory" "${ASTRO_ROOT}/CraftRoot-QT5/Craft"
-		srcStatus "CRAFT ARM QT5 Craft Directory" "${ASTRO_ROOT}/CraftRoot-QT5-ARM/Craft"
+		#srcStatus "CRAFT x86 QT5 Craft Directory" "${ASTRO_ROOT}/CraftRoot-QT5/Craft"
+		#srcStatus "CRAFT ARM QT5 Craft Directory" "${ASTRO_ROOT}/CraftRoot-QT5-ARM/Craft"
 		
 	# This checks Craft blueprints in Craft
 		srcStatus "CRAFT x86 QT6 Blueprints" "${ASTRO_ROOT}/CraftRoot/etc/blueprints/locations/craft-blueprints-kde"
 		srcStatus "CRAFT ARM QT6 Blueprints" "${ASTRO_ROOT}/CraftRoot-ARM/etc/blueprints/locations/craft-blueprints-kde"
-		srcStatus "CRAFT x86 QT5 Blueprints" "${ASTRO_ROOT}/CraftRoot-QT5/etc/blueprints/locations/craft-blueprints-kde"
-		srcStatus "CRAFT ARM QT5 Blueprints" "${ASTRO_ROOT}/CraftRoot-QT5-ARM/etc/blueprints/locations/craft-blueprints-kde"
+		#srcStatus "CRAFT x86 QT5 Blueprints" "${ASTRO_ROOT}/CraftRoot-QT5/etc/blueprints/locations/craft-blueprints-kde"
+		#srcStatus "CRAFT ARM QT5 Blueprints" "${ASTRO_ROOT}/CraftRoot-QT5-ARM/etc/blueprints/locations/craft-blueprints-kde"
 
 	# These are the packages it checks
 		packageStatus indi
