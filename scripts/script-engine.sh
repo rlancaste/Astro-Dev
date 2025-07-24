@@ -103,10 +103,10 @@
 			export BUILD_DIR="${BUILD_DIR}-xcode"
 		fi
 		
-		if [ -n "${USE_QT5}" ]
-		then
-			export BUILD_DIR="${BUILD_DIR}-QT5"
-		fi
+		#if [ -n "${USE_QT5}" ]
+		#then
+		#	export BUILD_DIR="${BUILD_DIR}-QT5"
+		#fi
 		
 		if [ -n "${USE_ARM}" ]
 		then
@@ -140,10 +140,10 @@
 			fi
 			
 		# This establishes a separate CRAFT-ROOT folder so that you can build in QT5 separate from QT6
-			if [ -n "${USE_QT5}" ]
-			then
-				export CRAFT_ROOT="${CRAFT_ROOT}-QT5"
-			fi
+			#if [ -n "${USE_QT5}" ]
+			#then
+			#	export CRAFT_ROOT="${CRAFT_ROOT}-QT5"
+			#fi
 		
 		# This establishes a separate CRAFT-ROOT folder so that you can build in x86 separate from ARM
 			if [ -n "${USE_ARM}" ]
@@ -191,10 +191,10 @@
 				fi
 			fi
 			
-			if [[ -n "${USE_QT5}" && -n "${USE_DEV_ROOT}" ]]
-			then
-				export DEV_ROOT="${DEV_ROOT}-QT5"
-			fi
+			#if [[ -n "${USE_QT5}" && -n "${USE_DEV_ROOT}" ]]
+			#then
+			#	export DEV_ROOT="${DEV_ROOT}-QT5"
+			#fi
 			
 			if [[ -n "${USE_ARM}" && -n "${USE_DEV_ROOT}" ]]
 			then
@@ -511,9 +511,9 @@
 			if [[ ! -n "${USE_QT5}" && "$branch" == "master" ]]
 			then
 				echo "This branch is compatible with a QT6 Craft folder."
-			elif [[ -n "${USE_QT5}" && "$branch" == "qt5-lts" ]]
-			then
-				echo "This branch is compatible with a QT5 Craft folder."
+			#elif [[ -n "${USE_QT5}" && "$branch" == "qt5-lts" ]]
+			#then
+			#	echo "This branch is compatible with a QT5 Craft folder."
 			else
 				echo "This branch might not be compatible with your craft folder."
 				read -p "?Do you really wish to proceed? (type y/n) " proceed
@@ -708,17 +708,7 @@
 						craft --destroy-craft-root
 				fi
 			else
-				TXT="Version of QT:"
-				ANS=""
-				if [ -n "${USE_QT5}" ]
-				then
-					TXT="${TXT} Qt5 (0)"
-					ANS="${ANS}0\n"
-				else
-					TXT="${TXT} Qt6 (1)"
-					ANS="${ANS}1\n"
-				fi
-				TXT="${TXT}, and Select target architecture:"
+				TXT="Select target architecture:"
 				if [ -n "${USE_ARM}" ]
 				then
 					TXT="${TXT} arm64 (1)"

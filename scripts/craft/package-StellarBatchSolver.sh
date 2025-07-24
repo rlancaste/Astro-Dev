@@ -53,12 +53,12 @@
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
 		display "Copying Craft Blueprints for StellarBatchSolver if needed."
-		if [ -n "${USE_QT5}" ]
-		then
-		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/stellarbatchsolver libs/stellarbatchsolver
-		else
+		#if [ -n "${USE_QT5}" ]
+		#then
+		# 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/stellarbatchsolver libs/stellarbatchsolver
+		#else
 		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/stellarbatchsolver libs/stellarbatchsolver
-		fi
+		#fi
 	fi
 	
 # This sets the craft environment based on the settings.

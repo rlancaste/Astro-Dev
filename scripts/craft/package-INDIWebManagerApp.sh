@@ -53,12 +53,12 @@
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
 		display "Copying Craft Blueprints for indiwebmanagerapp if needed."
-		if [ -n "${USE_QT5}" ]
-		then
-		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/indiwebmanagerapp libs/indiwebmanagerapp
-		else
+		#if [ -n "${USE_QT5}" ]
+		#then
+		# 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/indiwebmanagerapp libs/indiwebmanagerapp
+		#else
 		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/indiwebmanagerapp libs/indiwebmanagerapp
-		fi
+		#fi
 	fi
 	
 # This sets the craft environment based on the settings.

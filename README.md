@@ -51,7 +51,7 @@ In the [craft](scripts/craft) folder, there are several scripts which are helpfu
 
 # Running the Craft Packaging Scripts
 To Package and Distribute KStars, StellarSolverTester, StellarBatchSolver or INDIWebManagerApp, the craft packaging scripts can be used to generate a dmg.  There are options in each script for versions, verbosity, and which programs to rebuild before packaging.
-Note that this makes use of the USE_QT5 option to determine which craft scripts to run and which package to make.  Craft must be set up before running these scripts.
+Craft must be set up before running these scripts.
 1. [package-KStars.sh](scripts/craft/package-KStars.sh)
 2. [package-StellarSolverTester.sh](scripts/craft/package-StellarSolverTester.sh)
 3. [package-StellarBatchSolver.sh](scripts/craft/package-StellarBatchSolver.sh)
@@ -73,7 +73,7 @@ There are a number of options that you can turn on or off in settings.sh. To ena
 3. BUILD_OFFLINE.  This option allows you to run scripts and build packages if they are already downloaded.  it will not check to update them since it is offline.
 4. CLEAN_BUILD.  This option will clean build directories out before building packages.  This will take longer to build, but may solve some problems sometimes.	
 5. REMOVE_ALL.  This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
-6. USE_QT5.  The default for this REPO is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6.
+6. USE_QT5.  The default for this REPO is to build in QT6, and craft no longer supports QT5, so this option is now disabled.
 7. USE_ARM.  The default for this REPO is currently to build with x86_64 on MacOS, but ARM support is under development.
 
 # Individual Build Scripts Local Options

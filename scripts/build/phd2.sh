@@ -39,14 +39,14 @@
 	if [[ "${BUILD_FOUNDATION}" == "CRAFT" ]]
 	then
 		display "Copying Craft Blueprints for Dependencies if needed."
-		if [ -n "${USE_QT5}" ]
-		then
-		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/libwxwidgets libs/libwxwidgets
-		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/phd2 libs/phd2
-		else
+		#if [ -n "${USE_QT5}" ]
+		#then
+		# 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/libwxwidgets libs/libwxwidgets
+		# 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT5/phd2 libs/phd2
+		#else
 		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/libwxwidgets libs/libwxwidgets
 		 	copyCraftBlueprint ${SCRIPTS_DIR}/craft/extra-blueprints/QT6/phd2 libs/phd2
-		fi
+		#fi
 	fi
 	
 # This command will install dependencies for the package.

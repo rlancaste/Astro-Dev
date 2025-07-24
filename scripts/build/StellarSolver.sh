@@ -31,16 +31,16 @@
 	display "Setting up and Building StellarSolver with the Tester Application.  If you want to build the Batch Solver or Demos, please enable those options in StellarSolver.sh"
 
 # This will dynamically set the QT5 or QT6 build option using the USE_QT5 variable in settings.sh
-	if [ -n "${USE_QT5}" ]
-	then
-		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
-		export HOMEBREW_DEPENDENCIES="${HOMEBREW_DEPENDENCIES} qt5"
-		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev"
-	else
+	#if [ -n "${USE_QT5}" ]
+	#then
+	#	export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=ON ${PACKAGE_BUILD_OPTIONS}"
+	#	export HOMEBREW_DEPENDENCIES="${HOMEBREW_DEPENDENCIES} qt5"
+	#	export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qtbase5-dev"
+	#else
 		export PACKAGE_BUILD_OPTIONS="-DUSE_QT5=OFF ${PACKAGE_BUILD_OPTIONS}"
 		export HOMEBREW_DEPENDENCIES="${HOMEBREW_DEPENDENCIES} qt6"
 		export UBUNTU_DEPENDENCIES="${UBUNTU_DEPENDENCIES} qt6-base-dev"
-	fi
+	#fi
 
 # This automatically sets the repositories based on the package information above and your Username variables from settings.sh
 # If any of these are wrong or the variables are wrong you should change this.

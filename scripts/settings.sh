@@ -27,7 +27,7 @@
 		#export CLEAN_BUILD="Yep"
 	# This option will remove current homebrew packages and remove all the files in the Craft_Root Directory to start with a fresh craft foundation.  Be careful with this one.
 		#export REMOVE_ALL="Yep"
-	# The default for this Repo is to build in QT6, but this option allows you to build in QT5 since many Astronomy Packages (and homebrew) have not fully moved on to QT6	
+	# The default for this Repo is to build in QT6, and as of now Craft doesn't support QT5, so this option is disabled.
 		#export USE_QT5="Yep"
 	# The current default for this Repo is to build for x86-64 on MacOS, but ARM (Apple Silicon) support is being tested.
 		#export USE_ARM="Yep"
@@ -112,7 +112,7 @@ echo "BUILD_XCODE              ? [${BUILD_XCODE:-Nope}]"
 echo "BUILD_OFFLINE            ? [${BUILD_OFFLINE:-Nope}]"
 echo "CLEAN_BUILD              ? [${CLEAN_BUILD:-Nope}]"
 echo "REMOVE_ALL               ? [${REMOVE_ALL:-Nope}]"
-echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
+#echo "USE_QT5                  ? [${USE_QT5:-Nope}]"
 echo "USE_ARM                  ? [${USE_ARM:-Nope}]"
 
 # Key Directory paths determined above in the options
